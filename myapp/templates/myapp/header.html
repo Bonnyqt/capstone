@@ -1,9 +1,7 @@
 {% load static %}
 
-
-
 <div class="container-fluid position-relative p-0">
-    <nav class="navbar navbar-expand-lg navbar-dark px-5 py-3 py-lg-0 custom-navbar" style="background: rgba(8,20,44, 0.1);backdrop-filter: blur(6px);">
+    <nav class="navbar navbar-expand-lg navbar-dark px-5 py-3 py-lg-0 custom-navbar" style="background: rgba(8,20,44, 0.1); backdrop-filter: blur(6px);">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span class="fa fa-bars"></span>
         </button>
@@ -12,7 +10,8 @@
                 <a href="{% url 'contact' %}" class="nav-item nav-link mx-5 {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
                 <a href="{% url 'leaderboards' %}" class="nav-item nav-link mx-5 {% if request.resolver_match.url_name == 'leaderboards' %}active{% endif %}">Leaderboards</a>
 
-                <a href="{% url 'index' %}" class="navbar-brand mx-5 p-0">
+                <!-- Logo -->
+                <a href="{% url 'index' %}" class="navbar-brand mx-5 p-0 d-none d-lg-block">
                     <h1 class="m-0"><img style="width:80px; height:80px; margin-top:3px;" src="{% static 'img/logo.png'%}" alt=""></h1>
                 </a>
 
@@ -26,26 +25,38 @@
                 <a href="{% url 'about' %}" class="nav-item nav-link mx-5 {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a>
             </div>
         </div>
-      <!-- Check if the user is authenticated -->
-{% if request.user.is_authenticated %}
-<!-- Dropdown for logged in user -->
-<div class="dropdown" style="position: absolute; right: 40px;">
-    <a class="btn btn-primary dropdown-toggle py-2 px-4" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-        {{ request.user.first_name }}
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="userDropdown">
-        <li><a class="dropdown-item " href="{% url 'profile' %}">Profile</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-    </ul>
-</div>
-{% else %}
-<!-- Button for login when user is not authenticated -->
-<a class="btn btn-primary py-2 px-4" href="{% url 'loginPage' %}" style="position: absolute; right: 40px;">
-    LOGIN
-</a>
-{% endif %}
 
+        <!-- Check if the user is authenticated -->
+        {% if request.user.is_authenticated %}
+        <!-- Dropdown for logged in user -->
+        <div class="dropdown" style="position: absolute; right: 40px;">
+            <a class="btn btn-primary dropdown-toggle py-2 px-4" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ request.user.first_name }}
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item " href="{% url 'profile' %}">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+        </div>
+        {% else %}
+        <!-- Button for login when user is not authenticated -->
+        <a class="btn btn-primary py-2 px-4" href="{% url 'loginPage' %}" style="position: absolute; right: 40px;">
+            LOGIN
+        </a>
+        {% endif %}
     </nav>
 </div>
 
+<!-- CSS to hide the logo when the burger button is displayed -->
+<style>
+    @media (max-width: 992px) {
+        .navbar-brand {
+            display: none;
+        }
+    }
+
+    .navbar {
+        backdrop-filter: blur(6px);
+    }
+</style>

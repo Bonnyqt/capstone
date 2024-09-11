@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User as DjangoUser
 from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.contrib import messages
-
+from .models import Feedback
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     return render(request, 'myapp/index.html')
@@ -70,7 +72,31 @@ def custom_logout(request):
     request.session.flush()  # This will remove all session data
     
     # Optionally, you can add a message
-    messages.success(request, "You have been logged out successfully.")
     
     # Redirect to the login page or homepage
-    return redirect('loginPage')
+    return redirect('index')
+
+
+
+
+
+
+def feedback_view(request):
+    if request.method == 'POST':
+        feedback_text = request.POST.get('feedback')
+        user = request.user if request.user.is_authenticated else None
+        email = request.POST.get('email') if not user else user.email
+
+        print(f"Feedback: {feedback_text}")
+        print(f"Email: {email}")
+        print(f"User ID: {user.id if user else 'No user logged in'}")
+
+        # Save the feedback
+        Feedback.objects.create(user=user, email=email, feedback=feedback_text)
+
+        # Add a success message
+        messages.success(request, 'Your message has been sent successfully!')
+
+        return redirect('contact')  # Replace with your success page URL
+
+    return render(request, 'contact.html')

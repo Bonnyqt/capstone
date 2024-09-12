@@ -18,8 +18,6 @@ from django.contrib.sites.models import Site
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
-from django.contrib.auth.models import User as DjangoUser
-from django.shortcuts import render
 from django.utils import timezone
 from pytz import timezone as pytz_timezone
 from django.views.decorators.csrf import csrf_exempt

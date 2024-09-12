@@ -12,14 +12,13 @@
                 <a href="{% url 'leaderboards' %}" class="nav-item nav-link mx-5 {% if request.resolver_match.url_name == 'leaderboards' %}active{% endif %}">Leaderboards</a>
                 {% else %}
                 <a onclick="myFunction()" class="btn nav-item nav-link mx-5 {% if request.resolver_match.url_name == 'leaderboards' %}active{% endif %}">Leaderboards</a>
-               
                 {% endif %}
                 
                 <!-- Logo -->
                 <a href="{% url 'index' %}" class="navbar-brand mx-5 p-0 d-none d-lg-block">
                     <h1 class="m-0"><img style="width:80px; height:80px; margin-top:3px;" src="{% static 'img/logo.png'%}" alt=""></h1>
                 </a>
-
+    
                 <div class="nav-item dropdown mx-5">
                     <a href="{% url 'simulate' %}" class="nav-link dropdown-toggle {% if request.resolver_match.url_name == 'simulate' %}active{% endif %}" data-bs-toggle="dropdown">Simulate</a>
                     <div class="dropdown-menu m-0">
@@ -28,29 +27,83 @@
                     </div>
                 </div>
                 <a href="{% url 'about' %}" class="nav-item nav-link mx-5 {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a>
+                
             </div>
         </div>
-
+    
         <!-- Check if the user is authenticated -->
-        {% if request.user.is_authenticated %}
-        <!-- Dropdown for logged in user -->
-        <div class="dropdown" style="position: absolute; right: 40px;">
-            <a class="btn btn-primary dropdown-toggle py-2 px-4" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                {{ request.user.first_name }}
+        <div style="position: absolute; right: 40px; display: flex; align-items: center;">
+            {% if request.user.is_authenticated %}
+            <!-- Bell Icon -->
+            <div class="dropdown">
+                <a href="#" class="me-3 position-relative dropdown-toggle" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+                        <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+                    </svg>
+                    <!-- Badge for notifications -->
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        <h6 class="text-white mb-0" style="font-size:13px;" data-toggle="counter-up">3</h6>
+                        <span class="visually-hidden">unread notifications</span>
+                    </span>
+                   
+                </a>
+                
+                <!-- Dropdown Menu -->
+                <div class="dropdown" style="position: relative;">
+                    <ul class="dropdown-menu p-3" aria-labelledby="notificationDropdown" style="width: 300px; right: 0; position: absolute; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        <!-- Container for "Mark all as read" link -->
+                        <li class="d-flex justify-content-between align-items-center" style="border-bottom: 1px solid #ddd; ">
+                            <span></span>
+                            <a href="#" class="mb-2" style="text-decoration: none; color: #007bff; font-size: 14px;">Mark all as read</a>
+                        </li>
+                       
+                        <li class="d-flex align-items-center mb-3 mt-3" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            <img src="{% static 'img/alf1.jpg' %}" alt="Alex" class="rounded-circle me-3" style="width: 40px; height: 40px;">
+                            <div>
+                                <a class="dropdown-item p-0" href="#" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    <strong>Alex</strong> commented on your Timeline
+                                </a>
+                                <small class="text-muted">10 minutes ago</small>
+                            </div>
+                        </li>
+                        <hr>
+                        <li class="d-flex align-items-center mb-3" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            <img src="{% static 'img/alf1.jpg' %}" alt="Ben Hur" class="rounded-circle me-3" style="width: 40px; height: 40px;">
+                            <div>
+                                <a class="dropdown-item p-0" href="#" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    <strong>Ben Hur</strong> commented on <span class="text-primary">your Timeline Share</span>
+                                </a>
+                                <small class="text-muted">55 minutes ago</small>
+                            </div>
+                        </li>
+                        <hr>
+                    </ul>
+                </div>
+                
+                  
+                  
+                  
+            </div>
+            <!-- Dropdown for logged in user -->
+            <div class="dropdown">
+                <a class="btn btn-primary dropdown-toggle py-2 px-4" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ request.user.first_name }}
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </div>
+            {% else %}
+            <!-- Button for login when user is not authenticated -->
+            <a class="btn btn-primary py-2 px-4" href="{% url 'loginPage' %}">
+                LOGIN
             </a>
-            <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                <li><a class="dropdown-item " href="{% url 'profile' %}">Profile</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-            </ul>
+            {% endif %}
         </div>
-        {% else %}
-        <!-- Button for login when user is not authenticated -->
-        <a class="btn btn-primary py-2 px-4" href="{% url 'loginPage' %}" style="position: absolute; right: 40px;">
-            LOGIN
-        </a>
-        {% endif %}
     </nav>
+    
 </div>
 <script>
     function myFunction() {
@@ -64,8 +117,9 @@
   setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
 }
 </script>
-<!-- CSS to hide the logo when the burger button is displayed -->
+<script src="{% static 'js/main.js' %}"></script>
 <style>
+
     @media (max-width: 992px) {
         .navbar-brand {
             display: none;

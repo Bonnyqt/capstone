@@ -15,8 +15,12 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.html import strip_tags
 from django.contrib.sites.models import Site
 from django.contrib.auth import get_user_model
-from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
+from django.conf import settings
+from django.contrib.auth.models import User as DjangoUser
+
+
+
 
 
 
@@ -123,50 +127,47 @@ def login(request):
             user = authenticate(request, username=email, password=password)
             if user is not None:
                 auth_login(request, user)
-                return redirect('index')
+                return redirect('index')  # Redirect to the index page or a successful login page
             else:
                 return render(request, 'myapp/login.html', {'error': 'Invalid email or password'})
         
-        if 'signup' in request.POST:
+        elif 'signup' in request.POST:
+            # Handle signup
             name = request.POST.get('name')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+            email = request.POST.get('email')
+            password = request.POST.get('password')
 
-        if not email.endswith('@tip.edu.ph'):
-            return render(request, 'myapp/login.html', {'error': 'Email must end with @tip.edu.ph'})
+            if not email.endswith('@tip.edu.ph'):
+                return render(request, 'myapp/login.html', {'error': 'Email must end with @tip.edu.ph'})
+            
+            if DjangoUser.objects.filter(username=email).exists():
+                return render(request, 'myapp/login.html', {'error': 'Email already exists'})
+            
+            user = DjangoUser.objects.create_user(username=email, email=email, password=password)
+            user.first_name = name
+            user.is_active = False  # Deactivate account until it is confirmed
+            user.save()
 
-        User = get_user_model()
-        if User.objects.filter(email=email).exists():
-            return render(request, 'myapp/login.html', {'error': 'Email already exists'})
+            # Generate activation link
+            token = account_activation_token.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            domain = 'localhost:8000' if settings.DEBUG else get_current_site(request).domain
+            link = f'http://{domain}/activate/{uid}/{token}/'
 
-        user = User.objects.create_user(username=email, email=email, password=password)
-        user.first_name = name
-        user.is_active = False  # Deactivate account until it is confirmed
-        user.save()
+            # Send email
+            subject = 'Activate Your Account'
+            message = render_to_string('myapp/activation_email.html', {
+                'user': user,
+                'domain': domain,
+                'link': link,
+            })
+            plain_message = strip_tags(message)
+            send_mail(subject, plain_message, 'your-email@gmail.com', [email], html_message=message)
 
-        # Generate the activation link
-        token = account_activation_token.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        domain = get_current_site(request).domain
-        link = f'http://{domain}/activate/{uid}/{token}/'
-
-        # Send email
-        subject = 'Activate Your Account'
-        message = render_to_string('myapp/activation_email.html', {
-            'user': user,
-            'domain': domain,
-            'link': link,
-        })
-        plain_message = strip_tags(message)
-        send_mail(
-    subject,
-    plain_message,  # This will be the plain text version
-    'marquejonbon@gmail.com',
-    [email],
-    html_message=message  # This will be the HTML version
-)
-
-        return render(request, 'myapp/login.html', {'success': 'Signup successful! Please check your email to activate your account'})
+            return render(request, 'myapp/login.html', {'success': 'Signup successful! Please check your email to activate your account'})
+    
+    # Handle GET request or POST without 'login' or 'signup' action
+    return render(request, 'myapp/login.html')
     
   
     

@@ -1,7 +1,7 @@
 
 from pathlib import Path
 import os
-import environ
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -98,15 +98,15 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-from decouple import config
+
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = 'cyberclash.capstone@gmail.com'
+EMAIL_HOST_PASSWORD = 'ktey rmca lgyk cqrq'
 
 
 
@@ -137,7 +137,6 @@ LOGGING = {
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Manila'
-
 USE_I18N = True
 
 USE_TZ = True

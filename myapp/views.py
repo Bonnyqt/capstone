@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User as DjangoUser
 from django.contrib.auth import authenticate, login as auth_login
@@ -18,7 +19,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
 from django.contrib.auth.models import User as DjangoUser
-
+from django.shortcuts import render
+from django.utils import timezone
+from pytz import timezone as pytz_timezone
+from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -201,18 +205,19 @@ def custom_logout(request):
 
 
 
-
-
+@csrf_exempt
+def mark_all_as_read(request):
+    if request.method == 'POST':
+        Feedback.objects.filter(is_new=True).update(is_new=False)
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)
 
 def feedback_view(request):
     if request.method == 'POST':
         feedback_text = request.POST.get('feedback')
         user = request.user if request.user.is_authenticated else None
         email = request.POST.get('email') if not user else user.email
-
-        print(f"Feedback: {feedback_text}")
-        print(f"Email: {email}")
-        print(f"User ID: {user.id if user else 'No user logged in'}")
+        
 
         # Save the feedback
         Feedback.objects.create(user=user, email=email, feedback=feedback_text)

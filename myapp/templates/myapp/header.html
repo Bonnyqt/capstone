@@ -49,29 +49,40 @@
                 
                 <!-- Dropdown Menu -->
                 <div class="dropdown" style="position: relative;">
-                    <ul class="dropdown-menu p-3" aria-labelledby="notificationDropdown" style="width: 300px; right: 0; position: absolute; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    <ul class="dropdown-menu p-3" aria-labelledby="notificationDropdown" style="width: 350px; right: 0; position: absolute; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                         <!-- Container for "Mark all as read" link -->
-                        <li class="d-flex justify-content-between align-items-center" style="border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 8px;">
-                            <span></span>
-                            <a href="#" id="markAllAsRead" class="mb-2" style="text-decoration: none; color: #007bff; font-size: 14px;">Mark all as read</a>
-                        </li>
-                        {% for feedback in feedback_list %} 
-                        <li class="d-flex align-items-center mb-3 mt-3 {% if feedback.is_new %}new-feedback{% endif %}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                            <img src="{% static 'img/alf1.jpg' %}" alt="Alex" class="rounded-circle me-3" style="width: 40px; height: 40px;">
-                            <div>
-                                <a class="dropdown-item p-0" href="#" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    <strong>{{ feedback.user_id }}:</strong> 
-                                    {{ feedback.feedback }}
-                                </a>
-                                <small class="text-muted">{{ feedback.created_at }}</small>    
-                            </div>
-                        </li>
-                        <hr>
-                        {% empty %}          
-                        <li class="dropdown-item">No feedback available.</li>  
-                        {% endfor %}
+                        <center>
+                            <li class="" style="border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 8px;">
+                                <span></span>
+                                <h5>Notifications</h5>
+                            </li>
+                        </center>
+                        
+                        <!-- Feedback items container -->
+                        <div style="max-height: 400px; overflow-y: auto;">
+                            {% for feedback in feedback_list %}
+                            <li class="d-flex align-items-center mb-3 mt-3 {% if feedback.is_new %}new-feedback{% endif %}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                <img src="{% static 'img/alf1.jpg' %}" alt="Alex" class="rounded-circle me-3" style="width: 40px; height: 40px;">
+                                <div>
+                                    <a class="dropdown-item p-0" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        <strong>{{ request.user.first_name }}:</strong>
+                                        {{ feedback.feedback }}
+                                    </a>
+                                    <small class="text-muted">{{ feedback.created_at }}</small>
+                                </div>
+                            </li>
+                            <hr>
+                            {% empty %}
+                            <li class="dropdown-item">No feedback available.</li>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- "Mark all as read" and "View Inbox" links -->
+                        <a id="markAllAsRead" class="btn mb-2" style="text-decoration: none; color: #06a3da; font-size: 14px;">Mark all as read</a>
+                        <a id="viewinbox" class="btn mb-2" style="text-decoration: none; color: #06a3da; font-size: 14px; float:right;" onclick="searchGmail()">View Inbox</a>
                     </ul>
                 </div>
+                
                 
                 
                 
@@ -113,24 +124,50 @@
   setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
 }
 </script>
+<script>
+    function searchGmail() {
+        const searchQuery = 'from:cyberclash.capstone@gmail.com';
+        const gmailUrl = `https://mail.google.com/mail/u/0/#search/${encodeURIComponent(searchQuery)}`;
+        window.location.href = gmailUrl;
+    }
+</script>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#markAllAsRead').on('click', function() {
+            $.ajax({
+                url: '{% url "mark_all_as_read" %}', // Your Django URL endpoint
+                type: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    // Update the UI to reflect that all feedbacks are read
+                    $('.new-feedback').removeClass('new-feedback');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error marking all as read:', error);
+                }
+            });
+        });
+    });
+</script>
 <style>
-.new-feedback {
-    position: relative;
-}
 
-.new-feedback::before {
-    content: '';
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    background-color: red;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-}
+
+    .new-feedback {
+        background-color: #8cd7f3; /* Light red background for new feedback */
+        border-left: 4px solid #06a3da; /* Red border to indicate new feedback */
+        padding: 14px;
+    }
+    .dropdown-menu {
+        max-height: 500px; /* Adjust as necessary */
+        overflow-y: auto; /* Scroll if necessary */
+    }
+
+
 
 
 

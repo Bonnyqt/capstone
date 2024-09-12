@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
 
+
 class User(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
@@ -24,9 +25,9 @@ class Feedback(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     feedback = models.TextField()
-    created_at = models.DateTimeField(default=timezone.now) 
+    created_at = models.DateTimeField(default=timezone.now)
+    is_new = models.BooleanField(default=True)  # Add this field to track if feedback is new
 
     def __str__(self):
         return f"Feedback from {self.email or 'Anonymous'}"
-    
     

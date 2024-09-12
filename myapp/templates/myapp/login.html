@@ -129,7 +129,7 @@ body {
   height: 100%;
   width: 100%;
   opacity: 0.5;
-  background: #7d2ae8;
+  background: #06a3da;
 }
 
 .cover .text .text-1,
@@ -177,7 +177,7 @@ body {
   bottom: 0;
   height: 3px;
   width: 25px;
-  background: #7d2ae8;
+  background: #06a3da;
 }
 
 .forms .signup-form .title:before {
@@ -211,12 +211,12 @@ body {
 
 .form-content .input-box input:focus,
 .form-content .input-box input:valid {
-  border-color: #7d2ae8;
+  border-color: #06a3da;
 }
 
 .form-content .input-box i {
   position: absolute;
-  color: #7d2ae8;
+  color: #06a3da;
   font-size: 17px;
 }
 
@@ -241,7 +241,7 @@ body {
 
 .forms .form-content .button input {
   color: #fff;
-  background: #7d2ae8;
+  background: #06a3da;
   border-radius: 6px;
   padding: 0;
   cursor: pointer;
@@ -326,7 +326,7 @@ body {
           <div class="form-content">
           <!-- Login Form -->
 <div class="login-form">
-  <div class="title">Login</div>
+  <div class="title">LOGIN</div>
   <form action="{% url 'login' %}" method="post">
       {% csrf_token %}
       <input type="hidden" name="login" value="True">
@@ -350,7 +350,7 @@ body {
 
 <!-- Signup Form -->
 <div class="signup-form">
-  <div class="title">Signup</div>
+  <div class="title">SIGNUP</div>
   <form action="{% url 'login' %}" method="post">
       {% csrf_token %}
       <input type="hidden" name="signup" value="True">

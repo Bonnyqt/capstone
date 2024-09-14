@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.contrib import messages
 from .models import Feedback
-from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -19,7 +18,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
 from django.utils import timezone
-from pytz import timezone as pytz_timezone
+from pytz import timezone as pytz_timezone  
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -100,6 +99,7 @@ def contact(request):
 
 def loginPage(request):
     return render(request, 'myapp/login.html')
+
 def profile_view(request):
     if request.user.is_authenticated:
         # Fetch the count of feedback for the logged-in user
@@ -226,3 +226,5 @@ def feedback_view(request):
         return redirect('contact')  # Replace with your success page URL
 
     return render(request, 'contact.html')
+
+

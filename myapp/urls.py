@@ -17,4 +17,5 @@ urlpatterns = [
  path('feedback/', feedback_view, name='feedback_view'),
  path('activate/<uidb64>/<token>/', views.activate, name='activate'),
   path('mark-all-as-read/', mark_all_as_read, name='mark_all_as_read'),
+
 ]

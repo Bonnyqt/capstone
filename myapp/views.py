@@ -23,6 +23,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import UserProfile
 from .forms import UserProfileForm
 from django.http import HttpResponseNotFound
+from django.contrib.auth.models import User
 
 def update_profile(request):
     if request.method == "POST":
@@ -187,7 +188,7 @@ def login(request):
             # Generate activation link
             token = account_activation_token.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            domain = 'localhost:8000' if settings.DEBUG else get_current_site(request).domain
+            domain = '127.0.0.1:8000' if settings.DEBUG else get_current_site(request).domain
             link = f'http://{domain}/activate/{uid}/{token}/'
 
             # Send email
@@ -264,3 +265,33 @@ def feedback_view(request):
 def custom_404(request, exception=None):
     return render(request, '404.html', status=404)
 
+def other_profiles(request):
+    return render(request, 'myapp/other_profiles.html')
+    
+@login_required
+def update_profile(request):
+    # Ensure that UserProfile exists for the current user
+    if not hasattr(request.user, 'userprofile'):
+        # Create a UserProfile for the user if it does not exist
+        UserProfile.objects.create(user=request.user)
+
+    # Handle the form submission
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=request.user.userprofile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile_view')
+    else:
+        form = UserProfileForm(instance=request.user.userprofile)
+
+    return render(request, 'myapp/profile.html', {'form': form})
+
+
+def user_profiles(request):
+    # Fetch all users from the database
+    users = User.objects.all()
+    return render(request, 'myapp/other_profiles.html', {'users': users})
+
+def other_profiles(request):
+    users = User.objects.all()
+    return render(request, 'myapp/other_profiles.html', {'users': users})

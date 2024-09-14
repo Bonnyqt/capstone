@@ -3,7 +3,9 @@ from . import views
 from django.contrib.auth.views import LogoutView
 from .views import feedback_view, mark_all_as_read
 from django.conf.urls import handler404
-
+from .views import user_profiles
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('', views.index, name='index'),
     path('about/', views.about, name='about'),
@@ -19,7 +21,9 @@ urlpatterns = [
  path('activate/<uidb64>/<token>/', views.activate, name='activate'),
   path('mark-all-as-read/', mark_all_as_read, name='mark_all_as_read'),
    path('profile/', views.update_profile, name='update_profile'),
-]
+   path('other-profiles/', views.other_profiles, name='other_profiles'),
+   path('profiles/', user_profiles, name='user_profiles'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 handler404 = 'myapp.views.custom_404'

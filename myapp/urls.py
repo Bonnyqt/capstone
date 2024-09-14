@@ -23,6 +23,8 @@ urlpatterns = [
    path('profile/', views.update_profile, name='update_profile'),
    path('other-profiles/', views.other_profiles, name='other_profiles'),
    path('profiles/', user_profiles, name='user_profiles'),
+   path('profiles-details/', views.profile_details, name='profile_details'),
+   path('upload_image/', views.upload_image, name='upload_image'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

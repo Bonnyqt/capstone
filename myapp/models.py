@@ -4,11 +4,13 @@ from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.conf import settings
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     section = models.CharField(max_length=50)
     program = models.CharField(max_length=100)
+    profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True, default='profile_images/default_QBRSs97.jpg')
 
     def __str__(self):
         return f"{self.user.username} Profile"

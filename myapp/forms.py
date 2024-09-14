@@ -21,5 +21,4 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['section', 'program']
-
+        fields = ['section', 'program', 'profile_image']

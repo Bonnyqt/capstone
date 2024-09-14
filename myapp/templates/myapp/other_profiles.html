@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>CYBERCLASH | About</title>
+    <title>CYBERCLASH | Browse Network</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
@@ -63,12 +63,12 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex flex-column align-items-center text-center">
-                                <img src="{% static 'img/alf1.jpg' %}" alt="{{ user.first_name }}" class="rounded-circle p-1 bg-primary" width="110">
+                                <img src="{{ user.userprofile.profile_image.url }}" alt="{{ user.first_name }}" class="rounded-circle p-1 bg-primary" width="110">
                                 <div class="mt-3">
                                     <h4>{{ user.first_name }}</h4>
                                     <p class="text-secondary mb-1">{{ user.userprofile.course }}</p>
                                     <p class="text-muted font-size-sm">{{ user.userprofile.section }}</p>
-                                    <a href="{% url 'other_profiles' %}"><button class="btn btn-primary">View Others</button></a>
+                                    <a href="{% url 'profile_details' %}"><button class="btn btn-primary">View Others</button></a>
                                 </div>
                             </div>
                         </div>

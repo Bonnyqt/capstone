@@ -136,21 +136,7 @@ def contact(request):
 def loginPage(request):
     return render(request, 'myapp/login.html')
 
-def profile_view(request):
-    if not request.user.is_authenticated:
-        return redirect('index')  # Use your URL name or path for the index page
 
-    # Fetch the count of feedback for the logged-in user
-    feedback_count = Feedback.objects.filter(user=request.user).count()
-    # Fetch feedback list (if needed)
-    feedback_list = Feedback.objects.filter(user=request.user).order_by('-created_at')
-
-    # Pass feedback to the template context
-    context = {
-        'feedback_list': feedback_list,
-        'feedback_count': feedback_count,
-    }
-    return render(request, 'myapp/profile.html', context)
 
 
     
@@ -267,24 +253,7 @@ def custom_404(request, exception=None):
 
 def other_profiles(request):
     return render(request, 'myapp/other_profiles.html')
-    
-@login_required
-def update_profile(request):
-    # Ensure that UserProfile exists for the current user
-    if not hasattr(request.user, 'userprofile'):
-        # Create a UserProfile for the user if it does not exist
-        UserProfile.objects.create(user=request.user)
 
-    # Handle the form submission
-    if request.method == 'POST':
-        form = UserProfileForm(request.POST, request.FILES, instance=request.user.userprofile)
-        if form.is_valid():
-            form.save()
-            return redirect('profile_view')
-    else:
-        form = UserProfileForm(instance=request.user.userprofile)
-
-    return render(request, 'myapp/profile.html', {'form': form})
 
 
 def user_profiles(request):
@@ -295,3 +264,51 @@ def user_profiles(request):
 def other_profiles(request):
     users = User.objects.all()
     return render(request, 'myapp/other_profiles.html', {'users': users})
+def profile_details(request):
+    users = User.objects.all()
+    return render(request, 'myapp/profile_details.html', {'users': users})
+
+def profile_view(request):
+    if not request.user.is_authenticated:
+        return redirect('index')  # Use your URL name or path for the index page
+
+    # Fetch the count of feedback for the logged-in user
+    feedback_count = Feedback.objects.filter(user=request.user).count()
+    # Fetch feedback list (if needed)
+    feedback_list = Feedback.objects.filter(user=request.user).order_by('-created_at')
+
+    # Pass feedback to the template context
+    context = {
+        'feedback_list': feedback_list,
+        'feedback_count': feedback_count,
+    }
+    return render(request, 'myapp/profile.html', context)
+
+@login_required
+def upload_image(request):
+    if request.method == 'POST' and 'profile_image' in request.FILES:
+        user_profile = UserProfile.objects.get(user=request.user)
+        user_profile.profile_image = request.FILES['profile_image']
+        user_profile.save()
+        return redirect('profile_view')
+    return redirect('profile_view')
+    
+@login_required
+def update_profile(request):
+    # Ensure that UserProfile exists for the current user
+    if not hasattr(request.user, 'userprofile'):
+        UserProfile.objects.create(user=request.user)
+
+    if request.method == 'POST':
+        # Process the form data
+        form = UserProfileForm(request.POST, instance=request.user.userprofile)
+        if form.is_valid():
+            form.save()
+            # Update user first name separately
+            request.user.first_name = request.POST.get('first_name', request.user.first_name)
+            request.user.save()
+            return redirect('profile_view')
+    else:
+        form = UserProfileForm(instance=request.user.userprofile)
+
+    return render(request, 'myapp/profile.html', {'form': form})

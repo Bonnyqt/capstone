@@ -110,19 +110,19 @@
 						</div>
 					</div>
 				</div>
-
+				
 
 				<div class="col-lg-8">
 					<div class="card">
 						<div class="card-body">
-							<form method="POST">
+							<form method="POST" action="{% url 'update_profile' %}">
 								{% csrf_token %}
 								<div class="row mb-3">
 									<div class="col-sm-3">
 										<h6 class="mb-0">Username</h6>
 									</div>
 									<div class="col-sm-9 text-secondary">
-										<input type="text" class="form-control" value="">
+										<input type="text" class="form-control" name="first_name" value="{{ user.first_name }}">
 									</div>
 								</div>
 								<div class="row mb-3">
@@ -138,7 +138,7 @@
 										<h6 class="mb-0">Section</h6>
 									</div>
 									<div class="col-sm-9 text-secondary">
-										<input type="text" class="form-control" name="section" value="">
+										<input type="text" class="form-control" name="section" value="{{ request.user.userprofile.section }}">
 									</div>
 								</div>
 								<div class="row mb-3">
@@ -146,7 +146,7 @@
 										<h6 class="mb-0">Program</h6>
 									</div>
 									<div class="col-sm-9 text-secondary">
-										<input type="text" class="form-control" name="program" value="">
+										<input type="text" class="form-control" name="program" value="{{ request.user.userprofile.program }}">
 									</div>
 								</div>
 								<div class="row mb-3">
@@ -164,6 +164,7 @@
 									</div>
 								</div>
 							</form>
+							
 						</div>
 					</div>
 

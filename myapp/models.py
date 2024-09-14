@@ -3,7 +3,15 @@ from django.contrib.auth.models import User  # If using Django's built-in User m
 from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
+from django.contrib.auth.models import User
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    section = models.CharField(max_length=50)
+    program = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.user.username} Profile"
 
 class User(models.Model):
     name = models.CharField(max_length=255)
@@ -31,3 +39,4 @@ class Feedback(models.Model):
     def __str__(self):
         return f"Feedback from {self.email or 'Anonymous'}"
     
+

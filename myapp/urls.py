@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from django.contrib.auth.views import LogoutView
 from .views import feedback_view, mark_all_as_read
+from django.conf.urls import handler404
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -12,10 +13,13 @@ urlpatterns = [
      path('loginPage', views.loginPage, name='loginPage'),
     path('login', views.login, name='login'),
   path('logout/', LogoutView.as_view(), name='logout'),
- path('profile/', views.profile_view, name='profile'),
+ path('profile_view/', views.profile_view, name='profile_view'),
  path('logout', views.custom_logout, name='logout'),
  path('feedback/', feedback_view, name='feedback_view'),
  path('activate/<uidb64>/<token>/', views.activate, name='activate'),
   path('mark-all-as-read/', mark_all_as_read, name='mark_all_as_read'),
-
+   path('profile/', views.update_profile, name='update_profile'),
 ]
+
+
+handler404 = 'myapp.views.custom_404'

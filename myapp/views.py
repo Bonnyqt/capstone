@@ -20,8 +20,37 @@ from django.conf import settings
 from django.utils import timezone
 from pytz import timezone as pytz_timezone  
 from django.views.decorators.csrf import csrf_exempt
+from .models import UserProfile
+from .forms import UserProfileForm
+from django.http import HttpResponseNotFound
 
+def update_profile(request):
+    if request.method == "POST":
+        # Handle updating the user profile
+        user = request.user
 
+        # Update the user's first name
+        first_name = request.POST.get('first_name')
+        if first_name:
+            user.first_name = first_name
+            user.save()
+
+        # Handle user profile updates
+        try:
+            user_profile = UserProfile.objects.get(user=user)
+        except UserProfile.DoesNotExist:
+            user_profile = UserProfile(user=user)
+        
+        user_profile.section = request.POST.get('section')
+        user_profile.program = request.POST.get('program')
+        user_profile.save()
+
+        return redirect('profile_view')  # Redirect to a profile page or another relevant page
+
+    return render(request, 'profile.html', {
+        'user': request.user,
+        'user_profile': UserProfile.objects.filter(user=request.user).first()
+    })
 
 
 
@@ -61,9 +90,15 @@ def about(request):
     return render(request, 'myapp/about.html', context)
 
 def simulate(request):
+    if not request.user.is_authenticated:
+        return redirect('index')  # Use your URL name or path for the index page
+
     return render(request, 'myapp/simulate.html')
 
 def leaderboards(request):
+    if not request.user.is_authenticated:
+        return redirect('index')  # Use your URL name or path for the index page
+
     if request.user.is_authenticated:
         # Fetch the count of feedback for the logged-in user
         feedback_count = Feedback.objects.filter(user=request.user).count()
@@ -101,15 +136,14 @@ def loginPage(request):
     return render(request, 'myapp/login.html')
 
 def profile_view(request):
-    if request.user.is_authenticated:
-        # Fetch the count of feedback for the logged-in user
-        feedback_count = Feedback.objects.filter(user=request.user).count()
-        # Fetch feedback list (if needed)
-        feedback_list = Feedback.objects.filter(user=request.user).order_by('-created_at')
-    else:
-        feedback_count = 0
-        feedback_list = []
-    
+    if not request.user.is_authenticated:
+        return redirect('index')  # Use your URL name or path for the index page
+
+    # Fetch the count of feedback for the logged-in user
+    feedback_count = Feedback.objects.filter(user=request.user).count()
+    # Fetch feedback list (if needed)
+    feedback_list = Feedback.objects.filter(user=request.user).order_by('-created_at')
+
     # Pass feedback to the template context
     context = {
         'feedback_list': feedback_list,
@@ -227,4 +261,6 @@ def feedback_view(request):
 
     return render(request, 'contact.html')
 
+def custom_404(request, exception=None):
+    return render(request, '404.html', status=404)
 

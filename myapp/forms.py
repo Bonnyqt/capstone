@@ -15,3 +15,11 @@ class FeedbackForm(forms.ModelForm):
         }
 
 
+
+class UserProfileForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=30)
+
+    class Meta:
+        model = UserProfile
+        fields = ['section', 'program']
+

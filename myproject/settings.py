@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sites',
     'django.contrib.staticfiles',
+    'channels',
     'myapp',
 ]
 
@@ -67,9 +68,16 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
+ASGI_APPLICATION = 'myproject.asgi.application'
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # For local dev, switch to Redis in production
+    },
+}
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 

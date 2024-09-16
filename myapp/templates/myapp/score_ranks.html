@@ -1,0 +1,9 @@
+{% if user.userprofile.score == 0 %}
+<p class="text-secondary mb-1">UNRANKED</p>
+{% elif user.userprofile.score >= 1 and user.userprofile.score <= 100 %}
+<p class="text-secondary mb-1">BEGINNER</p>
+{% elif user.userprofile.score >= 101 and user.userprofile.score <= 200 %}
+<p class="text-secondary mb-1">CERTIFIED HACKER</p>
+{% else %}
+<p class="text-secondary mb-1">WOW</p>
+{% endif %}

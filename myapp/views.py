@@ -150,7 +150,9 @@ def login(request):
             user = authenticate(request, username=email, password=password)
             if user is not None:
                 auth_login(request, user)
-                return redirect('index')  # Redirect to the index page or a successful login page
+                if user.is_superuser:  # Check if the user is an admin
+                    return redirect('admin_dashboard')  # Redirect to admin dashboard if the user is a superuser
+                return redirect('index')  # Redirect to the index page for regular users
             else:
                 return render(request, 'myapp/login.html', {'error': 'Invalid email or password'})
         
@@ -251,8 +253,6 @@ def feedback_view(request):
 def custom_404(request, exception=None):
     return render(request, '404.html', status=404)
 
-def other_profiles(request):
-    return render(request, 'myapp/other_profiles.html')
 
 
 
@@ -312,3 +312,73 @@ def update_profile(request):
         form = UserProfileForm(instance=request.user.userprofile)
 
     return render(request, 'myapp/profile.html', {'form': form})
+
+@login_required
+def admin_dashboard(request):
+    # Check if the user is a superuser
+    if not request.user.is_superuser:
+        return redirect('index')  # Redirect to a forbidden page or wherever you want
+
+    # Fetch users excluding superusers
+    users = User.objects.filter(is_superuser=False)
+    user_count = users.count()  # Get the count of users excluding superusers
+
+    # Fetch all feedback
+    feedbacks = Feedback.objects.all()  # Fetch all feedback
+
+    # Render the data to the template
+    return render(request, 'myapp/admin/admin_dashboard.html', {
+        'users': users,
+        'feedbacks': feedbacks,
+        'user_count': user_count  # Pass the user count to the template
+    })
+
+
+
+@login_required
+def user_accounts(request):
+    # Check if the user is a superuser
+    if not request.user.is_superuser:
+        return redirect('index')  # Redirect to a forbidden page or wherever you want
+
+    # Fetch users and feedback from the database
+    users = User.objects.filter(is_superuser=False)
+    # Fetch all feedback
+
+    # Render the data to the template
+    return render(request, 'myapp/admin/user_accounts.html', {
+        'users': users,
+        
+    })
+
+@login_required
+def professor_accounts(request):
+    # Check if the user is a superuser
+    if not request.user.is_superuser:
+        return redirect('index')  # Redirect to a forbidden page or wherever you want
+
+    # Fetch users and feedback from the database
+
+    # Fetch all feedback
+    users = User.objects.filter(is_superuser=False)
+    # Render the data to the template
+    return render(request, 'myapp/admin/professor_accounts.html', {
+        'users': users,
+        
+    })
+
+@login_required
+def user_feedbacks(request):
+    # Check if the user is a superuser
+    if not request.user.is_superuser:
+        return redirect('index')  # Redirect to a forbidden page or wherever you want
+
+    # Fetch users and feedback from the database
+    users = User.objects.all()  # Fetch all users
+    feedbacks = Feedback.objects.all()  # Fetch all feedback
+
+    # Render the data to the template
+    return render(request, 'myapp/admin/user_feedbacks.html', {
+        'users': users,
+        'feedbacks': feedbacks
+    })

@@ -11,10 +11,11 @@ class UserProfile(models.Model):
     section = models.CharField(max_length=50)
     program = models.CharField(max_length=100)
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True, default='profile_images/default_QBRSs97.jpg')
-
+    is_online = models.BooleanField(default=False)
+    score = models.IntegerField(default=0)
     def __str__(self):
         return f"{self.user.username} Profile"
-
+    
 class User(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)

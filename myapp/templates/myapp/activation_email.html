@@ -3,14 +3,95 @@
 <html>
 <head>
     <title>Cyberclash | Verify Your Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #e9ecef;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #007BFF;
+        }
+        .header img {
+            max-width: 220px;
+            height: auto;
+            border: none;
+        }
+        h1 {
+            color: #007BFF;
+            font-size: 26px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 10px 0;
+            text-align: center;
+        }
+        a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007BFF;
+            color: #ffffff;
+            padding: 14px 28px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 20px 0;
+            border: 2px solid #007BFF;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #666666;
+            text-align: center;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .footer a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-    <p>Hi <strong>{{ user.first_name }}</strong>,</p>
-    <p>Welcome to Cyberclash! To complete your registration, please verify your account by clicking the link below:</p>
-    <p><a href="{{ link }}"><strong>Verify your account now</strong></a></p>
-    <p>If you did not create this account, please ignore this email.</p>
-    <p>Thank you,</p>
-    <p>Cyberclash</p>
-    <img src="{% static 'img/joko.jpg' %}" alt="">
+    <div class="container">
+        <div class="header">
+            <img src="https://imgur.com/a/fr9vfGm" alt="Cyberclash Logo">
+        </div>
+        <h1>Hi <strong>{{ user.first_name }}</strong>,</h1>
+        <p>Welcome to Cyberclash! To complete your registration, please verify your account by clicking the link below:</p>
+        <p><a href="{{ link }}" class="button" style="color:white;">Verify your account now</a></p>
+        <p>If you did not create this account, please ignore this email.</p>
+        <div class="footer">
+            <p>Thank you,</p>
+            <p>Cyberclash</p>
+            <p><a href="mailto:cyberclash.capstone@gmail.com">cyberclash.capstone@gmail.com</a></p>
+        </div>
+    </div>
 </body>
 </html>

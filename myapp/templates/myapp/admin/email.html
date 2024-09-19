@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERCLASH | Send Email</title>
+    <link href="{% static 'img/logo.png' %}" rel="icon">
+    <!-- Custom fonts for this template-->
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+      
+
+    <!-- Custom styles for this template-->
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- jQuery (necessary for Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
+</head>
+
+<body>
+    {% include "myapp/admin/admin_sidebar.html" %}
+
+    <div class="container mt-5"></div>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary">EMAIL USERS</h6>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'send_email' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="recipients" class="form-label">Recipients</label>
+                                <select class="form-select select2" id="recipients" name="recipients" multiple="multiple" required style="width: 100%; max-width: 500px;">
+                                    <option value="">Select a recipient</option>
+                                    <option value="all">Select All</option>
+                                    {% for user in users %}
+                                        <option value="{{ user.email }}">{{ user.username }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">Subject</label>
+                                <input type="text" class="form-control" id="subject" name="subject" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="body" class="form-label">Body</label>
+                                <textarea class="form-control" id="body" name="body" rows="4" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send Email</button>
+                        </form>
+                        
+                    </div>
+                    <div class="card-footer text-center">
+                        <small>&copy; 2024 Cyberclash. All rights reserved.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  
+<!-- End of Main Content -->
+</body>
+
+<script>
+    $(document).ready(function() {
+        // Initialize Select2
+        $('.select2').select2({
+            placeholder: 'Select a recipient',
+            allowClear: true
+        });
+
+        // Handle change event
+        $('#recipients').on('change', function() {
+            const selectedValues = $(this).val();
+
+            // Check if "Select All" is selected
+            if (selectedValues.includes('all')) {
+                // Create an array to hold all options values
+                const allValues = [];
+                
+                // Iterate through each option and add its value to the array (excluding "Select All")
+                $('#recipients option').each(function() {
+                    if (this.value && this.value !== 'all') {
+                        allValues.push(this.value);
+                    }
+                });
+
+                // Select all values
+                $(this).val(allValues).trigger('change.select2');
+            }
+        });
+    });
+</script>
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+
+    <!-- Page level plugins -->
+    <script src="{% static 'vendor/chart.js/Chart.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
+    <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
+</html>

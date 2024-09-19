@@ -41,10 +41,12 @@
                         <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
                     </svg>
                     <!-- Badge for notifications -->
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="transform: translate(50%, -50%);">
-                        <span class="visually-hidden">unread notifications</span>
-                        <h6 class="text-white mb-0" style="font-size: 12px;" data-toggle="counter-up">{{ feedback_count }}</h6>
-                    </span>
+                    {% if email_count > 0 %}
+<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="transform: translate(50%, -50%);">
+    <span class="visually-hidden">unread notifications</span>
+    <h6 class="text-white mb-0" style="font-size: 12px;">{{ email_count }}</h6>
+</span>
+{% endif %}
                 </a>
                 
                 <!-- Dropdown Menu -->
@@ -60,28 +62,35 @@
                         
                         <!-- Feedback items container -->
                         <div style="max-height: 400px; overflow-y: auto;">
-                            {% for feedback in feedback_list %}
-                            <li class="d-flex align-items-center mb-3 mt-3 {% if feedback.is_new %}new-feedback{% endif %}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                <img src="{% static 'img/alf1.jpg' %}" alt="Alex" class="rounded-circle me-3" style="width: 40px; height: 40px;">
+                            {% for email_log in email_logs %}
+                            <li class="d-flex align-items-center mb-3 mt-3" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                <img src="{% static 'img/alf1.jpg' %}" alt="User" class="rounded-circle me-3" style="width: 40px; height: 40px;">
                                 <div>
                                     <a class="dropdown-item p-0" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                        <strong>{{ request.user.first_name }}:</strong>
-                                        {{ feedback.feedback }}
+                                        <strong>
+                                            {% if email_log.sent_by %}
+                                                {{ email_log.sent_by.first_name }}:
+                                            {% else %}
+                                                System:
+                                            {% endif %}
+                                        </strong>
+                                        {{ email_log.subject }}
                                     </a>
-                                    <small class="text-muted">{{ feedback.created_at }}</small>
+                                    <small class="text-muted">{{ email_log.sent_at|date:"F j, Y, g:i a" }}</small>
                                 </div>
+                                {% if email_log.is_new %}
+                                <span class="badge bg-primary ms-2">New</span>
+                                {% endif %}
                             </li>
                             <hr>
                             {% empty %}
-                            <li class="dropdown-item">No feedback available.</li>
+                            <li class="dropdown-item">No notifications available.</li>
                             {% endfor %}
                         </div>
-                        
                         <!-- "Mark all as read" and "View Inbox" links -->
                         <a id="markAllAsRead" class="btn mb-2" style="text-decoration: none; color: #06a3da; font-size: 14px;">Mark all as read</a>
                         <a id="viewinbox" class="btn mb-2" style="text-decoration: none; color: #06a3da; font-size: 14px; float:right;" onclick="searchGmail()">View Inbox</a>
-                    </ul>
-                </div>
+                    </div>
                 
                 
                 
@@ -135,25 +144,42 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        $('#markAllAsRead').on('click', function() {
-            $.ajax({
-                url: '{% url "mark_all_as_read" %}', // Your Django URL endpoint
-                type: 'POST',
-                data: {
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                success: function(response) {
-                    // Update the UI to reflect that all feedbacks are read
-                    $('.new-feedback').removeClass('new-feedback');
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error marking all as read:', error);
+    document.getElementById('markAllAsRead').addEventListener('click', function() {
+        fetch('{% url "mark_all_as_read" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Hide all "New" badges
+                document.querySelectorAll('.badge.bg-primary').forEach(badge => {
+                    badge.style.display = 'none';  // Or use `badge.remove()` if you prefer
+                });
+
+                // Update the email count
+                const emailCountElement = document.querySelector('.text-white');
+                emailCountElement.textContent = data.new_email_count;
+
+                // Hide the badge if there are no new emails
+                if (data.new_email_count <= 0) {
+                    emailCountElement.parentElement.style.display = 'none';
+                } else {
+                    emailCountElement.parentElement.style.display = 'inline-block';  // Ensure the badge is visible
                 }
-            });
+            } else {
+                alert('Failed to mark all as read.');
+            }
         });
     });
 </script>
+
+
+    
 <style>
 
 

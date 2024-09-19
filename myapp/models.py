@@ -6,6 +6,17 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.conf import settings
 
+class EmailLog(models.Model):
+    recipients = models.TextField()  # To store recipient emails as a comma-separated string
+    subject = models.CharField(max_length=255)
+    body = models.TextField()
+    sent_at = models.DateTimeField(auto_now_add=True)
+    sent_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    is_new = models.BooleanField(default=True)  # Field to mark if the email is new
+    
+    def __str__(self):
+        return f"Email sent to {self.recipients} at {self.sent_at}"
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     section = models.CharField(max_length=50)

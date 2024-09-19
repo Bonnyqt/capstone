@@ -6,6 +6,9 @@ from django.conf.urls import handler404
 from .views import user_profiles
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import user_search
+from .views import email
+from .views import send_email_view
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -30,6 +33,11 @@ urlpatterns = [
     path('user-accounts/', views.user_accounts, name='user_accounts'),
      path('professor-accounts/', views.professor_accounts, name='professor_accounts'),
       path('user_feedbacks/', views.user_feedbacks, name='user_feedbacks'),
+      path('line-graph/', views.get_registration_data, name='get_registration_data'),
+       path('user-search/', user_search, name='user_search'),
+       path('professor-dashboard/', views.professor_dashboard, name='professor_dashboard'),
+       path('email/', email, name='email'),
+        path('send-email/', send_email_view, name='send_email'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERCLASH | USER ACCOUNTS</title>
+    <title>CYBERCLASH | Student Accounts</title>
     <link href="{% static 'img/logo.png' %}" rel="icon">
     <!-- Custom fonts for this template-->
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -28,7 +28,7 @@
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">USER ACCOUNTS MANAGEMENT</h6>
+                <h6 class="m-0 font-weight-bold text-primary">STUDENT ACCOUNTS MANAGEMENT</h6>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -39,6 +39,9 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Email</th>
+                                    <th>Administrative Access</th>
+                                    <th>Section</th>
+                                    <th>Program</th>
                                     <th>Status</th>
                                     <th>Date Joined</th>
                                     <th>Last Login</th>
@@ -62,6 +65,12 @@
                                                    class="form-control form-control-sm" 
                                                    placeholder="Email" />
                                         </td>
+                                        <td>
+                                            {{ user.is_superuser }}
+                                        </td>
+                                        <td>{{ user.userprofile.section }}</td>
+                                        
+                                        <td>{{ user.userprofile.program }}</td>
                                         <td>
                                             {% if user.userprofile.is_online %}
                                         <span id="user-status-{{ user.id }}" class="badge bg-success status-badge" style="color:white;">Online</span>

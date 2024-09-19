@@ -2,12 +2,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Page Not Found</title>
+    <title>404 | Page Not Found</title>
+    <style>
+         body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  height: 100vh;
+  display: flex;
+  
+  background: url("/static/img/ss1.gif");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.center-wrapper {
+  background: rgba(9, 30, 62, .7);
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+    </style>
+    
+    
 </head>
 <body>
-    <h1>Page Not Found (404)</h1>
-    <p>The page you were looking for does not exist. You will be redirected to the homepage.</p>
-    <a href="{% url 'index' %}">Go to Homepage</a>
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner"></div>
+    </div>
+      <div class="center-wrapper" style="color:white;">
+         <center>  <h1>404 | PAGE NOT FOUND</h1><br>
+            <h4>You will be redirected back to Homepage.</h4><br>
+
+            <a href="{% url 'index' %}"> <button class="btn btn-primary">GO BACK TO HOME</button></a></center> 
+      </div>
+  
+
     <script>
         // Optionally redirect automatically after a delay
         setTimeout(function() {

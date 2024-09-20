@@ -6,6 +6,17 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.conf import settings
 
+class BlogPost(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    image = models.ImageField(upload_to='blog_images/')
+    author = models.CharField(max_length=100)
+    date_published = models.DateField()
+    url = models.URLField(max_length=300, null=True, blank=True)  # New field for URL
+    def __str__(self):
+        return self.title
+
+
 class EmailLog(models.Model):
     recipients = models.TextField()  # To store recipient emails as a comma-separated string
     subject = models.CharField(max_length=255)
@@ -24,6 +35,8 @@ class UserProfile(models.Model):
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True, default='profile_images/default_QBRSs97.jpg')
     is_online = models.BooleanField(default=False)
     score = models.IntegerField(default=0)
+    accepted_data_privacy = models.BooleanField(default=False)
+    
     def __str__(self):
         return f"{self.user.username} Profile"
     

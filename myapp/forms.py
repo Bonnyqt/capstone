@@ -1,7 +1,14 @@
 from django import forms
 from .models import Feedback
 from .models import UserProfile
+from .models import BlogPost
 
+class BlogPostForm(forms.ModelForm):
+    class Meta:
+        model = BlogPost
+        fields = ['title', 'content', 'image', 'author', 'date_published','url']
+
+        
 class FeedbackForm(forms.ModelForm):
     class Meta:
         model = Feedback

@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User as DjangoUser
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
@@ -27,6 +27,45 @@ from django.contrib.auth.models import User
 from django.db.models.functions import TruncMonth
 from django.db.models import Count
 from .models import EmailLog
+from .models import BlogPost
+from .forms import BlogPostForm  # Create a form for your model
+from django.core.mail import send_mail
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.conf import settings
+from .models import EmailLog
+
+def add_news(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        author = request.POST.get('author')
+        date_published = request.POST.get('date_published')
+        content = request.POST.get('content')
+        image = request.FILES.get('image')
+
+        # Check if all required fields are provided
+        if title and author and date_published and content and image:
+            # Create and save the new blog post
+            try:
+                BlogPost.objects.create(
+                    title=title,
+                    author=author,
+                    date_published=date_published,
+                    content=content,
+                    image=image
+                )
+                messages.success(request, 'News added successfully.')
+                return redirect('news')  # Redirect to news list
+            except Exception as e:
+                messages.error(request, f'Error adding news: {str(e)}')
+        else:
+            messages.error(request, 'Please fill out all fields.')
+
+    return render(request, 'myapp/admin/news.html')
+
+def news(request):
+    
+    return render(request, 'myapp/admin/admin_news.html')
 
 def user_search(request):
     query = request.GET.get('q', '')
@@ -105,30 +144,31 @@ def index(request):
     
     # Fetch all email logs for display (or apply any other filters you need)
     email_logs = EmailLog.objects.all().order_by('-sent_at')
-    
+    blogposts = BlogPost.objects.all()  # Fetch all blog posts
+
+    # Combine context dictionaries
     context = {
         'email_count': email_count,
         'email_logs': email_logs,
+        'blogposts': blogposts,  # Include blogposts in the context
     }
+
     return render(request, 'myapp/index.html', context)
 
 
     
 
 def about(request):
-    if request.user.is_authenticated:
-        # Fetch the count of feedback for the logged-in user
-        feedback_count = Feedback.objects.filter(user=request.user).count()
-        # Fetch feedback list (if needed)
-        feedback_list = Feedback.objects.filter(user=request.user).order_by('-created_at')
-    else:
-        feedback_count = 0
-        feedback_list = []
+    email_count = EmailLog.objects.filter(is_new=True).count()
     
-    # Pass feedback to the template context
+    # Fetch all email logs for display (or apply any other filters you need)
+    email_logs = EmailLog.objects.all().order_by('-sent_at')
+
+    # Combine context dictionaries
     context = {
-        'feedback_list': feedback_list,
-        'feedback_count': feedback_count,
+        'email_count': email_count,
+        'email_logs': email_logs,
+ 
     }
     return render(request, 'myapp/about.html', context)
 
@@ -144,34 +184,35 @@ def leaderboards(request):
 
     if request.user.is_authenticated:
         # Fetch the count of feedback for the logged-in user
-        feedback_count = Feedback.objects.filter(user=request.user).count()
+        email_count = EmailLog.objects.filter(is_new=True).count()
         # Fetch feedback list (if needed)
-        feedback_list = Feedback.objects.filter(user=request.user).order_by('-created_at')
-    else:
-        feedback_count = 0
-        feedback_list = []
+        email_logs = EmailLog.objects.all().order_by('-sent_at')
+    
     
     # Pass feedback to the template context
     context = {
-        'feedback_list': feedback_list,
-        'feedback_count': feedback_count,
+        'email_count': email_count,
+        'email_logs': email_logs,
+     
     }
+    
     return render(request, 'myapp/leaderboards.html', context)
 
-def contact(request):
-    if request.user.is_authenticated:
-        # Fetch the count of feedback for the logged-in user
-        feedback_count = Feedback.objects.filter(user=request.user).count()
-        # Fetch feedback list (if needed)
-        feedback_list = Feedback.objects.filter(user=request.user).order_by('-created_at')
-    else:
-        feedback_count = 0
-        feedback_list = []
+
     
-    # Pass feedback to the template context
+
+
+def contact(request):
+    email_count = EmailLog.objects.filter(is_new=True).count()
+    
+    # Fetch all email logs for display (or apply any other filters you need)
+    email_logs = EmailLog.objects.all().order_by('-sent_at')
+
+
+    # Combine context dictionaries
     context = {
-        'feedback_list': feedback_list,
-        'feedback_count': feedback_count,
+        'email_count': email_count,
+        'email_logs': email_logs,
     }
     return render(request, 'myapp/contact.html', context)
 
@@ -208,43 +249,49 @@ def login(request):
 
         
         elif 'signup' in request.POST:
-            # Handle signup
+    # Handle signup
             name = request.POST.get('name')
             email = request.POST.get('email')
             password = request.POST.get('password')
+            data_privacy_accepted = 'data_privacy' in request.POST
 
             if not email.endswith('@tip.edu.ph'):
                 return render(request, 'myapp/login.html', {'error': 'Email must end with @tip.edu.ph'})
-            
+
             if DjangoUser.objects.filter(username=email).exists():
                 return render(request, 'myapp/login.html', {'error': 'Email already exists'})
-            
+
             user = DjangoUser.objects.create_user(username=email, email=email, password=password)
             user.first_name = name
             user.is_active = False  # Deactivate account until it is confirmed
             user.save()
 
-            # Generate activation link
+    # Create or update the UserProfile instance
+            user_profile, created = UserProfile.objects.get_or_create(user=user)
+            user_profile.accepted_data_privacy = data_privacy_accepted  # Set acceptance status
+            user_profile.save()
+
+    # Generate activation link
             token = account_activation_token.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             domain = '127.0.0.1:8000' if settings.DEBUG else get_current_site(request).domain
             link = f'http://{domain}/activate/{uid}/{token}/'
 
-            # Send email
+    # Send email
             subject = 'Activate Your Account'
             message = render_to_string('myapp/activation_email.html', {
                 'user': user,
                 'domain': domain,
                 'link': link,
-            })
-            plain_message = strip_tags(message)
-            send_mail(subject, plain_message, 'your-email@gmail.com', [email], html_message=message)
+        })
+        plain_message = strip_tags(message)
+        send_mail(subject, plain_message, 'your-email@gmail.com', [email], html_message=message)
 
-            return render(request, 'myapp/login.html', {'success': 'Signup successful! Please check your email to activate your account'})
-    
-    # Handle GET request or POST without 'login' or 'signup' action
+        return render(request, 'myapp/login.html', {'success': 'Signup successful! Please check your email to activate your account'})
+
+# Handle GET request or POST without 'login' or 'signup' action
     return render(request, 'myapp/login.html')
-    
+
   
     
 
@@ -363,7 +410,12 @@ def admin_dashboard(request):
 
     # Fetch users excluding superusers
     users = User.objects.filter(is_superuser=False)
-    user_count = users.count()  # Get the count of users excluding superusers
+
+    # Get the count of students (excluding professors and superusers)
+    student_count = User.objects.filter(is_superuser=False).exclude(email__endswith='.it@tip.edu.ph').count()
+
+    # Get the count of professors (users with email ending in '.it@tip.edu.ph')
+    professor_count = User.objects.filter(is_superuser=False, email__endswith='.it@tip.edu.ph').count()
 
     # Fetch all feedback
     feedbacks = Feedback.objects.all()  # Fetch all feedback
@@ -373,9 +425,11 @@ def admin_dashboard(request):
     return render(request, 'myapp/admin/admin_dashboard.html', {
         'users': users,
         'feedbacks': feedbacks,
-        'user_count': user_count,  # Pass the user count to the template
-        'feedback_count': feedback_count  # Pass the feedback count to the template
+        'student_count': student_count,
+        'professor_count': professor_count,  # Pass the professor count to the template
+        'feedback_count': feedback_count,    # Pass the feedback count to the template
     })
+
 
 
 
@@ -389,10 +443,22 @@ def user_accounts(request):
     # Fetch users excluding those with email ending in '.it@tip.edu.ph'
     users = User.objects.filter(is_superuser=False).exclude(email__endswith='.it@tip.edu.ph')
     
+    if request.method == 'POST':
+        for user in users:
+            first_name = request.POST.get(f'first_name_{user.id}')
+            email = request.POST.get(f'email_{user.id}')
+            user.first_name = first_name
+            user.email = email
+            user.save()  # Save the updated user
+            
+        # Redirect to the same page to avoid resubmission
+        return redirect('user_accounts')
+
     # Render the data to the template
     return render(request, 'myapp/admin/user_accounts.html', {
         'users': users,
     })
+
 @login_required
 def professor_accounts(request):
     # Check if the user is a superuser
@@ -405,11 +471,23 @@ def professor_accounts(request):
     ).union(
         User.objects.filter(is_superuser=False).exclude(email__endswith='@tip.edu.ph')
     )
-    
+
+    if request.method == 'POST':
+        for user in users:
+            first_name = request.POST.get(f'first_name_{user.id}')
+            email = request.POST.get(f'email_{user.id}')
+            user.first_name = first_name
+            user.email = email
+            user.save()  # Save the updated user
+
+        # Redirect to the same page to avoid resubmission
+        return redirect('professor_accounts')
+
     # Render the data to the template
     return render(request, 'myapp/admin/professor_accounts.html', {
         'users': users,
     })
+
 
 @login_required
 def user_feedbacks(request):
@@ -440,11 +518,7 @@ def email(request):
     }
     return render(request, 'myapp/admin/email.html', context)
 
-from django.core.mail import send_mail
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.conf import settings
-from .models import EmailLog
+
 
 def send_email_view(request):
     if request.method == 'POST':
@@ -484,4 +558,5 @@ def send_email_view(request):
         return redirect('email')  # Redirect after successful send
 
     # Render your form template if not a POST request
-    return render(request, 'admin/email.html')
+    return render(request, 'myapp/admin/email.html')
+

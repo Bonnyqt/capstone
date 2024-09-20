@@ -39,7 +39,8 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Email</th>
-                                    <th>Administrative Access</th>
+                                    <th>Admin Access</th>
+                                    <th>Data Privacy Acceptance</th>
                                     <th>Section</th>
                                     <th>Program</th>
                                     <th>Status</th>
@@ -68,6 +69,7 @@
                                         <td>
                                             {{ user.is_superuser }}
                                         </td>
+                                        <td>{{ user.userprofile.accepted_data_privacy }}</td>
                                         <td>{{ user.userprofile.section }}</td>
                                         
                                         <td>{{ user.userprofile.program }}</td>

@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth.views import LogoutView
-from .views import feedback_view, mark_all_as_read
+from .views import feedback_view, mark_all_as_read, news
 from django.conf.urls import handler404
 from .views import user_profiles
 from django.conf import settings
@@ -38,6 +38,10 @@ urlpatterns = [
        path('professor-dashboard/', views.professor_dashboard, name='professor_dashboard'),
        path('email/', email, name='email'),
         path('send-email/', send_email_view, name='send_email'),
+       path('news/', news, name='news'),
+       path('news/add/', views.add_news, name='add_news'), 
+
+       
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

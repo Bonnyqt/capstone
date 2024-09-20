@@ -355,27 +355,35 @@ body {
 <div class="signup-form">
   <div class="title">SIGNUP</div>
   <form action="{% url 'login' %}" method="post">
-      {% csrf_token %}
-      <input type="hidden" name="signup" value="True">
-      <div class="input-boxes">
-          <div class="input-box">
-              <i class="fas fa-user"></i>
-              <input type="text" name="name" placeholder="Enter your name" required>
-          </div>
-          <div class="input-box">
-              <i class="fas fa-envelope"></i>
-              <input type="text" name="email" placeholder="Enter your email" required>
-          </div>
-          <div class="input-box">
-              <i class="fas fa-lock"></i>
-              <input type="password" name="password" placeholder="Enter your password" required>
-          </div>
-          <div class="button input-box">
-              <input type="submit" value="Sign Up">
-          </div>
-          <div class="text sign-up-text">Already have an account? <label for="flip">Login now</label></div>
+    {% csrf_token %}
+    <input type="hidden" name="signup" value="True">
+    <div class="input-boxes">
+        <div class="input-box">
+            <i class="fas fa-user"></i>
+            <input type="text" name="name" placeholder="Enter your name" required>
+        </div>
+        <div class="input-box">
+            <i class="fas fa-envelope"></i>
+            <input type="email" name="email" placeholder="Enter your email" required>
+        </div>
+        <div class="input-box">
+            <i class="fas fa-lock"></i>
+            <input type="password" name="password" placeholder="Enter your password" required>
+        </div>
+        <!-- New checkbox for accepting Data Privacy Act -->
+        <div class="input-box" style="display: flex; align-items: center; margin-top: 10px;">
+          <label style="display: inline-flex; align-items: center; margin-right: 10px;">
+              <input type="checkbox" name="data_privacy" required style="margin-right: 8px;">
+          </label>
+          <div class="text">I accept the <a href="#">Data Privacy Act of 2012</a></div>
       </div>
-  </form>
+
+        <div class="button input-box" style="margin-top: 20px;">
+            <input type="submit" value="Sign Up">
+        </div>
+        <div class="text sign-up-text">Already have an account? <label for="flip">Login now</label></div>
+    </div>
+</form>
 </div>
 
           </div>
@@ -394,3 +402,4 @@ body {
     <!-- Template Javascript -->
     <script src="{% static 'js/main.js' %}"></script>
 </html>
+

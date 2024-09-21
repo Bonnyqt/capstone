@@ -3,7 +3,6 @@ from . import views
 from django.contrib.auth.views import LogoutView
 from .views import feedback_view, mark_all_as_read, news
 from django.conf.urls import handler404
-from .views import user_profiles
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import user_search
@@ -26,7 +25,6 @@ urlpatterns = [
   path('mark-all-as-read/', mark_all_as_read, name='mark_all_as_read'),
    path('profile/', views.update_profile, name='update_profile'),
    path('other-profiles/', views.other_profiles, name='other_profiles'),
-   path('profiles/', user_profiles, name='user_profiles'),
    path('profiles-details/', views.profile_details, name='profile_details'),
    path('upload_image/', views.upload_image, name='upload_image'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),

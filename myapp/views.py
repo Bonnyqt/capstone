@@ -36,6 +36,8 @@ from django.conf import settings
 from .models import EmailLog
 
 def add_news(request):
+    if not request.user.is_superuser:
+        return redirect('index') 
     if request.method == 'POST':
         title = request.POST.get('title')
         author = request.POST.get('author')
@@ -64,10 +66,13 @@ def add_news(request):
     return render(request, 'myapp/admin/news.html')
 
 def news(request):
-    
+    if not request.user.is_superuser:
+        return redirect('index') 
     return render(request, 'myapp/admin/admin_news.html')
 
 def user_search(request):
+    if not request.user.is_superuser:
+        return redirect('index') 
     query = request.GET.get('q', '')
     if query:
         users = User.objects.filter(
@@ -81,6 +86,8 @@ def user_search(request):
     return render(request, 'myapp/admin/user_accounts.html', {'users': users})
 
 def get_registration_data(request):
+    if not request.user.is_superuser:
+        return redirect('index') 
     # Query the database for registrations grouped by month
     registration_data = (
         User.objects
@@ -107,6 +114,7 @@ def get_registration_data(request):
 
 
 def update_profile(request):
+
     if request.method == "POST":
         # Handle updating the user profile
         user = request.user
@@ -355,10 +363,7 @@ def custom_404(request, exception=None):
 
 
 
-def user_profiles(request):
-    # Fetch all users from the database
-    users = User.objects.all()
-    return render(request, 'myapp/other_profiles.html', {'users': users})
+
 
 def other_profiles(request):
     users = User.objects.exclude(is_superuser=True)
@@ -405,6 +410,7 @@ def update_profile(request):
 @login_required
 def admin_dashboard(request):
     # Check if the user is a superuser
+    
     if not request.user.is_superuser:
         return redirect('index')  # Redirect to a forbidden page or wherever you want
 
@@ -506,11 +512,14 @@ def user_feedbacks(request):
     })
 
 def professor_dashboard(request):
+    
     # Fetch all users from the database
    
     return render(request, 'myapp/professor/professor_dashboard.html')
 
 def email(request):
+    if not request.user.is_superuser:
+        return redirect('index') 
     # Exclude superusers from the queryset
     users = User.objects.exclude(is_superuser=True)
     context = {
@@ -521,6 +530,8 @@ def email(request):
 
 
 def send_email_view(request):
+    if not request.user.is_superuser:
+        return redirect('index') 
     if request.method == 'POST':
         recipients = request.POST.getlist('recipients')
         subject = request.POST.get('subject')

@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.contrib import messages
+from django.views import View
 from .models import Feedback
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -28,12 +29,53 @@ from django.db.models.functions import TruncMonth
 from django.db.models import Count
 from .models import EmailLog
 from .models import BlogPost
-from .forms import BlogPostForm  # Create a form for your model
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.conf import settings
 from .models import EmailLog
+import random
+import string
+from django.db.models import Q
+
+def user_list(request):
+    query = request.GET.get('q')
+    if query:
+        users = User.objects.filter(
+            Q(username__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query)
+        )
+    else:
+        users = User.objects.all()
+
+    context = {
+        'users': users,
+    }
+    return render(request, 'myapp/other_profiles.html', context)
+
+def reset_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            # Generate a temporary password
+            temp_password = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+            # Send the temporary password to the user's email
+            send_mail(
+                'Password Reset',
+                f'Your temporary password is: {temp_password}',
+                'cyberclash.capstone@gmail.com',  # Replace with your email
+                [email],
+                fail_silently=False,
+            )
+            # Update the user's password in the database
+            user.set_password(temp_password)
+            user.save()
+            return redirect('login')
+        except User.DoesNotExist:
+            return render(request, 'password_reset.html', {'error': 'Email not found'})
+    return render(request, 'password_reset.html')
 
 def add_news(request):
     if not request.user.is_superuser:
@@ -68,7 +110,13 @@ def add_news(request):
 def news(request):
     if not request.user.is_superuser:
         return redirect('index') 
-    return render(request, 'myapp/admin/admin_news.html')
+    feedbacks = Feedback.objects.all()  # Fetch all feedback
+    feedback_count = feedbacks.count() 
+    context = {
+        'feedback_count':feedback_count,
+        'feedbacks': feedbacks,
+    }
+    return render(request, 'myapp/admin/admin_news.html', context)
 
 def user_search(request):
     if not request.user.is_superuser:
@@ -226,7 +274,8 @@ def contact(request):
 
 def loginPage(request):
     return render(request, 'myapp/login.html')
-
+def terms(request):
+    return render(request, 'myapp/terms.html')
 
 
 
@@ -264,10 +313,10 @@ def login(request):
             data_privacy_accepted = 'data_privacy' in request.POST
 
             if not email.endswith('@tip.edu.ph'):
-                return render(request, 'myapp/login.html', {'error': 'Email must end with @tip.edu.ph'})
+                return render(request, 'myapp/login.html', {'alert': 'Email must end with @tip.edu.ph'})
 
             if DjangoUser.objects.filter(username=email).exists():
-                return render(request, 'myapp/login.html', {'error': 'Email already exists'})
+                return render(request, 'myapp/login.html', {'alert': 'Email already exists'})
 
             user = DjangoUser.objects.create_user(username=email, email=email, password=password)
             user.first_name = name
@@ -295,7 +344,7 @@ def login(request):
         plain_message = strip_tags(message)
         send_mail(subject, plain_message, 'your-email@gmail.com', [email], html_message=message)
 
-        return render(request, 'myapp/login.html', {'success': 'Signup successful! Please check your email to activate your account'})
+        return render(request, 'myapp/login.html', {'alert': 'Signup successful! Please check your email to activate your account'})
 
 # Handle GET request or POST without 'login' or 'signup' action
     return render(request, 'myapp/login.html')
@@ -351,7 +400,7 @@ def feedback_view(request):
         Feedback.objects.create(user=user, email=email, feedback=feedback_text)
 
         # Add a success message
-        messages.success(request, 'Your message has been sent successfully!')
+        return render(request, 'myapp/contact.html', {'alert': 'Feedback sent successfully!'})
 
         return redirect('contact')  # Replace with your success page URL
 
@@ -366,17 +415,64 @@ def custom_404(request, exception=None):
 
 
 def other_profiles(request):
+    query = request.GET.get('q')
+    # Get all users excluding superusers by default
     users = User.objects.exclude(is_superuser=True)
-    return render(request, 'myapp/other_profiles.html', {'users': users})
+
+    # If a search query is provided, filter the users based on username, first_name, or last_name
+    if query:
+        users = users.filter(
+            Q(username__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) 
+            
+        )
+
+    # Email count and logs (remains the same)
+    email_count = EmailLog.objects.filter(is_new=True).count()
+    email_logs = EmailLog.objects.all().order_by('-sent_at')
+
+    context = {
+        'users': users,  # Show all users or filtered users
+        'email_count': email_count,
+        'email_logs': email_logs,
+        'query': query,  # Pass the search query to template
+    }
+    
+    return render(request, 'myapp/other_profiles.html', context)
+
+
 def profile_details(request):
-    users = User.objects.all()
-    return render(request, 'myapp/profile_details.html', {'users': users})
+    users = User.objects.exclude(is_superuser=True)
+    email_count = EmailLog.objects.filter(is_new=True).count()
+    
+    # Fetch all email logs for display (or apply any other filters you need)
+    email_logs = EmailLog.objects.all().order_by('-sent_at')
+
+    # Combine context dictionaries
+    context = {
+        'users': users,
+        'email_count': email_count,
+        'email_logs': email_logs,
+    }
+    return render(request, 'myapp/profile_details.html', context)
 
 def profile_view(request):
     if not request.user.is_authenticated:
         return redirect('index')  # Use your URL name or path for the index page
+    users = User.objects.exclude(is_superuser=True)
+    email_count = EmailLog.objects.filter(is_new=True).count()
+    
+    # Fetch all email logs for display (or apply any other filters you need)
+    email_logs = EmailLog.objects.all().order_by('-sent_at')
 
-    return render(request, 'myapp/profile.html')
+    # Combine context dictionaries
+    context = {
+        'users': users,
+        'email_count': email_count,
+        'email_logs': email_logs,
+    }
+    return render(request, 'myapp/profile.html',context)
 
 @login_required
 def upload_image(request):
@@ -459,10 +555,13 @@ def user_accounts(request):
             
         # Redirect to the same page to avoid resubmission
         return redirect('user_accounts')
-
+    feedbacks = Feedback.objects.all()  # Fetch all feedback
+    feedback_count = feedbacks.count()  # Get the count of feedback
     # Render the data to the template
     return render(request, 'myapp/admin/user_accounts.html', {
         'users': users,
+        'feedback_count':feedback_count,
+        'feedbacks': feedbacks,
     })
 
 @login_required
@@ -488,10 +587,13 @@ def professor_accounts(request):
 
         # Redirect to the same page to avoid resubmission
         return redirect('professor_accounts')
-
+    feedbacks = Feedback.objects.all()  # Fetch all feedback
+    feedback_count = feedbacks.count()  # Get the count of feedback
     # Render the data to the template
     return render(request, 'myapp/admin/professor_accounts.html', {
         'users': users,
+        'feedback_count':feedback_count,
+        'feedbacks': feedbacks,
     })
 
 
@@ -504,11 +606,12 @@ def user_feedbacks(request):
     # Fetch users and feedback from the database
     users = User.objects.all()  # Fetch all users
     feedbacks = Feedback.objects.all()  # Fetch all feedback
-
+    feedback_count = feedbacks.count()
     # Render the data to the template
     return render(request, 'myapp/admin/user_feedbacks.html', {
         'users': users,
-        'feedbacks': feedbacks
+        'feedbacks': feedbacks,
+        'feedback_count': feedback_count,
     })
 
 def professor_dashboard(request):
@@ -522,8 +625,12 @@ def email(request):
         return redirect('index') 
     # Exclude superusers from the queryset
     users = User.objects.exclude(is_superuser=True)
+    feedbacks = Feedback.objects.all()  # Fetch all feedback
+    feedback_count = feedbacks.count()
     context = {
-        'users': users
+        'users': users,
+        'feedbacks': feedbacks,
+        'feedback_count': feedback_count,
     }
     return render(request, 'myapp/admin/email.html', context)
 

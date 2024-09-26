@@ -124,15 +124,13 @@
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
 </body>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            {% if messages %}
-                {% for message in messages %}
-                    alert("{{ message.message|escapejs }}");
-                {% endfor %}
-            {% endif %}
-        });
-    </script>    
+<script>
+    window.onload = function() {
+        {% if alert %}
+            alert("{{ alert }}");
+        {% endif %}
+    };
+  </script>   
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

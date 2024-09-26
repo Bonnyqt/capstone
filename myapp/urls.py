@@ -8,6 +8,8 @@ from django.conf.urls.static import static
 from .views import user_search
 from .views import email
 from .views import send_email_view
+from .views import terms
+from .views import user_list
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -38,8 +40,9 @@ urlpatterns = [
         path('send-email/', send_email_view, name='send_email'),
        path('news/', news, name='news'),
        path('news/add/', views.add_news, name='add_news'), 
-
-       
+ path('terms-and-conditions/', terms, name='terms'),
+     path('reset_password/', views.reset_password, name='reset_password'),
+ path('users/', user_list, name='user_list'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

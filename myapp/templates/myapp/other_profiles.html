@@ -32,7 +32,8 @@
     
     <!-- Template Stylesheet -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   
 
     <style>
         /* Position the badge in the top-left corner */
@@ -55,6 +56,73 @@
         .bg-danger {
             background-color: rgb(211, 59, 59) !important;
         }
+
+        /* The Modal (background) */
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; 
+  z-index: 1; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%;
+  overflow: auto; 
+  background-color: rgba(0, 0, 0, 0.4); 
+  opacity: 0; /* Start invisible */
+  transition: opacity 0.5s ease; /* Transition effect for fade-in and fade-out */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: white;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 1000px;
+  opacity: 0; /* Initially hidden */
+  transform: translateY(-20px); /* Position it slightly up for slide-in effect */
+  transition: opacity 0.5s ease, transform 0.5s ease; /* Add both fade and slide effect */
+}
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%; /* Full width for small screens */
+        max-height: 90%; /* Allow more height on small screens */
+    }
+}
+/* Fade-in effect for modal content */
+.modal.show {
+  display: block;
+  opacity: 1; /* Make it visible */
+}
+
+.modal-content.show {
+  opacity: 1;
+  transform: translateY(0); /* Slide to normal position */
+}
+
+/* Close Button */
+.close-btn {
+    position: absolute; /* Positioning the close button absolutely */
+    top: 10px; /* Adjust the distance from the top of the modal content */
+    right: 15px; /* Adjust the distance from the right of the modal content */
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
         </style>
         
 </head>
@@ -81,97 +149,215 @@
     </div>
     <!-- Navbar End -->
 <br><br><br>
-<div class="content-wrapper"></div>
-<div class="container">
-    <div class="main-body"></div>
-    <div class="row">
-        {% if users %}
-            {% for user in users %}
-                {% if user != request.user %}
+<div class="content-wrapper">
+    <div class="container">
+        <!-- Search Form -->
+        <form method="GET" action="">
+            <div class="input-group mb-3">
+                <input type="text" name="q" class="form-control" placeholder="Search users..." value="{{ query }}">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+
+        <!-- Display Users -->
+        <div class="main-body"></div>
+        <div class="row">
+            {% if query %}
+            {% if users %}
+                <!-- Show filtered users when query is present -->
+                {% for user in users %}
                     <div class="col-lg-4">
                         <div class="card mb-4">
                             <div class="card-body position-relative">
                                 <div class="d-flex flex-column align-items-center text-center">
-                                    <!-- Status Badge (Top-Left) -->
                                     {% if user.userprofile.is_online %}
-    <span id="user-status-{{ user.id }}" class="badge bg-success status-badge">Online</span>
-{% else %}
-    <span id="user-status-{{ user.id }}" class="badge bg-danger status-badge">Offline</span>
-{% endif %}
-    
-<div style="position: relative; width: 110px; height: 110px;">
-    <img src="{{ user.userprofile.profile_image.url }}" alt="Admin" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
-    
-    <!-- Bootstrap Icon at the bottom-right -->
-    
-</div>
-                                    
+                                        <span id="user-status-{{ user.id }}" class="badge bg-success status-badge">Online</span>
+                                    {% else %}
+                                        {% if user.is_active %}
+                                            <span id="user-status-{{ user.id }}" class="badge bg-danger status-badge">Offline</span>
+                                        {% else %}
+                                            <span id="user-status-{{ user.id }}" class="badge bg-warning status-badge">Not Verified</span>
+                                        {% endif %}
+                                    {% endif %}
+                                    <div style="position: relative; width: 110px; height: 110px;">
+                                        <img src="{{ user.userprofile.profile_image.url }}" alt="Admin" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
+                                    </div>
                                     <div class="mt-3">
                                         <h4>{{ user.first_name }}{% if user == request.user %} (You){% endif %}</h4>
-    
-                                        {% include "myapp/score_ranks.html" with user=user %}
-    
                                         <p class="text-muted font-size-sm">{{ user.userprofile.section }} | {{ user.userprofile.program }}</p>
-    
-                                        <a href="{% url 'profile_details' %}"><button class="btn btn-primary">View Profile</button></a>
+                                        <button class="btn btn-primary viewProfileBtn" data-name="{{ user.first_name }}" data-email="{{ user.email }}">View Profile</button>
                                         <a href=""><button class="btn btn-outline-primary">Message</button></a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                   
+                {% endfor %}
+            {% else %}
+                <!-- No users found for the search query -->
+                <div class="col-12">
+                    <div class="alert alert-warning" role="alert">
+                        No users found for "{{ query }}".
+                    </div>
+                </div>
+            {% endif %}
+            {% else %}
+                <!-- Show all users if no query is provided -->
+                {% for user in users %}
+<div class="col-lg-4">
+    <div class="card mb-4">
+        <div class="card-body position-relative">
+            <div class="d-flex flex-column align-items-center text-center">
+                {% if user.userprofile.is_online %}
+                    <span id="user-status-{{ user.id }}" class="badge bg-success status-badge">Online</span>
+                {% else %}
+                    {% if user.is_active %}
+                        <span id="user-status-{{ user.id }}" class="badge bg-danger status-badge">Offline</span>
+                    {% else %}
+                        <span id="user-status-{{ user.id }}" class="badge bg-warning status-badge">Not Verified</span>
+                    {% endif %}
                 {% endif %}
-            {% endfor %}
-           
-        {% else %}
-            <div class="col-12">
-                <div class="alert alert-info" role="alert">
-                    No other users are registered.
+                <div style="position: relative; width: 110px; height: 110px;">
+                    <img src="{{ user.userprofile.profile_image.url }}" alt="Admin" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
+                </div>
+                <div class="mt-3">
+                    <h4>{{ user.first_name }}{% if user == request.user %} (You){% endif %}</h4>
+                    <p class="text-muted font-size-sm">{{ user.userprofile.section }} | {{ user.userprofile.program }}</p>
+                    <button class="btn btn-primary viewProfileBtn" data-name="{{ user.first_name }}" data-email="{{ user.email }}">View Profile</button>
+                    <a href=""><button class="btn btn-outline-primary">Message</button></a>
                 </div>
             </div>
-        {% endif %}
+        </div>
     </div>
-    
-    
-
-
-    
-
-
+</div>
+{% endfor %}
+            {% endif %}
+        </div>
+        
+    </div>
 </div>
 
+
+
+<!-- Modal Structure -->
+<div id="profileModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>User Profile</h2>
+        <div id="profileDetails">
+            <!-- Profile details will go here -->
+       
+           
+        </div>
+    </div>
+</div>
+  
             
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
 
-</body>
 
-<script>
-    const ws = new WebSocket('ws://' + window.location.host + '/ws/status/');
+    <script>
+        const ws = new WebSocket('ws://' + window.location.host + '/ws/status/');
     
-    ws.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        const userId = data.user_id;
-        const isOnline = data.is_online;
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            const userId = data.user_id;
+            const isOnline = data.is_online;
     
-        // Update the status badge in the DOM
-        const userBadge = document.querySelector(`#user-status-${userId}`);
-        if (userBadge) {
-            if (isOnline) {
-                userBadge.textContent = 'Online';
-                userBadge.classList.remove('bg-danger');
-                userBadge.classList.add('bg-success');
-            } else {
-                userBadge.textContent = 'Offline';
-                userBadge.classList.remove('bg-success');
-                userBadge.classList.add('bg-danger');
+            const userBadge = document.querySelector(`#user-status-${userId}`);
+            if (userBadge) {
+                if (isOnline) {
+                    userBadge.textContent = 'Online';
+                    userBadge.classList.remove('bg-danger');
+                    userBadge.classList.add('bg-success');
+                } else {
+                    userBadge.textContent = 'Offline';
+                    userBadge.classList.remove('bg-success');
+                    userBadge.classList.add('bg-danger');
+                }
+            }
+        };
+    
+        var modal = document.getElementById("profileModal");
+        var span = document.getElementsByClassName("close-btn")[0];
+    
+        document.querySelectorAll('.viewProfileBtn').forEach(function(btn) {
+            btn.onclick = function() {
+                modal.style.display = "block"; 
+                setTimeout(function() { 
+                    modal.classList.add('show');
+                    document.querySelector('.modal-content').classList.add('show');
+                }, 10); 
+    
+                var userName = this.getAttribute('data-name');
+                var userEmail = this.getAttribute('data-email');
+    
+                document.getElementById("profileDetails").innerHTML = `
+                    <p>Name: ${userName}</p>
+                    <p>Email: ${userEmail}</p>
+                     <canvas id="userChart" width="400" height="400" style="display: block; margin: auto;"></canvas>
+                `;
+    
+                var ctx = document.getElementById('userChart').getContext('2d');
+                var userChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['SQL INJECTION', 'XSS ATTACKS', 'MALWARE'],
+                        datasets: [{
+                            label: 'User Data',
+                            data: [10, 20, 30],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'User Data Distribution'
+                            }
+                        }
+                    }
+                });
+    
+                document.getElementById('userChart').style.display = 'block';
+            }
+        });
+    
+        span.onclick = function() {
+            modal.classList.remove('show');
+            document.querySelector('.modal-content').classList.remove('show');
+            setTimeout(function() {
+                modal.style.display = "none"; 
+            }, 500);
+        }
+    
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.classList.remove('show');
+                document.querySelector('.modal-content').classList.remove('show');
+                setTimeout(function() {
+                    modal.style.display = "none"; 
+                }, 500);
             }
         }
-    };
     </script>
     
-
-
+    
+</body>
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>

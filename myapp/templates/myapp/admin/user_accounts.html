@@ -73,12 +73,16 @@
                                         <td>{{ user.userprofile.section }}</td>
                                         
                                         <td>{{ user.userprofile.program }}</td>
-                                        <td>
+                                       <td style="color:white;">
                                             {% if user.userprofile.is_online %}
-                                        <span id="user-status-{{ user.id }}" class="badge bg-success status-badge" style="color:white;">Online</span>
-                                    {% else %}
-                                        <span id="user-status-{{ user.id }}" class="badge bg-danger status-badge" style="color:white;">Offline</span>
-                                    {% endif %}
+                                            <span id="user-status-{{ user.id }}" class="badge bg-success status-badge">Online</span>
+                                        {% else %}
+                                            {% if user.is_active %}
+                                                <span id="user-status-{{ user.id }}" class="badge bg-danger status-badge">Offline</span>
+                                            {% else %}
+                                                <span id="user-status-{{ user.id }}" class="badge bg-warning status-badge">Not Verified</span>
+                                            {% endif %}
+                                        {% endif %}
                                         </td>
                                         <td class="text-muted">
                                             {{ user.date_joined|date:"d M Y, H:i" }}

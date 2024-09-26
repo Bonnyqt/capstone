@@ -419,13 +419,15 @@ def other_profiles(request):
     # Get all users excluding superusers by default
     users = User.objects.exclude(is_superuser=True)
 
+    # Exclude users with email ending in .it@tip.edu.ph
+    users = users.exclude(email__endswith='.it@tip.edu.ph')
+
     # If a search query is provided, filter the users based on username, first_name, or last_name
     if query:
         users = users.filter(
             Q(username__icontains=query) |
             Q(first_name__icontains=query) |
-            Q(last_name__icontains=query) 
-            
+            Q(last_name__icontains=query)
         )
 
     # Email count and logs (remains the same)
@@ -438,7 +440,7 @@ def other_profiles(request):
         'email_logs': email_logs,
         'query': query,  # Pass the search query to template
     }
-    
+
     return render(request, 'myapp/other_profiles.html', context)
 
 

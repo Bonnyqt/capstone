@@ -135,7 +135,7 @@
     <!-- Spinner End -->
 
     <div id="snackbar" style="z-index: 9999;">Please Log In First</div>
-
+ 
 
     <!-- Navbar Start -->
     {% include "myapp/header.html" %}
@@ -204,33 +204,33 @@
             {% else %}
                 <!-- Show all users if no query is provided -->
                 {% for user in users %}
-<div class="col-lg-4">
-    <div class="card mb-4">
-        <div class="card-body position-relative">
-            <div class="d-flex flex-column align-items-center text-center">
-                {% if user.userprofile.is_online %}
-                    <span id="user-status-{{ user.id }}" class="badge bg-success status-badge">Online</span>
-                {% else %}
-                    {% if user.is_active %}
-                        <span id="user-status-{{ user.id }}" class="badge bg-danger status-badge">Offline</span>
-                    {% else %}
-                        <span id="user-status-{{ user.id }}" class="badge bg-warning status-badge">Not Verified</span>
-                    {% endif %}
-                {% endif %}
-                <div style="position: relative; width: 110px; height: 110px;">
-                    <img src="{{ user.userprofile.profile_image.url }}" alt="Admin" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
-                </div>
-                <div class="mt-3">
-                    <h4>{{ user.first_name }}{% if user == request.user %} (You){% endif %}</h4>
-                    <p class="text-muted font-size-sm">{{ user.userprofile.section }} | {{ user.userprofile.program }}</p>
-                    <button class="btn btn-primary viewProfileBtn" data-name="{{ user.first_name }}" data-email="{{ user.email }}">View Profile</button>
-                    <a href=""><button class="btn btn-outline-primary">Message</button></a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endfor %}
+                    <div class="col-lg-4">
+                        <div class="card mb-4">
+                            <div class="card-body position-relative">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    {% if user.userprofile.is_online %}
+                                        <span id="user-status-{{ user.id }}" class="badge bg-success status-badge">Online</span>
+                                    {% else %}
+                                        {% if user.is_active %}
+                                            <span id="user-status-{{ user.id }}" class="badge bg-danger status-badge">Offline</span>
+                                        {% else %}
+                                            <span id="user-status-{{ user.id }}" class="badge bg-warning status-badge">Not Verified</span>
+                                        {% endif %}
+                                    {% endif %}
+                                    <div style="position: relative; width: 110px; height: 110px;">
+                                        <img src="{{ user.userprofile.profile_image.url }}" alt="Admin" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
+                                    </div>
+                                    <div class="mt-3">
+                                        <h4>{{ user.first_name }}{% if user == request.user %} (You){% endif %}</h4>
+                                        <p class="text-muted font-size-sm">{{ user.userprofile.section }} | {{ user.userprofile.program }}</p>
+                                        <button class="btn btn-primary viewProfileBtn" data-name="{{ user.first_name }}" data-email="{{ user.email }}">View Profile</button>
+                                        <a href=""><button class="btn btn-outline-primary">Message</button></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             {% endif %}
         </div>
         
@@ -239,8 +239,10 @@
 
 
 
+
+
 <!-- Modal Structure -->
-<div id="profileModal" class="modal">
+<div id="profileModal" class="modal" style="z-index: 9998;">
     <div class="modal-content">
         <span class="close-btn">&times;</span>
         <h2>User Profile</h2>

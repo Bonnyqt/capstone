@@ -121,6 +121,67 @@
   text-decoration: none;
   cursor: pointer;
 }
+modal {
+  display: none; /* Hidden by default */
+  position: fixed; 
+  z-index: 1; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%;
+  overflow: auto; 
+  background-color: rgba(0, 0, 0, 0.4); 
+  opacity: 0; /* Start invisible */
+  transition: opacity 0.5s ease; /* Transition effect for fade-in and fade-out */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: white;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 1000px;
+  opacity: 0; /* Initially hidden */
+  transform: translateY(-20px); /* Position it slightly up for slide-in effect */
+  transition: opacity 0.5s ease, transform 0.5s ease; /* Add both fade and slide effect */
+}
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%; /* Full width for small screens */
+        max-height: 90%; /* Allow more height on small screens */
+    }
+}
+/* Fade-in effect for modal content */
+.modal.show {
+  display: block;
+  opacity: 1; /* Make it visible */
+}
+
+.modal-content.show {
+  opacity: 1;
+  transform: translateY(0); /* Slide to normal position */
+}
+
+/* Close Button */
+.close-btn {
+    position: absolute; /* Positioning the close button absolutely */
+    top: 10px; /* Adjust the distance from the top of the modal content */
+    right: 15px; /* Adjust the distance from the right of the modal content */
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
 
 
         </style>
@@ -163,44 +224,45 @@
         <div class="main-body"></div>
         <div class="row">
             {% if query %}
-            {% if users %}
-                <!-- Show filtered users when query is present -->
-                {% for user in users %}
-                    <div class="col-lg-4">
-                        <div class="card mb-4">
-                            <div class="card-body position-relative">
-                                <div class="d-flex flex-column align-items-center text-center">
-                                    {% if user.userprofile.is_online %}
-                                        <span id="user-status-{{ user.id }}" class="badge bg-success status-badge">Online</span>
-                                    {% else %}
-                                        {% if user.is_active %}
-                                            <span id="user-status-{{ user.id }}" class="badge bg-danger status-badge">Offline</span>
+                {% if users %}
+                    <!-- Show filtered users when query is present -->
+                    {% for user in users %}
+                        <div class="col-lg-4">
+                            <div class="card mb-4">
+                                <div class="card-body position-relative">
+                                    <div class="d-flex flex-column align-items-center text-center">
+                                        {% if user.userprofile.is_online %}
+                                            <span id="user-status-{{ user.id }}" class="badge bg-success status-badge">Online</span>
                                         {% else %}
-                                            <span id="user-status-{{ user.id }}" class="badge bg-warning status-badge">Not Verified</span>
+                                            {% if user.is_active %}
+                                                <span id="user-status-{{ user.id }}" class="badge bg-danger status-badge">Offline</span>
+                                            {% else %}
+                                                <span id="user-status-{{ user.id }}" class="badge bg-warning status-badge">Not Verified</span>
+                                            {% endif %}
                                         {% endif %}
-                                    {% endif %}
-                                    <div style="position: relative; width: 110px; height: 110px;">
-                                        <img src="{{ user.userprofile.profile_image.url }}" alt="Admin" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
-                                    </div>
-                                    <div class="mt-3">
-                                        <h4>{{ user.first_name }}{% if user == request.user %} (You){% endif %}</h4>
-                                        <p class="text-muted font-size-sm">{{ user.userprofile.section }} | {{ user.userprofile.program }}</p>
-                                        <button class="btn btn-primary viewProfileBtn" data-name="{{ user.first_name }}" data-email="{{ user.email }}">View Profile</button>
-                                        <a href=""><button class="btn btn-outline-primary">Message</button></a>
+                                        <div style="position: relative; width: 110px; height: 110px;">
+                                            <img src="{{ user.userprofile.profile_image.url }}" alt="Profile Image" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
+                                        </div>
+                                        <div class="mt-3">
+                                            <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+                                            <strong style="color:green">{{ user.rank }}</strong>
+                                            <p class="text-muted font-size-sm">{{ user.userprofile.section }} | {{ user.userprofile.program }}</p>
+                                            <button class="btn btn-primary viewProfileBtn" data-name="{{ user.first_name }}" data-email="{{ user.email }}">View Profile</button>
+                                      
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- No users found for the search query -->
+                    <div class="col-12">
+                        <div class="alert alert-warning" role="alert">
+                            No users found for "{{ query }}".
+                        </div>
                     </div>
-                {% endfor %}
-            {% else %}
-                <!-- No users found for the search query -->
-                <div class="col-12">
-                    <div class="alert alert-warning" role="alert">
-                        No users found for "{{ query }}".
-                    </div>
-                </div>
-            {% endif %}
+                {% endif %}
             {% else %}
                 <!-- Show all users if no query is provided -->
                 {% for user in users %}
@@ -218,13 +280,14 @@
                                         {% endif %}
                                     {% endif %}
                                     <div style="position: relative; width: 110px; height: 110px;">
-                                        <img src="{{ user.userprofile.profile_image.url }}" alt="Admin" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
+                                        <img src="{{ user.userprofile.profile_image.url }}" alt="Profile Image" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
                                     </div>
                                     <div class="mt-3">
-                                        <h4>{{ user.first_name }}{% if user == request.user %} (You){% endif %}</h4>
+                                        <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+                                        <strong style="color:green">{{ user.rank }}</strong>
                                         <p class="text-muted font-size-sm">{{ user.userprofile.section }} | {{ user.userprofile.program }}</p>
                                         <button class="btn btn-primary viewProfileBtn" data-name="{{ user.first_name }}" data-email="{{ user.email }}">View Profile</button>
-                                        <a href=""><button class="btn btn-outline-primary">Message</button></a>
+                                
                                     </div>
                                 </div>
                             </div>
@@ -233,9 +296,9 @@
                 {% endfor %}
             {% endif %}
         </div>
-        
     </div>
 </div>
+
 
 
 
@@ -247,7 +310,7 @@
         <span class="close-btn">&times;</span>
         <h2>User Profile</h2>
         <div id="profileDetails">
-            <!-- Profile details will go here -->
+            
        
            
         </div>

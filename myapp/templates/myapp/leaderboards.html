@@ -15,6 +15,7 @@
     <link href="lib/animate/animate.min.css" rel="stylesheet">
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
   margin: 0;
@@ -30,11 +31,362 @@
 }
 .center-wrapper {
   background: rgba(9, 30, 62, .7);
-  display: flex;
+
   justify-content: center;
   align-items: center;
   flex: 1;
 }
+
+.leaderboard {
+            width: 90%;
+            max-width: 1500px;
+            margin-top: 50px;
+        }
+        
+
+/* Optional: If you want to apply styles for other profiles */
+
+
+.profile:hover {
+    transform: scale(1.05);  /* Add a subtle hover effect for all profiles */
+}
+.top-three {
+    display: flex;
+    justify-content: center;  /* Center the profiles horizontally */
+    align-items: center;
+    margin-bottom: 50px;
+    gap: 100px;  /* Reduce the gap between the profiles */
+}
+/* Positioning rules */
+.profile {
+    text-align: center;
+    padding: 20px 30px;
+    transition: all 0.3s ease;
+    border-radius: 20px;
+    flex: 1;
+    max-width: 250px;
+    border: 2px solid transparent; /* Set border to transparent initially */
+}
+.gold-circle {
+    width: 50px; /* Size of the circle */
+    height: 50px; /* Size of the circle */
+    background-color: #ffd700; /* Gold color */
+    border-radius: 50%; /* Make it round */
+    position: absolute;
+    top: -25px; /* Position it above the profile card */
+    left: 50%;
+    transform: translateX(-50%); /* Center it horizontally */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px; /* Font size for the rank text inside the circle */
+    color: white;
+    font-weight: bold;
+}
+
+/* Gold border for 1st place (center) */
+
+
+ 
+.profile.pro {
+
+    order: 0;  /* Center position */
+    flex-grow: 2;  /* Make the Gold profile larger */
+    padding: 30px 40px;  /* Increase padding for larger size */
+    transform: scale(1.1);  /* Slightly enlarge the Gold profile */
+    position: relative; /* Needed for positioning the gold circle */
+    border-radius: 10px;  /* Optional: rounded corners */
+    
+    /* Glowing border animation */
+    animation: glow 2s infinite ease-in-out;
+    
+    /* Apply the spinning border and gradient background */
+    --border-angle: 0turn;
+    --main-bg: conic-gradient(from var(--border-angle), #213, #112 5%, #112 60%, #213 95%);
+    border: solid 5px transparent;
+    --gradient-border: conic-gradient(from var(--border-angle), transparent 25%, #08f, rgb(253, 249, 5) 99%, transparent);
+    background: var(--main-bg) padding-box, var(--gradient-border) border-box, var(--main-bg) border-box;
+    background-position: center center;
+    animation: bg-spin 3s linear infinite;
+}
+
+@keyframes bg-spin {
+    to {
+        --border-angle: 1turn;
+    }
+}
+
+
+
+
+/* Silver border for 2nd place (left) */
+.profile.elevated {
+
+    order: -1;  /* Move to the left */
+    flex-grow: 1;  /* Default size */
+    position: relative;  /* Needed for positioning the silver circle */
+    
+    /* Apply the spinning border and gradient background */
+    --border-angle: 0turn;
+    --main-bg: conic-gradient(from var(--border-angle), #213, #112 5%, #112 60%, #213 95%);
+    border: solid 5px transparent;
+    --gradient-border: conic-gradient(from var(--border-angle), transparent 25%, #08f, #c0c0c0 99%, transparent);
+    background: var(--main-bg) padding-box, var(--gradient-border) border-box, var(--main-bg) border-box;
+    background-position: center center;
+    animation: bg-spin 3s linear infinite;
+}
+
+@keyframes bg-spin {
+    to {
+        --border-angle: 1turn;
+    }
+}
+
+
+
+/* Bronze border for 3rd place (right) */
+.profile.third-place {
+   
+    order: 1;  /* Move to the right */
+    flex-grow: 1;  /* Default size */
+    position: relative;  /* Needed for positioning the bronze circle */
+    
+    /* Apply the spinning border and gradient background */
+    --border-angle: 0turn;
+    --main-bg: conic-gradient(from var(--border-angle), #213, #112 5%, #112 60%, #213 95%);
+    border: solid 5px transparent;
+    --gradient-border: conic-gradient(from var(--border-angle), transparent 25%, #08f, #cd7f32 99%, transparent);
+    background: var(--main-bg) padding-box, var(--gradient-border) border-box, var(--main-bg) border-box;
+    background-position: center center;
+    animation: bg-spin 3s linear infinite;
+}
+
+@keyframes bg-spin {
+    to {
+        --border-angle: 1turn;
+    }
+}
+
+
+
+
+/* Styling for the silver circle above the profile */
+.silver-circle {
+    width: 50px; /* Size of the circle */
+    height: 50px; /* Size of the circle */
+    background-color: #c0c0c0; /* Silver color */
+    border-radius: 50%; /* Make it round */
+    position: absolute;
+    top: -25px; /* Position it above the profile card */
+    left: 50%;
+    transform: translateX(-50%); /* Center it horizontally */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px; /* Font size for the rank text inside the circle */
+    color: white;
+    font-weight: bold;
+}
+
+/* Styling for the bronze circle above the profile */
+.bronze-circle {
+    width: 50px; /* Size of the circle */
+    height: 50px; /* Size of the circle */
+    background-color: #cd7f32; /* Bronze color */
+    border-radius: 50%; /* Make it round */
+    position: absolute;
+    top: -25px; /* Position it above the profile card */
+    left: 50%;
+    transform: translateX(-50%); /* Center it horizontally */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px; /* Font size for the rank text inside the circle */
+    color: white;
+    font-weight: bold;
+}
+
+/* General styling for all profiles */
+.profile {
+    text-align: center;
+    padding: 20px 30px;
+    transition: all 0.3s ease;
+    border-radius: 20px;
+    flex: 1;
+    max-width: 250px;
+    border: 2px solid transparent; /* Set border to transparent initially */
+}
+
+/* Image styling */
+.profile img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+}
+
+/* Header styling */
+.profile h2 {
+    margin: 10px 0 5px;
+    font-size: 1.5em;  /* Slightly increase the font size for the larger Gold profile */
+    color: white;
+}
+
+/* Score and rank styling */
+.profile .score, .profile .rank, .profile .username {
+    display: block;
+    margin: 5px 0;
+}
+.profile {
+    cursor: pointer;  /* Change cursor to hand */
+    transition: transform 0.3s, box-shadow 0.3s;  /* Smooth animation for hover */
+}
+
+.profile:hover {
+    transform: scale(1.05);  /* Slight zoom effect on hover */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);  /* Add a shadow on hover */
+}
+
+.profile img {
+    transition: transform 0.3s;  /* Smooth image scaling */
+}
+
+.profile:hover img {
+    transform: scale(1.1);  /* Slight zoom effect on image */
+}
+       
+        .table-container {
+            width: 100%;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+        th {
+            background: #444;
+        }
+        tr:nth-child(even) {
+            background: #3a3a3a;
+        }
+        tr:nth-child(odd) {
+            background: #2e2e2e;
+        }
+        .rank {
+            display: flex;
+            align-items: center;
+        }
+        .rank img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+            
+            @keyframes bg-spin {
+	 to {
+		 --border-angle: 1turn;
+	}
+}
+.clickable-row {
+    cursor: pointer;  /* Change cursor to hand */
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.clickable-row:hover {
+    transform: scale(1);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);  /* Optional: add shadow on hover */
+}
+
+.clickable-row td {
+    padding: 10px;  /* Optional: space out the content in cells for easier click */
+}
+
+ @property --border-angle {
+	 syntax: "<angle>";
+	 inherits: true;
+	 initial-value: 0turn;
+}
+@media (max-width: 768px) {
+        /* Hide top-three section for small screens */
+        .top-three {
+            display: none;
+        }
+
+        /* Ensure table is full width on small screens */
+        .table-container {
+            margin-top: 20px;
+        }
+    }
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; 
+  z-index: 1; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%;
+  overflow: auto; 
+  background-color: rgba(0, 0, 0, 0.4); 
+  opacity: 0; /* Start invisible */
+  transition: opacity 0.5s ease; /* Transition effect for fade-in and fade-out */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: white;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 1000px;
+  opacity: 0; /* Initially hidden */
+  transform: translateY(-20px); /* Position it slightly up for slide-in effect */
+  transition: opacity 0.5s ease, transform 0.5s ease; /* Add both fade and slide effect */
+}
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%; /* Full width for small screens */
+        max-height: 90%; /* Allow more height on small screens */
+    }
+}
+/* Fade-in effect for modal content */
+.modal.show {
+  display: block;
+  opacity: 1; /* Make it visible */
+}
+
+.modal-content.show {
+  opacity: 1;
+  transform: translateY(0); /* Slide to normal position */
+}
+
+/* Close Button */
+.close-btn {
+    position: absolute; /* Positioning the close button absolutely */
+    top: 10px; /* Adjust the distance from the top of the modal content */
+    right: 15px; /* Adjust the distance from the right of the modal content */
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
     </style>
 </head>
 <body>
@@ -43,15 +395,267 @@
     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
       <div class="spinner"></div>
   </div>
-    <div class="center-wrapper"></div>
 
+  
+    <div class="center-wrapper">
+        <h1 class="display-1 text-white mb-md-4 animated zoomIn" style="font-size: 50px; margin-top: 120px; align-items: center; display: flex;
+        justify-content: center;">LEADERBOARDS</h1>
+        <div class="leaderboard" style="margin-top: 70px; margin-left: 190px; margin-bottom: 60px;">
+            <!-- Check if there are user scores -->
+            {% if user_scores %}
+            <div class="top-three">
+                <!-- Loop through the top 3 user scores -->
+                {% for user_score in user_scores|slice:":3" %}
+                    <div class="profile 
+                        {% if forloop.first %}pro{% endif %}
+                        {% if forloop.counter == 2 %}elevated{% endif %}
+                        {% if forloop.counter == 3 %}third-place{% endif %}
+                    " onclick="showProfileModal(this)" data-name="{{ user_score.user__first_name }}" data-email="{{ user_score.user__email }}">
+                        <!-- Rank Badge -->
+                        {% if forloop.first %}
+                            <div class="gold-circle">1st</div>
+                        {% elif forloop.counter == 2 %}
+                            <div class="silver-circle">2nd</div>
+                        {% elif forloop.counter == 3 %}
+                            <div class="bronze-circle">3rd</div>
+                        {% endif %}
+                        
+                        <br>
+                        <img src="{{ user_score.profile_image_url }}" alt="Profile Image" width="110" height="110" style="object-fit: cover; border-radius: 50%;">
+                
+                        <!-- User Info -->
+                        <h2>{{ user_score.user__first_name }}</h2>
+                        <span class="score" style="color: white;">Score: {{ user_score.total_score }}</span><br>
+                        <span class="rank" style="color: white; font-size: 23px;"> <strong>{{ user_score.rank }}</strong></span>
+                    </div>
+                {% endfor %}
+            </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr style="color: white;">
+                                <th>RANK NO.</th>
+                                <th>EMAIL</th>
+                                <th>USER NAME</th>
+                                <th>RANK</th>
+                                <th>TOP CATEGORY ANSWERED</th>
+                                <th>SCORE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user_score in user_scores %}
+    <tr class="clickable-row" onclick="showProfileModal(this)" data-name="{{ user_score.user__first_name }}" data-email="{{ user_score.user__email }}">
+        <td class="rank">
+            <!-- Profile image -->
+            <img src="{{ user_score.profile_image_url }}" width="110" height="110" style="object-fit: cover;">
+            {{ user_score.rank_no }}
+            <span class="pro">{% if user_score.rank == "PRO" %}PRO{% endif %}</span>
+        </td>
+        <td>{{ user_score.user__email }}</td>
+        <td>@{{ user_score.user__first_name }}</td>
+        <td>{{ user_score.rank }}</td>
+        <td>{{ user_score.top_category }}</td> <!-- Display the top category -->
+        <td>{{ user_score.total_score }}</td>
+    </tr>
+{% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>No scores available at the moment.</p> <!-- Message when there are no scores -->
+            {% endif %}
+        </div>
+        
+        
+    
+    
+    
+    </div>
+    <div id="profileModal" class="modal" style="z-index: 9998;">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>User Profile</h2>
+        <div id="profileDetails"></div>
+    </div>
+</div>
 </body>
+<script>
+    var modal = document.getElementById("profileModal");
+var span = document.getElementsByClassName("close-btn")[0];
+
+// Function to show the modal when a profile is clicked
+function showProfileModal(element) {
+    // Open modal
+    modal.style.display = "block"; 
+    setTimeout(function() { 
+        modal.classList.add('show');
+        document.querySelector('.modal-content').classList.add('show');
+    }, 10); 
+
+    // Get the data attributes from the clicked profile
+    var userName = element.getAttribute('data-name');
+    var userEmail = element.getAttribute('data-email');
+    
+    // Populate modal with user data
+    document.getElementById("profileDetails").innerHTML = `
+        <p>Name: ${userName}</p>
+        <p>Email: ${userEmail}</p>
+        <canvas id="userChart" width="400" height="400" style="display: block; margin: auto;"></canvas>
+    `;
+    
+    // Create the chart
+    var ctx = document.getElementById('userChart').getContext('2d');
+    var userChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['SQL INJECTION', 'XSS ATTACKS', 'MALWARE'],
+            datasets: [{
+                label: 'User Data',
+                data: [10, 20, 30],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'User Data Distribution'
+                }
+            }
+        }
+    });
+
+    document.getElementById('userChart').style.display = 'block';
+}
+
+// Close modal when the close button is clicked
+span.onclick = function() {
+    modal.classList.remove('show');
+    document.querySelector('.modal-content').classList.remove('show');
+    setTimeout(function() {
+        modal.style.display = "none"; 
+    }, 500);
+}
+
+// Close modal if clicked outside the modal
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.classList.remove('show');
+        document.querySelector('.modal-content').classList.remove('show');
+        setTimeout(function() {
+            modal.style.display = "none"; 
+        }, 500);
+    }
+}
+</script>
+
+<script>
+    function showProfileModal(row) {
+    // Get user data from the clicked row
+    var userName = row.getAttribute('data-name');
+    var userEmail = row.getAttribute('data-email');
+
+    // Show modal and populate it with user information
+    var modal = document.getElementById("profileModal");
+    var profileDetails = document.getElementById("profileDetails");
+
+    // Add the user info to the modal
+    profileDetails.innerHTML = `
+        <p>Name: ${userName}</p>
+        <p>Email: ${userEmail}</p>
+        <canvas id="userChart" width="400" height="400" style="display: block; margin: auto;"></canvas>
+    `;
+
+    // Display the modal
+    modal.style.display = "block"; 
+    setTimeout(function() { 
+        modal.classList.add('show');
+        document.querySelector('.modal-content').classList.add('show');
+    }, 10); 
+
+    // Create the chart (just as an example, you can adjust it based on actual data)
+    var ctx = document.getElementById('userChart').getContext('2d');
+    var userChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['SQL INJECTION', 'XSS ATTACKS', 'MALWARE'],
+            datasets: [{
+                label: 'User Data',
+                data: [10, 20, 30], // These values can come from the server
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'User Data Distribution'
+                }
+            }
+        }
+    });
+}
+
+// Modal close functionality
+var span = document.getElementsByClassName("close-btn")[0];
+span.onclick = function() {
+    var modal = document.getElementById("profileModal");
+    modal.classList.remove('show');
+    document.querySelector('.modal-content').classList.remove('show');
+    setTimeout(function() {
+        modal.style.display = "none"; 
+    }, 500);
+}
+
+window.onclick = function(event) {
+    var modal = document.getElementById("profileModal");
+    if (event.target == modal) {
+        modal.classList.remove('show');
+        document.querySelector('.modal-content').classList.remove('show');
+        setTimeout(function() {
+            modal.style.display = "none"; 
+        }, 500);
+    }
+}</script>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static 'lib/wow/wow.min.js' %}"></script>
-<script src="{% static 'lib/easing/easing.min.js' %}"></script>
-<script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
-<script src="{% static 'lib/counterup/counterup.min.js' %}"></script>
-<script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
-<script src="{% static 'js/main.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/counterup/counterup.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+  
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main.js' %}"></script>
+
 </html>

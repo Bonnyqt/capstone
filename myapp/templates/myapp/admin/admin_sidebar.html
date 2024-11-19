@@ -44,31 +44,17 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Components:</h6>
                 <a class="collapse-item" href="{% url 'user_accounts' %}">Student Accounts</a>
-                <a class="collapse-item" href="{% url 'professor_accounts' %}">Professors Accounts</a>
+                <a class="collapse-item" href="{% url 'professor_accounts' %}">Professor Accounts</a>
                 <a class="collapse-item" href="{% url 'news' %}">News</a>
                 <a class="collapse-item" href="{% url 'email' %}">Email</a>
+                <a class="collapse-item" href="{% url 'user_feedbacks' %}">Feedbacks</a>
+                <a class="collapse-item" href="{% url 'admin_leaderboards' %}">Leaderboards</a>
             </div>
         </div>
     </li>
 
     <!-- Nav Item - Utilities Collapse Menu -->
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-            aria-expanded="true" aria-controls="collapseUtilities">
-            <i class="fas fa-fw fa-wrench"></i>
-            <span>Utilities</span>
-        </a>
-        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-            data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Utilities:</h6>
-                <a class="collapse-item" href="{% url 'user_feedbacks' %}">Feedbacks</a>
-                <a class="collapse-item" href="utilities-border.html">Leaderboards</a>
-                <a class="collapse-item" href="utilities-animation.html">Network</a>
-                <a class="collapse-item" href="utilities-other.html">Messages</a>
-            </div>
-        </div>
-    </li>
+  
 
     <!-- Divider -->
   
@@ -189,20 +175,19 @@
                             Notifications
                         </h6>
                         {% for feedback in feedbacks %}
-                        <a class="dropdown-item d-flex align-items-center" href="{% url 'user_feedbacks'%}">
-                            <div class="dropdown-list-image mr-3">
-                                <img class="rounded-circle" src="{{ user.userprofile.profile_image.url }}"
-                                    alt="...">
-                                <div class="status-indicator bg-success"></div>
-                            </div>
-                            <div class="font-weight-bold">
-                                <div class="text-truncate">{{ feedback.feedback }}</div>
-                                <div class="small text-gray-500">{{ feedback.user.first_name }} · {{ feedback.created_at|date:"d M Y, H:i" }}</div>
-                            </div>
-                        </a>
-                        {% empty %}
-                        <center><p class="p-3">No feedback available.</p></center>
-                    {% endfor %}
+                                <a class="dropdown-item d-flex align-items-center" href="{% url 'user_feedbacks' %}">
+                                    <div class="dropdown-list-image mr-3">
+                                        <img class="rounded-circle" src="{{ feedback.user.userprofile.profile_image.url }}" alt="{{ feedback.user.first_name }}">
+                                        <div class="status-indicator bg-success"></div>
+                                    </div>
+                                    <div class="font-weight-bold">
+                                        <div class="text-truncate">{{ feedback.feedback }}</div>
+                                        <div class="small text-gray-500">{{ feedback.user.first_name }} · {{ feedback.created_at|date:"d M Y, H:i" }}</div>
+                                    </div>
+                                </a>
+                            {% empty %}
+                                <center><p class="p-3">No feedback available.</p></center>
+                            {% endfor %}
                     <a class="dropdown-item text-center small text-gray-500" href="{% url 'user_feedbacks'%}">View Feedbacks</a>
                       
                         

@@ -16,24 +16,180 @@
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <style>
-        body {
-  margin: 0;
-  padding: 0;
-  font-family: "Poppins", sans-serif;
-  height: 100vh;
-  display: flex;
-  
-  flex-direction: column;
-  background: url("/static/img/ss1.gif");
-  background-repeat: no-repeat;
-  background-size: cover;
+       body {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: url("/static/img/ss1.gif") no-repeat center center;
+    background-size: cover;
+    background-attachment: fixed;
+    justify-content: flex-start;
+    align-items: center;
 }
+
 .center-wrapper {
-  background: rgba(9, 30, 62, .7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 1;
+    background: rgba(9, 30, 62, .7);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 2rem;
+    width: 100%;
+}
+
+h1 {
+    text-align: center; /* Center the heading */
+    font-size: 50px;
+    color: white;
+    margin-bottom: 2rem;
+}
+        :root {
+            --surface-color: #fff;
+            --curve: 40;
+        }
+        .categories {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.category {
+    margin-bottom: 2rem;
+}
+
+.category-title {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding: 0;
+    margin-left: 40px;
+    list-style-type: none;
+    justify-content: flex-start; /* Align the cards to the left */
+}
+        .card {
+            position: relative;
+            max-width: 400px;
+            border-radius: calc(var(--curve) * 1px);
+            overflow: hidden;
+            text-decoration: none;
+            background-color: var(--surface-color);
+        }
+        .card__image {
+            width: 100%;
+            height: auto;
+        }
+        .card__overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1;
+            border-radius: calc(var(--curve) * 1px);
+            background-color: var(--surface-color);
+            transform: translateY(100%);
+            transition: .2s ease-in-out;
+        }
+        .card:hover .card__overlay {
+            transform: translateY(0);
+        }
+        .card__header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 2em;
+    padding: 2em;
+    border-radius: calc(var(--curve) * 1px) 0 0 0;
+    background-color: var(--surface-color);
+    transform: translateY(-100%);
+    transition: .2s ease-in-out;
+}
+
+.card__arc {
+    width: 80px;
+    height: 80px;
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    z-index: 1;
+}
+
+.card__arc path {
+    fill: var(--surface-color);
+    d: path("M 40 80 c 22 0 40 -22 40 -40 v 40 Z");
+}
+
+.card:hover .card__header {
+    transform: translateY(0);
+}
+
+.card__thumb {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.card__title {
+    font-size: 1em;
+    margin: 0 0 .3em;
+    color: #6A515E;
+}
+
+.card__status {
+    font-size: .8em;
+    color: #8b8b8b;
+}
+
+.card__description {
+    padding: 0 2em 2em;
+    margin: 0;
+    color: #8b8b8b;
+    font-family: "MockFlowFont";
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 1200px) {
+    .card {
+        max-width: 350px;
+    }
+}
+
+@media (max-width: 992px) {
+    .card {
+        max-width: 300px;
+    }
+    .cards {
+        justify-content: space-around;
+    }
+}
+
+@media (max-width: 768px) {
+    .card {
+        max-width: 100%;  /* Full width on smaller screens */
+        margin-bottom: 1rem;  /* Reduce spacing on smaller screens */
+    }
+    .cards {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .card {
+        max-width: 100%;  /* Full width on very small screens */
+    }
 }
     </style>
 </head>
@@ -41,10 +197,93 @@
     {% include "myapp/header.html" %}
     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
       <div class="spinner"></div>
-  </div>
-    <div class="center-wrapper"></div>
+    </div>
+
+    <div class="center-wrapper">
+      <br><br> <br><br><br>
+      
+     
+      
+      <h1 class="display-1 text-white mb-md-4 animated zoomIn" style="font-size: 50px;">ATTACK! SIMULATIONS</h1>
+
+  {% if challenges %}
+    <div class="categories">
+        <!-- Loop through the categories -->
+        {% for category in categories %}
+            <div class="category">
+                <h2 class="category-title" style="color:white;">{{ category }}</h2>
+                <ul class="cards">
+                    <!-- Filter challenges by category -->
+                    {% for challenge in challenges %}
+                    {% if challenge.category == category %}
+                        <li>
+                            <a href="javascript:void(0);" onclick="openWindow({{ challenge.id }})" 
+                            class="card {% if challenge.finished %}card-finished{% endif %}">
+                                <img src="{% static 'img/dasda.jpg' %}" class="card__image" alt="" />
+                                <div class="card__overlay">
+                                    <div class="card__header">
+                                        <svg class="card__arc" xmlns="http://www.w3.org/2000/svg"><path /></svg>
+                                        <div class="card__header-text">
+                                            <h3 class="card__title">
+                                                {{ challenge.title }} 
+                                                | 
+                                                <span class="badge 
+                                                    {% if challenge.difficulty == 'Easy' %}bg-success{% elif challenge.difficulty == 'Medium' %}bg-warning{% else %}bg-danger{% endif %}
+                                                    status-badge">
+                                                    {{ challenge.difficulty }}
+                                                </span>
+                                            </h3>
+                                            <span class="card__status">Date Published: {{ challenge.created_at|date:"d M Y, H:i" }}</span>
+                                        </div>
+                                    </div>
+                                    <p class="card__description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, blanditiis? </p>
+                                </div>
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-center text-white">No challenges published yet.</p>
+{% endif %}
+
+  
+      
+      
+    </div>
 
 </body>
+<script>
+let openedWindow = null;  // Store reference to the opened window
+
+function openWindow(id) {
+    // Check if there is an opened window and it is not closed
+    if (openedWindow && !openedWindow.closed) {
+        alert('Please close or finish the current window before navigating again.');
+        return;  // Prevent opening a new window
+    }
+
+    // Construct the URL with the dynamic 'id'
+    const url = "{% url 'display_canvas' canvas_id=0 %}".replace('0', id);
+    const windowFeatures = 'fullscreen=yes, scrollbars=yes, resizable=yes, width=' + screen.width + ', height=' + screen.height;
+
+    // Open the new window and store the reference
+    openedWindow = window.open(url, '_blank', windowFeatures);
+
+    // Optional: Add an event listener to check when the opened window is closed
+    openedWindow.addEventListener('unload', function() {
+        // After the window is closed, reset the reference to allow opening a new one
+        openedWindow = null;
+    });
+}
+
+  </script>
+  
+  
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'lib/wow/wow.min.js' %}"></script>

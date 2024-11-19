@@ -1,0 +1,1042 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERCLASH | Add DEFEND! Challenge</title>
+    <link href="{% static 'img/logo.png' %}" rel="icon">
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+    <style>
+        
+        body {
+            background-color: #f0f4f8; /* Light background for the body */
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .canvas {
+    width: 100%; /* Adjusts to 90% of the parent container's width */
+    height: 70vh; /* Adjusts to 50% of the viewport height */
+    border: 2px dashed #ccc;
+    position: relative;
+    margin: 20px auto; /* Centers the canvas with automatic left and right margins */
+    background: linear-gradient(135deg, #042350cb, #3b73db); /* Gradient background */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    overflow: visible; /* Allow overflow */
+    max-width: 1600px; /* Ensures it doesn't exceed 1500px */
+    max-height: 720px; /* Ensures it doesn't exceed 720px */
+}
+
+@media (max-width: 768px) {
+    .canvas {
+        width: 100%; /* Full width for smaller screens */
+        height: 60vh; /* Adjust height for smaller screens */
+        margin: 10px auto; /* Adjust margins */
+    }
+}
+
+@media (max-width: 480px) {
+    .canvas {
+        width: 100%; /* Full width for very small screens */
+        height: 70vh; /* Increase height for better fit on mobile */
+        margin: 5px auto; /* Smaller margins for mobile */
+    }
+}
+
+
+        .node {
+            position: absolute; /* Ensure the node can be positioned freely */
+            padding: 10px;
+            background: #293B44;
+            border: 2px solid green; /* Set default border color to green */
+ 
+            transition: border-color 0.3s; 
+            border-radius: 50%;
+            text-align: center;
+            width: 50px;
+            height: 50px;
+            cursor: grab;
+            color: white;
+            z-index: 1;
+            transition: transform 0.2s; /* Scale effect */
+        }
+        
+
+        
+        .node:hover {
+            transform: scale(1.1); /* Scale up on hover */
+        }
+
+        .node i {
+            font-size: 20px;
+        }
+
+        .tooltip {
+            z-index: 9999;
+        position: absolute;
+        bottom: 120%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 6px;
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.2s;
+        max-width: 300px;
+        white-space: normal;
+        word-wrap: break-word;
+        text-align: center;
+    }
+
+    .tooltip::after {
+        z-index: 9999;
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+    }
+
+    .node:hover .tooltip {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    /* New styles for IP address and vulnerability */
+    .tooltip .ip-address {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #00ff7f; /* Light green for IP address */
+    }
+
+    .tooltip .vulnerability {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #ff6347; /* Tomato color for vulnerability */
+        font-style: italic;
+    }
+
+        
+
+        button {
+            padding: 10px 20px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s; /* Button hover effect */
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .packet {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+            display: none;
+            z-index: 10;
+            transition: transform 0.3s; /* Animation for packet */
+        }
+
+        /* Modal styles */
+        /* Center the modal in the middle of the screen */
+        .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 10; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background */
+    display: flex;
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    padding: 20px; /* Padding around the modal */
+}
+
+.modal-content {
+    background-color: #fefefe; /* White background */
+    border-radius: 10px; /* Rounded corners */
+    padding: 20px; /* Padding inside modal */
+    border: 1px solid #888; /* Light border */
+    width: 100%; /* Full width */
+    max-width: 500px; /* Maximum width */
+    text-align: center; /* Center text */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+    animation: fadeIn 0.3s; /* Fade in animation */
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Close button style */
+.close {
+    color: #aaa; /* Close button color */
+    float: right; /* Position to the right */
+    font-size: 28px; /* Close button size */
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black; /* Change color on hover/focus */
+    text-decoration: none; /* Remove underline */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+/* Button styles */
+button {
+    background-color: #007bff; /* Primary button color */
+    color: white; /* Text color */
+    border: none; /* No borders */
+    padding: 10px 20px; /* Padding */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Transition effect */
+}
+
+button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Input field styles */
+input[type="text"] {
+    width: 100%; /* Full width */
+    padding: 10px; /* Padding */
+    margin: 8px 0; /* Margin above and below */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 4px; /* Rounded corners */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+/* Label styles */
+label {
+    font-weight: bold; /* Bold labels */
+    margin-top: 10px; /* Space above labels */
+    display: block; /* Each label on a new line */
+}
+
+/* Icon styles */
+.icon-container {
+    display: flex; /* Use flexbox for alignment */
+    flex-wrap: wrap; /* Allow icons to wrap to the next line */
+    justify-content: space-around; /* Distribute space around icons */
+    padding: 10px; /* Add padding for better spacing */
+}
+
+.icon {
+    font-size: 40px; /* Icon size */
+    color: #007bff; /* Icon color */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: color 0.3s, transform 0.3s; /* Smooth transitions */
+    margin: 10px; /* Add margin for spacing between icons */
+}
+
+.icon:hover {
+    color: #0056b3; /* Darker color on hover */
+    transform: scale(1.1); /* Slightly increase size on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .modal-content {
+        width: 90%; /* Adjust width on smaller screens */
+    }
+
+    .icon {
+        font-size: 30px; /* Smaller icon size for mobile */
+    }
+
+    .icon-container {
+        justify-content: space-between; /* Change alignment for mobile if needed */
+    }
+
+    button {
+        padding: 8px 16px; /* Smaller button padding */
+    }
+}
+
+/* Style the close button */
+#closeModalBtn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#closeModalBtn:hover {
+    background-color: #0056b3;
+}
+.details-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center align text */
+    margin-top: 5px; /* Space between icon and details */
+    font-size: 12px; /* Smaller font for details */
+    text-align: center; /* Center align text */
+}
+
+.info-row {
+    display: flex; /* Use flexbox for row layout */
+    gap: 50px; /* Space between items */
+}
+
+.ip-address,
+.vulnerability {
+    font-size: 12px; /* Keep smaller font size */
+    color: #666; /* Text color */
+}
+
+.node-title {
+    margin-top: 7px;
+    font-weight: bold;
+    color: #ffffff; /* Color for the title */
+}
+
+
+.wire {
+    stroke: rgb(255, 123, 0); /* Orange color */
+    stroke-width: 3;          /* Thickness */
+    stroke-dasharray: 10, 5;  /* Dashed line with 10px dash and 5px gap */
+    stroke-linecap: round;    /* Rounded ends for a cleaner look */
+    animation: moveWire 2s infinite linear; /* Dash movement for animation */
+}
+
+@keyframes moveWire {
+    0% {
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dashoffset: -15;
+    }
+}
+#canvasCategoryDropdown, #canvasDifficultyDropdown {
+    width: 100%; /* Make it responsive */
+    padding: 10px; /* Add padding for better usability */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Make text size consistent */
+    background-color: #f9f9f9; /* Light background for better contrast */
+    appearance: none; /* Remove default browser styles */
+    margin-top: 10px; /* Add spacing above the dropdown */
+}
+
+/* Add a custom dropdown arrow */
+#canvasCategoryDropdown::after, #canvasDifficultyDropdown::after {
+    content: '▼'; /* Custom arrow symbol */
+    font-size: 12px; /* Adjust size */
+    color: #007bff; /* Match theme color */
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* On focus */
+#canvasCategoryDropdown:focus, #canvasDifficultyDropdown:focus {
+    outline: none; /* Remove default focus */
+    border-color: #007bff; /* Add a highlight color */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add focus shadow */
+}
+
+/* Style for mobile responsiveness */
+@media (max-width: 600px) {
+    #canvasCategoryDropdown, #canvasDifficultyDropdown {
+        font-size: 14px; /* Slightly smaller font size */
+        padding: 8px; /* Adjust padding for smaller screens */
+    }
+}
+
+    </style>
+</head>
+<body>
+    {% include "myapp/professor/professor_sidebar.html" %}
+
+
+  
+    
+    
+ <center>  
+    <div id="iconModal" class="modal">
+        <div class="modal-content">
+            <h2>Select Icon</h2>
+            <div id="iconList" class="icon-container">
+                <!-- User icons -->
+                <i class="fas fa-user icon" data-icon="fas fa-user" title="User"></i>
+                <i class="fas fa-user-secret icon" data-icon="fas fa-user-secret" title="User Secret"></i>
+                
+                <!-- Development and Security icons -->
+                <i class="fas fa-code icon" data-icon="fas fa-code" title="Code"></i>
+                <i class="fas fa-virus icon" data-icon="fas fa-virus" title="Virus"></i>
+                <i class="fas fa-fingerprint icon" data-icon="fas fa-fingerprint" title="Fingerprint"></i>
+                <i class="fas fa-globe icon" data-icon="fas fa-globe" title="Globe"></i>
+                <i class="fas fa-cloud icon" data-icon="fas fa-cloud" title="Cloud"></i>
+                <i class="fas fa-database icon" data-icon="fas fa-database" title="Database"></i>
+                
+                <!-- Security and Malware -->
+                <i class="fas fa-shield-alt icon" data-icon="fas fa-shield-alt" title="Firewall"></i>
+                <i class="fas fa-skull-crossbones icon" data-icon="fas fa-skull-crossbones" title="Malware"></i>
+                <i class="fas fa-bug icon" data-icon="fas fa-bug" title="Bug/Exploit"></i>
+                <i class="fas fa-lock icon" data-icon="fas fa-lock" title="Encryption"></i>
+                
+                <!-- Networking and Server Icons -->
+                <i class="fas fa-network-wired icon" data-icon="fas fa-network-wired" title="Network"></i>
+                <i class="fas fa-server icon" data-icon="fas fa-server" title="Server"></i>
+                <i class="fas fa-satellite-dish icon" data-icon="fas fa-satellite-dish" title="Communications"></i>
+                
+                <!-- Verification and Protection -->
+                <i class="fas fa-file-signature icon" data-icon="fas fa-file-signature" title="Signature Verification"></i>
+                <i class="fas fa-user-shield icon" data-icon="fas fa-user-shield" title="User Protection"></i>
+                <i class="fas fa-robot icon" data-icon="fas fa-robot" title="Automated Threats"></i>
+                
+                <!-- Access and Firewall -->
+                <i class="fas fa-key icon" data-icon="fas fa-key" title="Access Control"></i>
+                <i class="fas fa-firewall icon" data-icon="fas fa-firewall" title="Firewall Protection"></i>
+                
+                <!-- Power and Virus Protection -->
+                <i class="fas fa-bolt icon" data-icon="fas fa-bolt" title="Power/Threats"></i>
+                <i class="fas fa-shield-virus icon" data-icon="fas fa-shield-virus" title="Virus Protection"></i>
+                
+                <!-- Warnings and Data -->
+                <i class="fas fa-exclamation-triangle icon" data-icon="fas fa-exclamation-triangle" title="Warning/Error"></i>
+                <i class="fas fa-exchange-alt icon" data-icon="fas fa-exchange-alt" title="Data Transfer"></i>
+                
+                <!-- Lock and Network Signal -->
+                <i class="fas fa-unlock-alt icon" data-icon="fas fa-unlock-alt" title="Unlock Access"></i>
+                <i class="fas fa-user-lock icon" data-icon="fas fa-user-lock" title="User Lock"></i>
+                <i class="fas fa-signal icon" data-icon="fas fa-signal" title="Signal Strength/Network"></i>
+                
+                <!-- Performance and Data Analysis -->
+                <i class="fas fa-tachometer-alt icon" data-icon="fas fa-tachometer-alt" title="Performance Monitoring"></i>
+                <i class="fas fa-network-wired icon" data-icon="fas fa-network-wired" title="Wired Network"></i>
+                <i class="fas fa-chart-line icon" data-icon="fas fa-chart-line" title="Data Analysis"></i>
+            </div>
+            
+            <button id="closeModalBtn">Close</button>
+        </div>
+    </div>
+
+    <div id="nodeConfigModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeNodeConfigModalBtn" style="position:fixed;position: absolute; top: 25px; right: 25px;">&times;</span>
+            <h2>Node Configuration</h2>
+            <label for="titleInput">Title:</label>
+            <input type="text" id="titleInput" placeholder="Enter title" required>
+            <label for="ipAddressInput">IP Address:</label>
+            <input type="text" id="ipAddressInput" placeholder="Enter IP address" required>
+            <label for="tooltipInput">Tooltip Description:</label>
+            <input type="text" id="tooltipInput" placeholder="Enter tooltip description" required>
+            <label for="vulnerabilityInput">Vulnerability:</label>
+            <input type="text" id="vulnerabilityInput" placeholder="Enter vulnerability" required>
+          
+            <button id="saveNodeBtn">Save Node</button>
+        </div>
+    </div>
+
+    
+<div id="titleModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeTitleModalBtn" style="position:fixed;position: absolute; top: 25px; right: 25px;">&times;</span>
+        <h2>Enter Canvas Title</h2>
+        <input type="text" id="canvasTitleInput" placeholder="Enter title" required>
+
+        <label for="canvasCategoryDropdown">Select Category:</label>
+        <select id="canvasCategoryDropdown">
+            <option value="Network Security">Network Security</option>
+            <option value="Cloud Security">Cloud Security</option>
+            <option value="Server Security">Server Security</option>
+            <option value="Database Security">Database Security</option>
+            <option value="General Skills">General Skills</option>
+        </select>
+        
+        <!-- Dropdown for Difficulty Level -->
+        <label for="canvasDifficultyDropdown">Select Level of Difficulty:</label>
+        <select id="canvasDifficultyDropdown">
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+        </select>
+        <br>
+        <button id="saveTitleBtn">Save Title</button>
+    </div>
+</div>
+    </center>
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3" style="display: flex;">
+                <h6 class="m-0 font-weight-bold text-primary">ADD DEFEND! CHALLENGES</h6>
+                
+            </div>
+            <div class="card-body">
+                <div>
+                    <button id="addNodeBtn">Add Node</button>
+                    <button id="addWireBtn">Connect Nodes</button>
+                    <button id="removeBtn">Remove Node</button>
+                    <button id="clearBtn">Clear Canvas</button>
+                    <button id="demoBtn">Demonstrate</button>
+                    <button id="publishBtn">Publish</button>
+                    
+                </div>
+                <div class="canvas" id="canvas">
+                    <svg id="svgCanvas" width="1600" height="750" style="position: absolute; top: 0; left: 0;"></svg>
+                </div>
+
+                
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- /.container-fluid -->
+
+</div>
+</body>
+<script>
+    document.getElementById('publishBtn').addEventListener('click', () => {
+    document.getElementById('titleModal').style.display = 'block'; // Show title modal
+});
+
+// Close modal functionality
+document.getElementById('closeTitleModalBtn').addEventListener('click', () => {
+    document.getElementById('titleModal').style.display = 'none';
+});
+
+</script>
+<script>
+ 
+ const canvas = document.getElementById('canvas');
+    const svgCanvas = document.getElementById('svgCanvas');
+    const addNodeBtn = document.getElementById('addNodeBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const addWireBtn = document.getElementById('addWireBtn');
+    const demoBtn = document.getElementById('demoBtn');
+    const iconModal = document.getElementById('iconModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const iconList = document.getElementById('iconList');
+    const nodeConfigModal = document.getElementById('nodeConfigModal');
+    const ipAddressInput = document.getElementById('ipAddressInput');
+    const tooltipInput = document.getElementById('tooltipInput');
+    const vulnerabilityInput = document.getElementById('vulnerabilityInput');
+    const titleInput = document.getElementById('titleInput');
+    const saveNodeBtn = document.getElementById('saveNodeBtn');
+    const removeBtn = document.getElementById('removeBtn');
+    let removeNodeMode = false;
+
+    
+    let nodeCount = 0;
+    let wireStart = null;
+    let wires = [];
+    let packet = document.createElement('div');
+    packet.className = 'packet';
+    canvas.appendChild(packet);
+    let selectedIconClass = 'fas fa-user'; // Default icon
+
+    removeBtn.addEventListener('click', () => {
+    removeNodeMode = !removeNodeMode;
+    if (removeNodeMode) {
+        alert('Click on a node to remove it.');
+    }
+});
+canvas.addEventListener('click', (e) => {
+    if (removeNodeMode) {
+        const node = e.target.closest('.node'); // Check if clicked element is a node
+        
+        if (node) {
+            const nodeId = node.id; // Assuming nodes have unique IDs
+            
+            // Find and remove wires connected to this node by its ID
+            const connectedWires = document.querySelectorAll(`.wire[data-source="${nodeId}"], .wire[data-target="${nodeId}"]`);
+            connectedWires.forEach(wire => wire.remove()); // Remove each connected wire
+            
+            node.remove(); // Remove the clicked node
+            
+            // Exit remove node mode after removal
+            removeNodeMode = false; 
+            alert('Node and its connected wires removed.');
+        }
+    }
+});
+
+    addNodeBtn.addEventListener('click', () => {
+        // Show the icon selection modal
+        iconModal.style.display = 'block';
+    });
+
+    // Close modal button for icon selection
+    closeModalBtn.addEventListener('click', () => {
+        iconModal.style.display = 'none';
+    });
+
+    // Icon selection
+    iconList.addEventListener('click', (e) => {
+        if (e.target.classList.contains('icon')) {
+            selectedIconClass = e.target.getAttribute('data-icon');
+            nodeConfigModal.style.display = 'block'; // Show node configuration modal
+            iconModal.style.display = 'none'; // Close the icon selection modal
+        }
+    });
+
+    // Close node configuration modal
+    document.getElementById("closeNodeConfigModalBtn").onclick = function() {
+    document.getElementById("nodeConfigModal").style.display = "none";
+}
+
+// Close Title Modal
+document.getElementById("closeTitleModalBtn").onclick = function() {
+    document.getElementById("titleModal").style.display = "none";
+}
+
+    // Save node configuration
+    saveNodeBtn.addEventListener('click', () => {
+        const ipAddress = ipAddressInput.value;
+        const tooltipDescription = tooltipInput.value;
+        const vulnerability = vulnerabilityInput.value;
+        const title = titleInput.value;
+
+        addNode(selectedIconClass, ipAddress, tooltipDescription, vulnerability, title);
+        ipAddressInput.value = ''; // Clear input field
+        tooltipInput.value = ''; // Clear input field
+        vulnerabilityInput.value = ''; // Clear input field
+        titleInput.value = ''; // Clear input field
+        nodeConfigModal.style.display = 'none'; // Close the modal
+    });
+
+    function addNode(iconClass, ipAddress, tooltipDescription, vulnerability, title) {
+    const node = document.createElement('div');
+    node.className = 'node';
+    node.id = `node-${nodeCount++}`;
+    node.style.left = '50px';
+    node.style.top = '50px';
+
+    const icon = document.createElement('i');
+    icon.className = iconClass;
+    node.appendChild(icon);
+
+    // Tooltip display
+    const tooltip = document.createElement('input');
+    tooltip.className = 'tooltip';
+    tooltip.type = 'text';
+    tooltip.value = tooltipDescription || 'Double-click to edit tooltip.';
+    node.appendChild(tooltip);
+
+    // Hidden input to store tooltip value
+    const tooltipInput = document.createElement('input');
+    tooltipInput.type = 'hidden';
+    tooltipInput.className = 'tooltip-input';
+    tooltipInput.value = tooltipDescription || '';
+
+    // Add IP and vulnerability in a row format
+    const infoRow = document.createElement('div');
+    infoRow.className = 'info-row';
+
+    if (ipAddress) {
+        const ipAddressElement = document.createElement('div');
+        ipAddressElement.className = 'ip-address';
+        ipAddressElement.textContent = `IP: ${ipAddress}`;
+        infoRow.appendChild(ipAddressElement);
+    }
+
+    if (vulnerability) {
+        const vulnerabilityElement = document.createElement('div');
+        vulnerabilityElement.className = 'vulnerability';
+        vulnerabilityElement.textContent = `Vuln: ${vulnerability}`;
+        infoRow.appendChild(vulnerabilityElement);
+    }
+
+    // Append the infoRow to the tooltip
+    tooltip.appendChild(infoRow);
+    node.appendChild(tooltip);
+
+    // Append the hidden tooltip input to the node
+    node.appendChild(tooltipInput);
+
+    // Create a container for details below the node
+    const detailsContainer = document.createElement('div');
+    detailsContainer.className = 'details-container';
+
+    if (title) {
+        const titleElement = document.createElement('div');
+        titleElement.className = 'node-title';
+        titleElement.textContent = title;
+        detailsContainer.appendChild(titleElement);
+    }
+
+    // Append the details container to the node
+    node.appendChild(detailsContainer);
+
+    canvas.appendChild(node);
+
+    // Make the node draggable
+    let offsetX, offsetY;
+
+    node.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+
+        const canvasRect = canvas.getBoundingClientRect();
+
+        offsetX = e.clientX - node.getBoundingClientRect().left;
+        offsetY = e.clientY - node.getBoundingClientRect().top;
+
+        node.style.cursor = 'grabbing';
+
+        const moveNode = (event) => {
+            let newLeft = event.clientX - offsetX - canvasRect.left;
+            let newTop = event.clientY - offsetY - canvasRect.top;
+
+            const minLeft = 0;
+            const minTop = 0;
+            const maxLeft = canvasRect.width - node.offsetWidth;
+            const maxTop = canvasRect.height - node.offsetHeight;
+
+            newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
+            newTop = Math.max(minTop, Math.min(newTop, maxTop));
+
+            node.style.left = `${newLeft}px`;
+            node.style.top = `${newTop}px`;
+
+            updateWires();
+        };
+
+        const stopMove = () => {
+            document.removeEventListener('mousemove', moveNode);
+            document.removeEventListener('mouseup', stopMove);
+            node.style.cursor = 'grab';
+        };
+
+        document.addEventListener('mousemove', moveNode);
+        document.addEventListener('mouseup', stopMove);
+    });
+
+    // Double-click to edit tooltip
+    node.addEventListener('dblclick', () => {
+        const newTooltip = prompt('Enter new tooltip:', tooltipInput.value);
+        if (newTooltip) {
+            tooltip.innerHTML = newTooltip;
+            tooltipInput.value = newTooltip; // Update hidden input value
+        }
+    });
+
+    // Animate adding the node
+    node.style.transform = 'scale(0.5)';
+    setTimeout(() => {
+        node.style.transform = 'scale(1)';
+    }, 0);
+}
+
+
+        function updateWires() {
+    svgCanvas.innerHTML = ''; // Clear existing wires
+    wires.forEach(wire => {
+        const startNode = document.getElementById(wire.start);
+        const endNode = document.getElementById(wire.end);
+        if (startNode && endNode) {
+            const startX = parseInt(startNode.style.left) + 25;
+            const startY = parseInt(startNode.style.top) + 25;
+            const endX = parseInt(endNode.style.left) + 25;
+            const endY = parseInt(endNode.style.top) + 25;
+
+            // Update wire positions in the wires array
+            wire.startX = startX;
+            wire.startY = startY;
+            wire.endX = endX;
+            wire.endY = endY;
+
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', startX);
+            line.setAttribute('y1', startY);
+            line.setAttribute('x2', endX);
+            line.setAttribute('y2', endY);
+            line.classList.add('wire');
+            svgCanvas.appendChild(line);
+        }
+    });
+}
+
+
+    clearBtn.addEventListener('click', () => {
+        while (canvas.firstChild) {
+            canvas.removeChild(canvas.firstChild);
+        }
+        wires = [];
+        svgCanvas.innerHTML = '';
+        nodeCount = 0;
+    });
+
+    addWireBtn.addEventListener('click', () => {
+        const nodes = document.querySelectorAll('.node');
+        if (nodes.length < 2) {
+            alert('Add at least two nodes to connect with a wire.');
+            return;
+        }
+    
+        if (wireStart === null) {
+            wireStart = null; // Reset wire start
+            nodes.forEach(node => {
+                node.style.cursor = 'pointer'; // Change cursor to pointer
+                node.onclick = () => {
+                    if (!wireStart) {
+                        wireStart = node; // Set the start node
+                        alert(`Selected ${wireStart.id} as the start node. Click another node to connect.`);
+                    } else {
+                        if (node !== wireStart) {
+                            const startX = parseInt(wireStart.style.left) + 25;
+                            const startY = parseInt(wireStart.style.top) + 25;
+                            const endX = parseInt(node.style.left) + 25;
+                            const endY = parseInt(node.style.top) + 25;
+    
+                            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                            line.setAttribute('x1', startX);
+                            line.setAttribute('y1', startY);
+                            line.setAttribute('x2', endX);
+                            line.setAttribute('y2', endY);
+                            line.classList.add('wire'); // Add wire class for animation
+                            line.setAttribute('data-start', wireStart.id); // Store start node id
+                            line.setAttribute('data-end', node.id); // Store end node id
+                            line.setAttribute('data-start-x', startX); // Store start x position
+                            line.setAttribute('data-start-y', startY); // Store start y position
+                            line.setAttribute('data-end-x', endX); // Store end x position
+                            line.setAttribute('data-end-y', endY); // Store end y position
+                            svgCanvas.appendChild(line);
+    
+                            // Store the wire connection along with positions
+                            wires.push({
+                                start: wireStart.id,
+                                end: node.id,
+                                startX: startX,
+                                startY: startY,
+                                endX: endX,
+                                endY: endY
+                            });
+                            wireStart = null; // Reset wire start
+                            nodes.forEach(node => {
+                                node.style.cursor = 'grab'; // Reset cursor for nodes
+                                node.onclick = null; // Reset click event for nodes
+                            });
+                        } else {
+                            alert('You cannot connect a node to itself.');
+                        }
+                    }
+                };
+            });
+        }
+    });
+    
+    document.getElementById('saveTitleBtn').addEventListener('click', () => {
+    const canvasTitle = document.getElementById('canvasTitleInput').value.trim();
+    const category = document.getElementById('canvasCategoryDropdown').value;
+    const difficulty = document.getElementById('canvasDifficultyDropdown').value;
+
+    if (!canvasTitle) {
+        alert('Please enter a title for the canvas.');
+        return;
+    }
+
+    const nodes = [];
+    const wiresData = [];
+
+    document.querySelectorAll('.node').forEach(node => {
+        const nodeData = {
+            id: node.id,
+            iconClass: node.querySelector('i')?.className || '',
+            left: node.style.left || '',
+            top: node.style.top || '',
+            ipAddress: node.querySelector('.ip-address')?.textContent || '',
+            vulnerability: node.querySelector('.vulnerability')?.textContent || '',
+            title: node.querySelector('.node-title')?.textContent || '',
+            tooltip: node.querySelector('.tooltip')?.value || '' // Retrieve tooltip value
+        };
+
+        if (nodeData.id && nodeData.title) {
+            nodes.push(nodeData);
+        }
+    });
+
+    wires.forEach(wire => {
+        const startNode = document.getElementById(wire.start);
+        const endNode = document.getElementById(wire.end);
+
+        if (startNode && endNode) {
+            wiresData.push({
+                start: wire.start,
+                end: wire.end,
+                startX: parseInt(startNode.style.left) + 25,
+                startY: parseInt(startNode.style.top) + 25,
+                endX: parseInt(endNode.style.left) + 25,
+                endY: parseInt(endNode.style.top) + 25,
+            });
+        }
+    });
+
+    const canvasStateDefend = {
+        title: canvasTitle,
+        category: category,
+        difficulty: difficulty,
+        nodes: nodes,
+        wires: wiresData
+    };
+
+    fetch('/save_canvas_state_defend/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: JSON.stringify(canvasStateDefend)
+    }).then(response => {
+        if (response.ok) {
+            alert('Canvas state saved successfully!');
+            document.getElementById('titleModal').style.display = 'none';
+        } else {
+            alert('Failed to save canvas state.');
+        }
+    }).catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while saving the canvas state.');
+    });
+});
+    
+
+
+    // Function to get the CSRF token (used by Django for security)
+    function getCSRFToken() {
+        const name = 'csrftoken';
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    
+    demoBtn.addEventListener('click', () => {
+    const nodes = document.querySelectorAll('.node');
+    if (nodes.length < 2) {
+        alert('Add at least two nodes to simulate packet transfer.');
+        return;
+    }
+
+    let currentWireIndex = 0;
+
+    const animatePacketThroughWires = () => {
+        const wire = wires[currentWireIndex];
+        const startNode = document.getElementById(wire.start);
+        const endNode = document.getElementById(wire.end);
+        const startX = parseInt(startNode.style.left) + 25;
+        const startY = parseInt(startNode.style.top) + 25;
+        const endX = parseInt(endNode.style.left) + 25;
+        const endY = parseInt(endNode.style.top) + 25;
+
+        // Position the packet at the start node
+        packet.style.left = `${startX}px`;
+        packet.style.top = `${startY}px`;
+        packet.style.display = 'block';
+
+        // Show tooltip at the start node
+        const tooltip = startNode.querySelector('.tooltip');
+        tooltip.style.visibility = 'visible';
+        tooltip.style.opacity = 1;
+
+        // Change the border color of the start node
+        startNode.style.borderColor = 'red'; // Change this color based on your logic
+
+        // Pause at the start node for 2 seconds
+        setTimeout(() => {
+            // Animate the packet movement to the end node
+            const distanceX = endX - startX;
+            const distanceY = endY - startY;
+            const duration = 1000; // 1 second
+            const startTime = performance.now();
+
+            function animatePacket(timestamp) {
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / duration, 1); // Normalize progress
+
+                const easing = (t) => t * (2 - t); // Ease out effect
+                const easedProgress = easing(progress);
+
+                packet.style.left = `${startX + distanceX * easedProgress}px`;
+                packet.style.top = `${startY + distanceY * easedProgress}px`;
+
+                if (progress < 1) {
+                    requestAnimationFrame(animatePacket);
+                } else {
+                    // Hide the packet after animation
+                    packet.style.display = 'none';
+
+                    // Hide the tooltip for the current start node
+                    tooltip.style.visibility = 'hidden';
+                    tooltip.style.opacity = 0;
+
+                    // Show tooltip at the end node
+                    const endTooltip = endNode.querySelector('.tooltip');
+                    endTooltip.style.visibility = 'visible';
+                    endTooltip.style.opacity = 1;
+
+                    // Change the border color of the end node
+                    endNode.style.borderColor = 'red'; // Change this color based on your logic
+
+                    // Pause at the end node for 2 seconds
+                    setTimeout(() => {
+                        // Hide the tooltip after reaching the end node
+                        endTooltip.style.visibility = 'hidden';
+                        endTooltip.style.opacity = 0;
+
+                        // Reset the border color back to original (green) after a delay
+                        endNode.style.borderColor = ''; // Reset to original
+                        startNode.style.borderColor = ''; // Reset to original
+
+                        currentWireIndex++; // Move to the next wire
+
+                        // Check if there are more wires to animate
+                        if (currentWireIndex < wires.length) {
+                            animatePacketThroughWires(); // Animate the next wire
+                        }
+                    }, 2000); // Pause for 2 seconds at the end node
+                }
+            }
+
+            requestAnimationFrame(animatePacket);
+        }, 2000); // Pause for 2 seconds before moving to the end node
+    };
+
+    // Start animation at the initial node
+    animatePacketThroughWires();
+});
+
+</script>
+</html>

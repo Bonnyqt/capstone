@@ -37,7 +37,7 @@
                         <h6 class="m-0 font-weight-bold text-primary">EMAIL USERS</h6>
                     </div>
                     <div class="card-body">
-                        <form method="post" action="{% url 'send_email' %}">
+                        <form method="post" action="{% url 'send_email' %}" id="emailForm">
                             {% csrf_token %}
                             <div class="mb-3">
                                 <label for="recipients" class="form-label">Recipients</label>
@@ -45,7 +45,7 @@
                                     <option value="">Select a recipient</option>
                                     <option value="all">Select All</option>
                                     {% for user in users %}
-                                        <option value="{{ user.email }}">{{ user.username }}</option>
+                                        <option value="{{ user.email }}" {% if selected_recipient == user.email %}selected{% endif %}>{{ user.username }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -60,6 +60,8 @@
                             </div>
                             <button type="submit" class="btn btn-primary">Send Email</button>
                         </form>
+                        
+                        
                         
                     </div>
                     

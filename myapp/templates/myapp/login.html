@@ -416,7 +416,7 @@ button:hover {
           <div class="form-content">
           <!-- Login Form -->
 <div class="login-form">
-  <div class="title">LOGIN</div>
+  <div class="title" style="fon">LOGIN</div>
   <form action="{% url 'login' %}" method="post">
       {% csrf_token %}
       <input type="hidden" name="login" value="True">
@@ -453,6 +453,7 @@ button:hover {
             <i class="fas fa-envelope"></i>
             <input type="email" name="email" placeholder="Enter your T.I.P. email" required>
         </div>
+      
         <div class="input-box">
             <i class="fas fa-lock"></i>
             <input type="password" name="password" placeholder="Enter your password" required>

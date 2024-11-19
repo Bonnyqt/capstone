@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERCLASH | Challenges</title>
+</head>
+<body>
+    {% include "myapp/professor/professor_sidebar.html" %}
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            {% if challenges %}
+                <!-- Loop through challenges if there are any -->
+                {% for challenge in challenges %}
+                    <div class="col-xl-4 col-lg-4 col-md-6 mb-4"> <!-- Adjust the column size for responsiveness -->
+                        <div class="card shadow mb-4">
+                            <!-- Card Header - Dropdown -->
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Challenge: {{ challenge.title }}</h6>
+                                <div class="dropdown no-arrow">
+                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                        aria-labelledby="dropdownMenuLink">
+                                        <div class="dropdown-header">Action</div>
+                                        <a class="dropdown-item" href="">Edit Challenge</a>
+                                        <a class="dropdown-item" href="#" style="color:rgb(226, 70, 70)" onclick="deleteCanvasState({{ challenge.id }})">Remove Challenge</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Card Body -->
+                            <div class="card-body">
+                                <div class="chart-area">
+                                    <canvas id="myAreaChart-{{ challenge.id }}"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <!-- Display this message if there are no challenges -->
+                <div class="col-12">
+                    <div class="alert alert-info" role="alert">
+                        No Challenges Published. To publish a challenge, <a href="{% url 'professor_add' %}">click here!</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    
+
+</body>
+<script>
+    function deleteCanvasState(challengeId) {
+        if (confirm("Are you sure you want to remove this challenge?")) {
+            window.location.href = `/remove_challenge/${challengeId}/`;  // Redirect to the delete URL
+        }
+    }
+</script>
+</html>

@@ -31,17 +31,18 @@
                         <h6 class="m-0 font-weight-bold text-primary">{{ feedback.user.first_name }} | {{ feedback.user.email }}</h6>
                         <div class="dropdown no-arrow">
                             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                aria-labelledby="dropdownMenuLink">
-                                <div class="dropdown-header">Dropdown Header:</div>
-                                <a class="dropdown-item" href="#">Send Email</a>
-                                 
+                                 aria-labelledby="dropdownMenuLink">
+                                <div class="dropdown-header">Action:</div>
+                                <a class="dropdown-item" href="#" data-email="{{ feedback.user.email }}" onclick="redirectToEmailForm(this)">Send Email</a>
+
                             </div>
                         </div>
                     </div>
+                    
                     <!-- Card Body -->
                     <div class="card-body">
                         {{ feedback.feedback }}
@@ -56,6 +57,37 @@
     
 
 </body>
+
+<script>
+    function redirectToEmailForm(element) {
+    var recipientEmail = element.getAttribute('data-email');
+    
+    // Redirect to the email form page with the recipient's email as a query parameter
+    var emailFormUrl = "{% url 'email' %}?recipient=" + encodeURIComponent(recipientEmail);
+    window.location.href = emailFormUrl;
+}
+    function setRecipientEmail(element) {
+    var recipientEmail = element.getAttribute('data-email');
+    var recipientsSelect = document.getElementById('recipients');
+    
+    // Clear the previously selected recipients
+    for (var i = 0; i < recipientsSelect.options.length; i++) {
+        recipientsSelect.options[i].selected = false;
+    }
+
+    // Select the new recipient
+    for (var i = 0; i < recipientsSelect.options.length; i++) {
+        if (recipientsSelect.options[i].value === recipientEmail) {
+            recipientsSelect.options[i].selected = true;
+            break;
+        }
+    }
+
+    // Optional: scroll to the form or trigger modal popup
+    // document.getElementById("emailForm").scrollIntoView(); 
+}
+
+</script>
 <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 

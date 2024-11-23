@@ -16,7 +16,7 @@ SECRET_KEY = 'django-insecure-n^r_qkj2tjc$fz439l#xmqy2ux(3*^i12ngib6*k9=)e5it36h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*', '0.0.0.0  ']
+ALLOWED_HOSTS = ['https://cyberclash.onrender.com', 'https://cyberclash.onrender.com']
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',

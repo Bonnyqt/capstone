@@ -1264,6 +1264,7 @@ def professor_view_challenges(request):
     
 
 
+
 import threading
 from django.utils.timezone import now
 from django.contrib.auth.models import User
@@ -1335,7 +1336,7 @@ def login(request):
                 'link': link,
             })
             plain_message = strip_tags(message)
-            send_mail(subject, plain_message, 'your-email@gmail.com', [email], html_message=message)
+            send_mail(subject, plain_message, 'cyberclash.capstone@gmail.com', [email], html_message=message)
 
             return render(request, 'myapp/login.html', {'alert': 'Signup successful! Please check your email to activate your account'})
 
@@ -1366,7 +1367,7 @@ def activate(request, uidb64, token):
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
-        return redirect('login')
+        return redirect('loginPage')
     else:
         return render(request, 'myapp/activation_invalid.html')
 

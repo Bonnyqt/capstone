@@ -1296,7 +1296,7 @@ def login(request):
             else:
                 return render(request, 'myapp/login.html', {'alert': 'Invalid email or password'})
 
-        elif 'signup' in request.POST:
+        elif '' in request.POST:
             # Handle signup
             name = request.POST.get('name')
             email = request.POST.get('email')
@@ -1328,9 +1328,8 @@ def login(request):
             # Generate activation link
             token = account_activation_token.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            domain = get_current_site(request).domain  # Dynamically get the current domain
             protocol = 'https' if request.is_secure() else 'http'
-            link = f'{protocol}://{domain}/activate/{uid}/{token}/'
+            link = f'https://capstone-896j.onrender.com/activate/{uid}/{token}/'
 
             # Send email
             subject = 'Activate Your Account'

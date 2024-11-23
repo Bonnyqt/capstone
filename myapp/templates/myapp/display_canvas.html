@@ -857,7 +857,7 @@ function autoSubmitChallenge() {
     setTimeout(() => {
         const distanceX = endX - startX;
         const distanceY = endY - startY;
-        const duration = 100; // Duration of animation
+        const duration = 3000; // Duration of animation
         const startTime = performance.now();
 
         function animatePacket(timestamp) {
@@ -910,12 +910,12 @@ function autoSubmitChallenge() {
                     } else {
                         animatePacketThroughWires(); // Continue animation for the next wire
                     }
-                }, 100);
+                }, 3000);
             }
         }
 
         requestAnimationFrame(animatePacket);
-    }, 100);
+    }, 3000);
 };
 
     // Calculate multiplier based on remaining time

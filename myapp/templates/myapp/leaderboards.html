@@ -462,7 +462,7 @@
                 <div class="bronze-circle">3rd</div>
                 {% endif %}
                 <br>
-                <img src="{{ user_score.profile_image_url }}" alt="Profile Image" width="110" height="110" style="object-fit: cover; border-radius: 50%;">
+                <img src="{% static 'img/default.jpg' %}" alt="Profile Image" width="110" height="110" style="object-fit: cover; border-radius: 50%;">
                 <h2>{{ user_score.user__first_name }}</h2>
                 <span class="score" style="color: white;">Score: {{ user_score.total_score }}</span><br>
                 <span class="rank" style="color: white; font-size: 23px;"> <strong>{{ user_score.rank }}</strong></span>
@@ -486,7 +486,7 @@
                     {% for user_score in user_scores %}
                     <tr class="clickable-row" onclick="location.href='{% url 'profile_details' user_score.user__id %}'">
                         <td class="rank">
-                            <img src="{{ user_score.profile_image_url }}" width="110" height="110" style="object-fit: cover;">
+                            <img src="{% static 'img/default.jpg' %}" width="110" height="110" style="object-fit: cover;">
                             {{ user_score.rank_no }}
                             <span class="pro">{% if user_score.rank == "PRO" %}PRO{% endif %}</span>
                         </td>

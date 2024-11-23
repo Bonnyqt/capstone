@@ -558,12 +558,7 @@
 							<div style="position: relative; display: inline-block;">
 								<div style="position: relative; width: 110px; height: 110px;">
 									
-									{% if user.userprofile.profile_image %}
-    <img src="{{ user.userprofile.profile_image.url }}" alt="{{ user.username }}'s profile image" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
-{% else %}
-    <img src="{{ MEDIA_URL }}profile_images/default_QBRSs97.jpg" alt="Default profile image" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
-{% endif %}
-
+									<img src="{% static 'img/default.jpg' %}" alt="Admin" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
 								</div>
 							</div>
 						</label>

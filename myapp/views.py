@@ -1323,7 +1323,7 @@ def login(request):
             # Generate activation link
             token = account_activation_token.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            domain = get_current_site(request).domain if request else 'capstone-896j.onrender.com'
+            domain ='capstone-896j.onrender.com'
             protocol = 'https' if request.is_secure() else 'http'
             link = f'{protocol}://{domain}/activate/{uid}/{token}/'
 

@@ -18,7 +18,7 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOST").split(" ")
 #DEBUG = True
 #ALLOWED_HOSTS = ['*','127.0.0.1:8000']
 CSRF_TRUSTED_ORIGINS = [
-    "https://capstone-896j.onrender.com",  # Add your Render domain
+    "https://cyberclash.onrender.com",  # Add your Render domain
 ]
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',

@@ -1365,7 +1365,7 @@ def login(request):
             # Generate activation link
             token = account_activation_token.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            domain ='capstone-896j.onrender.com'
+            domain ='cyberclash.onrender.com'
             protocol = 'https' if request.is_secure() else 'http'
             link = f'{protocol}://{domain}/activate/{uid}/{token}/'
 

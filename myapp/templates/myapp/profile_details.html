@@ -1,0 +1,816 @@
+{% load static %}
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<style>
+    
+
+
+
+/* User Cards */
+.user-box {
+    width: 110px;
+    margin: auto;
+    margin-bottom: 20px;
+    
+}
+
+.user-box img {
+    width: 100%;
+    border-radius: 50%;
+	padding: 3px;
+	background: #fff;
+	-webkit-box-shadow: 0px 5px 25px 0px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0px 5px 25px 0px rgba(0, 0, 0, 0.2);
+    -ms-box-shadow: 0px 5px 25px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 5px 25px 0px rgba(0, 0, 0, 0.2);
+}
+
+.profile-card-2 .card {
+	position:relative;
+}
+
+.profile-card-2 .card .card-body {
+	z-index:1;
+}
+
+.profile-card-2 .card::before {
+    content: "";
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    left: 0px;
+	border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+    height: 112px;
+    background-color: #e6e6e6;
+}
+
+.profile-card-2 .card.profile-primary::before {
+	background-color: #008cff;
+}
+.profile-card-2 .card.profile-success::before {
+	background-color: #15ca20;
+}
+.profile-card-2 .card.profile-danger::before {
+	background-color: #fd3550;
+}
+.profile-card-2 .card.profile-warning::before {
+	background-color: #ff9700;
+}
+.profile-card-2 .user-box {
+	margin-top: 30px;
+}
+
+.profile-card-3 .user-fullimage {
+	position:relative;
+}
+
+.profile-card-3 .user-fullimage .details{
+	position: absolute;
+    bottom: 0;
+    left: 0px;
+	width:100%;
+}
+
+.profile-card-4 .user-box {
+    width: 110px;
+    margin: auto;
+    margin-bottom: 10px;
+    margin-top: 15px;
+}
+
+.profile-card-4 .list-icon {
+    display: table-cell;
+    font-size: 30px;
+    padding-right: 20px;
+    vertical-align: middle;
+    color: #223035;
+}
+
+.profile-card-4 .list-details {
+	display: table-cell;
+	vertical-align: middle;
+	font-weight: 600;
+    color: #223035;
+    font-size: 15px;
+    line-height: 15px;
+}
+
+.profile-card-4 .list-details small{
+	display: table-cell;
+	vertical-align: middle;
+	font-size: 12px;
+	font-weight: 400;
+    color: #808080;
+}
+
+/*Nav Tabs & Pills */
+.nav-tabs .nav-link {
+    color: #223035;
+	font-size: 12px;
+    text-align: center;
+	letter-spacing: 1px;
+    font-weight: 600;
+	margin: 2px;
+    margin-bottom: 0;
+	padding: 12px 20px;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+	
+}
+.nav-tabs .nav-link:hover{
+    border: 1px solid transparent;
+}
+.nav-tabs .nav-link i {
+    margin-right: 2px;
+	font-weight: 600;
+}
+
+.top-icon.nav-tabs .nav-link i{
+	margin: 0px;
+	font-weight: 500;
+	display: block;
+    font-size: 20px;
+    padding: 5px 0;
+}
+
+.nav-tabs-primary.nav-tabs{
+	border-bottom: 1px solid #008cff;
+}
+
+.nav-tabs-primary .nav-link.active, .nav-tabs-primary .nav-item.show>.nav-link {
+    color: #008cff;
+    background-color: #fff;
+    border-color: #008cff #008cff #fff;
+    border-top: 3px solid #008cff;
+}
+
+.nav-tabs-success.nav-tabs{
+	border-bottom: 1px solid #15ca20;
+}
+
+.nav-tabs-success .nav-link.active, .nav-tabs-success .nav-item.show>.nav-link {
+    color: #15ca20;
+    background-color: #fff;
+    border-color: #15ca20 #15ca20 #fff;
+    border-top: 3px solid #15ca20;
+}
+
+.nav-tabs-info.nav-tabs{
+	border-bottom: 1px solid #0dceec;
+}
+
+.nav-tabs-info .nav-link.active, .nav-tabs-info .nav-item.show>.nav-link {
+    color: #0dceec;
+    background-color: #fff;
+    border-color: #0dceec #0dceec #fff;
+    border-top: 3px solid #0dceec;
+}
+
+.nav-tabs-danger.nav-tabs{
+	border-bottom: 1px solid #fd3550;
+}
+
+.nav-tabs-danger .nav-link.active, .nav-tabs-danger .nav-item.show>.nav-link {
+    color: #fd3550;
+    background-color: #fff;
+    border-color: #fd3550 #fd3550 #fff;
+    border-top: 3px solid #fd3550;
+}
+
+.nav-tabs-warning.nav-tabs{
+	border-bottom: 1px solid #ff9700;
+}
+
+.nav-tabs-warning .nav-link.active, .nav-tabs-warning .nav-item.show>.nav-link {
+    color: #ff9700;
+    background-color: #fff;
+    border-color: #ff9700 #ff9700 #fff;
+    border-top: 3px solid #ff9700;
+}
+
+.nav-tabs-dark.nav-tabs{
+	border-bottom: 1px solid #223035;
+}
+
+.nav-tabs-dark .nav-link.active, .nav-tabs-dark .nav-item.show>.nav-link {
+    color: #223035;
+    background-color: #fff;
+    border-color: #223035 #223035 #fff;
+    border-top: 3px solid #223035;
+}
+
+.nav-tabs-secondary.nav-tabs{
+	border-bottom: 1px solid #75808a;
+}
+.nav-tabs-secondary .nav-link.active, .nav-tabs-secondary .nav-item.show>.nav-link {
+    color: #75808a;
+    background-color: #fff;
+    border-color: #75808a #75808a #fff;
+    border-top: 3px solid #75808a;
+}
+
+.tabs-vertical .nav-tabs .nav-link {
+    color: #223035;
+    font-size: 12px;
+    text-align: center;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin: 2px;
+    margin-right: -1px;
+    padding: 12px 1px;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    border-radius: 0;
+    border-top-left-radius: .25rem;
+    border-bottom-left-radius: .25rem;
+}
+
+.tabs-vertical .nav-tabs{
+	border:0;
+	border-right: 1px solid #dee2e6;
+}
+
+.tabs-vertical .nav-tabs .nav-item.show .nav-link, .tabs-vertical .nav-tabs .nav-link.active {
+    color: #495057;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+    border-bottom: 1px solid #dee2e6;
+    border-right: 0;
+    border-left: 1px solid #dee2e6;
+}
+
+.tabs-vertical-primary.tabs-vertical .nav-tabs{
+	border:0;
+	border-right: 1px solid #008cff;
+}
+
+.tabs-vertical-primary.tabs-vertical .nav-tabs .nav-item.show .nav-link, .tabs-vertical-primary.tabs-vertical .nav-tabs .nav-link.active {
+    color: #008cff;
+    background-color: #fff;
+    border-color: #008cff #008cff #fff;
+    border-bottom: 1px solid #008cff;
+    border-right: 0;
+    border-left: 3px solid #008cff;
+}
+
+.tabs-vertical-success.tabs-vertical .nav-tabs{
+	border:0;
+	border-right: 1px solid #15ca20;
+}
+
+.tabs-vertical-success.tabs-vertical .nav-tabs .nav-item.show .nav-link, .tabs-vertical-success.tabs-vertical .nav-tabs .nav-link.active {
+    color: #15ca20;
+    background-color: #fff;
+    border-color: #15ca20 #15ca20 #fff;
+    border-bottom: 1px solid #15ca20;
+    border-right: 0;
+    border-left: 3px solid #15ca20;
+}
+
+.tabs-vertical-info.tabs-vertical .nav-tabs{
+	border:0;
+	border-right: 1px solid #0dceec;
+}
+
+.tabs-vertical-info.tabs-vertical .nav-tabs .nav-item.show .nav-link, .tabs-vertical-info.tabs-vertical .nav-tabs .nav-link.active {
+    color: #0dceec;
+    background-color: #fff;
+    border-color: #0dceec #0dceec #fff;
+    border-bottom: 1px solid #0dceec;
+    border-right: 0;
+    border-left: 3px solid #0dceec;
+}
+
+.tabs-vertical-danger.tabs-vertical .nav-tabs{
+	border:0;
+	border-right: 1px solid #fd3550;
+}
+
+.tabs-vertical-danger.tabs-vertical .nav-tabs .nav-item.show .nav-link, .tabs-vertical-danger.tabs-vertical .nav-tabs .nav-link.active {
+    color: #fd3550;
+    background-color: #fff;
+    border-color: #fd3550 #fd3550 #fff;
+    border-bottom: 1px solid #fd3550;
+    border-right: 0;
+    border-left: 3px solid #fd3550;
+}
+
+.tabs-vertical-warning.tabs-vertical .nav-tabs{
+	border:0;
+	border-right: 1px solid #ff9700;
+}
+
+.tabs-vertical-warning.tabs-vertical .nav-tabs .nav-item.show .nav-link, .tabs-vertical-warning.tabs-vertical .nav-tabs .nav-link.active {
+    color: #ff9700;
+    background-color: #fff;
+    border-color: #ff9700 #ff9700 #fff;
+    border-bottom: 1px solid #ff9700;
+    border-right: 0;
+    border-left: 3px solid #ff9700;
+}
+
+.tabs-vertical-dark.tabs-vertical .nav-tabs{
+	border:0;
+	border-right: 1px solid #223035;
+}
+
+.tabs-vertical-dark.tabs-vertical .nav-tabs .nav-item.show .nav-link, .tabs-vertical-dark.tabs-vertical .nav-tabs .nav-link.active {
+    color: #223035;
+    background-color: #fff;
+    border-color: #223035 #223035 #fff;
+    border-bottom: 1px solid #223035;
+    border-right: 0;
+    border-left: 3px solid #223035;
+}
+
+.tabs-vertical-secondary.tabs-vertical .nav-tabs{
+	border:0;
+	border-right: 1px solid #75808a;
+}
+
+.tabs-vertical-secondary.tabs-vertical .nav-tabs .nav-item.show .nav-link, .tabs-vertical-secondary.tabs-vertical .nav-tabs .nav-link.active {
+    color: #75808a;
+    background-color: #fff;
+    border-color: #75808a #75808a #fff;
+    border-bottom: 1px solid #75808a;
+    border-right: 0;
+    border-left: 3px solid #75808a;
+}
+
+.nav-pills .nav-link {
+    border-radius: .25rem;
+    color: #223035;
+    font-size: 12px;
+    text-align: center;
+	letter-spacing: 1px;
+    font-weight: 600;
+    text-transform: uppercase;
+	margin: 3px;
+    padding: 12px 20px;
+	-webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease; 
+
+}
+
+.nav-pills .nav-link:hover {
+    background-color:#f4f5fa;
+}
+
+.nav-pills .nav-link i{
+	margin-right:2px;
+	font-weight: 600;
+}
+
+.top-icon.nav-pills .nav-link i{
+	margin: 0px;
+	font-weight: 500;
+	display: block;
+    font-size: 20px;
+    padding: 5px 0;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+    color: #fff;
+    background-color: #008cff;
+    box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(0, 140, 255, 0.5);
+}
+
+.nav-pills-success .nav-link.active, .nav-pills-success .show>.nav-link {
+    color: #fff;
+    background-color: #15ca20;
+    box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(21, 202, 32, .5);
+}
+
+.nav-pills-info .nav-link.active, .nav-pills-info .show>.nav-link {
+    color: #fff;
+    background-color: #0dceec;
+    box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(13, 206, 236, 0.5);
+}
+
+.nav-pills-danger .nav-link.active, .nav-pills-danger .show>.nav-link{
+    color: #fff;
+    background-color: #fd3550;
+    box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(253, 53, 80, .5);
+}
+
+.nav-pills-warning .nav-link.active, .nav-pills-warning .show>.nav-link {
+    color: #fff;
+    background-color: #ff9700;
+    box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(255, 151, 0, .5);
+}
+
+.nav-pills-dark .nav-link.active, .nav-pills-dark .show>.nav-link {
+    color: #fff;
+    background-color: #223035;
+    box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(34, 48, 53, .5);
+}
+
+.nav-pills-secondary .nav-link.active, .nav-pills-secondary .show>.nav-link {
+    color: #fff;
+    background-color: #75808a;
+    box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(117, 128, 138, .5);
+}
+.card .tab-content{
+	padding: 1rem 0 0 0;
+}
+
+.z-depth-3 {
+    -webkit-box-shadow: 0 11px 7px 0 rgba(0,0,0,0.19),0 13px 25px 0 rgba(0,0,0,0.3);
+    box-shadow: 0 11px 7px 0 rgba(0,0,0,0.19),0 13px 25px 0 rgba(0,0,0,0.3);
+}
+.horizontal-scroll {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px 0; /* Optional padding for aesthetics */
+}
+
+.horizontal-scroll .d-flex {
+    display: inline-flex; /* Prevents wrapping */
+    min-width: 300px; /* Optional: Ensures bars have a minimum size */
+}
+</style>
+
+
+
+
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/counterup/counterup.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>CYBERCLASH | {{ user_profile.user.first_name }}'s Fort</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="{% static 'img/logo.png' %}" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Libraries Stylesheet -->
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    
+    <!-- Template Stylesheet -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner"></div>
+    </div>
+    <!-- Spinner End -->
+
+    <div id="snackbar" style="z-index: 9999;">Please Log In First</div>
+
+
+    <!-- Navbar Start -->
+    {% include "myapp/header.html" %}
+        <div class="container-fluid bg-primary py-5 bg-header">
+            <div class="row py-5">
+                <div class="col-12 pt-lg-5 mt-lg-5 text-center">
+                    <h1 class="display-4 text-white animated zoomIn">{{ user_profile.user.first_name }}'s Fort</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+
+
+	<div class="container" style="margin-top: 30px;">
+		<div class="row">
+			
+				<div class="col-lg-4">
+				   <div class="profile-card-4 z-depth-3">
+					
+					<div class="card">
+					   
+					  <div class="card-body bg-primary rounded-top">
+					  
+					   <div class="user-box">
+						
+							
+							<label for="profile_image">
+								<div style="position: relative; display: inline-block;">
+									<div style="position: relative; width: 110px; height: 110px;">
+										<img src="{{ user.userprofile.profile_image.url }}" alt="Admin" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
+									</div>
+								</div>
+							</label>
+						
+					  </div>
+					  <h5 class="mb-1 text-white">{{ user_profile.user.first_name }}</h5>
+					  <h6 class="text-light">{{ user_profile.section }} | {{ user_profile.program }}</h6>
+					 </div>
+					  <div class="card-body">
+						<ul class="list-group shadow-none">
+						<li class="list-group-item">
+						  <div class="list-icon" >
+							<i class="bi bi-star" style="color:#06152c ;"></i>	
+						  </div>
+						  <div class="list-details">
+							<span>{{ rank }}</span>
+							<small>Rank</small>
+						  </div>
+						</li>
+						<li class="list-group-item">
+						  <div class="list-icon">
+							<i class="bi bi-peace-fill" style="color:#06152c ;"></i>
+						  </div>
+						  <div class="list-details">
+	
+							<span>{{ top_category}}</span>
+							<small>Top Categories Answered</small>
+						  </div>
+						</li>
+						<li class="list-group-item">
+						  <div class="list-icon">
+							<i class="fa fa-globe"></i>
+						  </div>
+						  <div class="list-details">
+							<span>www.example.com</span>
+							<small>Top</small>
+						  </div>
+						</li>
+						</ul>
+						<div class="row text-center mt-4">
+						  <div class="col p-2">
+						   <h4 class="mb-1 line-height-5">{{ total_score }}</h4>
+							<small class="mb-0 font-weight-bold">Score</small>
+						   </div>
+							<div class="col p-2">
+							  <h4 class="mb-1 line-height-5">{{ rankno }}</h4>
+							 <small class="mb-0 font-weight-bold">Rank No.</small>
+							</div>
+							<div class="col p-2">
+							 <h4 class="mb-1 line-height-5">{{ performance_percent }}%</h4>
+							 <small class="mb-0 font-weight-bold">Performance</small>
+							</div>
+						 </div>
+					   </div>
+					   <div class="card-footer text-center">
+						 <a href="javascript:void()" class="btn-social btn-facebook waves-effect waves-light m-1"><i class="fa fa-facebook"></i></a>
+						 <a href="javascript:void()" class="btn-social btn-google-plus waves-effect waves-light m-1"><i class="fa fa-google-plus"></i></a>
+						 <a href="javascript:void()" class="list-inline-item btn-social btn-behance waves-effect waves-light"><i class="fa fa-behance"></i></a>
+						 <a href="javascript:void()" class="list-inline-item btn-social btn-dribbble waves-effect waves-light"><i class="fa fa-dribbble"></i></a>
+					   </div>
+					 </div>
+				   </div>
+				</div>
+				<div class="col-lg-8">
+				   <div class="card z-depth-3">
+					<div class="card-body">
+					<ul class="nav nav-pills nav-pills-primary nav-justified">
+						<li class="nav-item">
+							<a href="javascript:void();" data-target="#profile" data-toggle="pill" class="nav-link active show"><i class="icon-user"></i> <span class="hidden-xs">Profile</span></a>
+						</li>
+						<li class="nav-item">
+							<a href="javascript:void();" data-target="#messages" data-toggle="pill" class="nav-link"><i class="icon-envelope-open"></i> <span class="hidden-xs">Analytics</span></a>
+						</li>
+						
+					</ul>
+					<hr>
+					<div class="tab-content p-3">
+						
+						<div class="tab-pane active show" id="profile">
+							<h5 class="mb-3">User Profile</h5>
+							<div class="row">
+								<div class="col-md-6">
+									<h6>Username</h6>
+									<p>
+										{{ user_profile.user.first_name }}
+									</p>
+									<h6>Email</h6>
+									<p>
+										{{ user_profile.user.email }}
+									</p>
+								</div>
+								<hr>
+								<div class="col-md-12">
+									<h5 class="mt-2 mb-3"><span class="fa fa-clock-o ion-clock float-right"></span> Recent Activity</h5>
+									<table class="table table-hover table-striped">
+										<tbody>
+											{% for activity in recent_activities %}
+												<tr>
+													<td>
+														<strong>{{ user_profile.user.first_name }}</strong> answered the challenge <strong>`{{ activity.canvas_state_title }}`</strong> in <strong>{{ activity.category }}</strong> category. 
+													</td>
+												</tr>
+											{% empty %}
+												<tr>
+													<td>No recent activity found.</td>
+												</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+								
+								</div>
+								
+							</div>
+							<!--/row-->
+						</div>
+						<div class="tab-pane" id="messages">
+							<h5 class="mb-3" style="text-align: center; font-size: 30px; margin-bottom: 40px;">Student's Performance Analytics</h5>
+							<div id="carouselExampleDark" class="carousel carousel-dark slide">
+								<div class="carousel-inner">
+								  <div class="carousel-item active" data-bs-interval="10000">
+									<div class="row">
+										<div class="col-sm-12">
+											<div class="card">
+												<div class="card-body">
+													<h5 class="d-flex align-items-center mb-3">Category Submissions Performance</h5>
+													<div class="horizontal-scroll">
+														{% if performance_data %}
+															{% for data in performance_data %}
+																<p>{{ data.category }}</p>
+																<div class="d-flex mb-3">
+																	{% if data.correct_ratio > 0 %}
+																		<div class="flex-fill tooltip-bar"
+																			 style="background-color: rgb(25, 110, 190); height: 5px; width: {{ data.correct_ratio }}%;"
+																			 data-tooltip="Correct: {{ data.correct_ratio }}%">
+																		</div>
+																	{% endif %}
+																	{% if data.incorrect_ratio > 0 %}
+																		<div class="flex-fill tooltip-bar"
+																			 style="background-color: rgb(238, 74, 74); height: 5px; width: {{ data.incorrect_ratio }}%;"
+																			 data-tooltip="Incorrect: {{ data.incorrect_ratio }}%">
+																		</div>
+																	{% endif %}
+																</div>
+															{% endfor %}
+														{% else %}
+															<p>No data available. This user is either inactive or has not answered any challenges. </p>
+														{% endif %}
+													</div>
+													<h5 class="mb-3">Detailed Analysis</h5>
+													{% if analysis and analysis.split_graph %}
+														<ul>
+															{% for line in analysis.split_graph.splitlines %}
+																{% if line %}
+																	<li>{{ line }}</li> <!-- Display each line of the analysis as a list item -->
+																{% endif %}
+															{% endfor %}
+														</ul>
+													{% else %}
+														<p>No analysis available for the area chart.</p>
+													{% endif %}
+												</div>
+											</div>
+										</div>
+									</div>
+								  </div>
+								  <div class="carousel-item" data-bs-interval="2000">
+									<div class="col-sm-12">
+										<div class="card">
+											
+											<div class="card-body">
+												<h5 class="d-flex align-items-center mb-3">Top Categories Answered</h5>
+												
+												<div style="overflow-x: auto; white-space: nowrap;">
+													<canvas id="myPieChart"></canvas>
+												</div>
+												
+												<script>
+													// Get category labels and counts from Django context
+													var categories = {{ category_labels|safe }};
+													var categoryCounts = {{ category_counts|safe }};
+													
+													var ctx = document.getElementById("myPieChart");
+													var myPieChart = new Chart(ctx, {
+														type: 'doughnut',
+														data: {
+															labels: categories,  // Dynamic category labels
+															datasets: [{
+																data: categoryCounts,  // Count of categories
+																backgroundColor: ['#1cc88a', '#36b9cc', '#4e73df', '#f6c23e', '#e74a3b'],  // Add more colors if needed
+																hoverBackgroundColor: ['#17a673', '#2c9faf', '#375fa1', '#e4b634', '#b32424'],
+																hoverBorderColor: "rgba(234, 236, 244, 1)",
+															}],
+														},
+														options: {
+															maintainAspectRatio: false,
+															tooltips: {
+																backgroundColor: "rgb(255,255,255)",
+																bodyFontColor: "#858796",
+																borderColor: '#dddfeb',
+																borderWidth: 1,
+																xPadding: 15,
+																yPadding: 15,
+																displayColors: false,
+																caretPadding: 10,
+															},
+															legend: {
+																display: true,
+																position: 'bottom',
+																labels: {
+																	fontColor: '#858796',
+																	boxWidth: 20,
+																	padding: 15,
+																},
+															},
+															cutoutPercentage: 80,
+														},
+													});
+												</script>
+											</div>
+											<h5 class="mb-3 ml-3">Detailed Analysis</h5>
+													{% if analysis and analysis.pie_graph %}
+														<ul>
+															{% for line in analysis.pie_graph.splitlines %}
+																{% if line %}
+																	<li>{{ line }}</li> <!-- Display each line of the analysis as a list item -->
+																{% endif %}
+															{% endfor %}
+														</ul>
+													{% else %}
+														<p>No analysis available.</p>
+													{% endif %}
+										</div>
+									</div>
+								  </div>
+								 
+								</div>
+							
+	
+								<div class="carousel-indicators">
+									<button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+									<button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+									
+								  </div>
+							  </div>
+						</div>
+						
+						
+						
+					</div>
+				</div>
+			  </div>
+			  </div>
+				
+			</div>
+		</div>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/counterup/counterup.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+  
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main.js' %}"></script>
+   
+</body>
+
+</html>

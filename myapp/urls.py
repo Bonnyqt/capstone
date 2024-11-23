@@ -53,10 +53,23 @@ path('save_canvas_state_defend/', views.save_canvas_state_defend, name='save_can
 path('display_canvas/<int:canvas_id>/', views.display_canvas, name='display_canvas'),
 path('display_canvas_defend/<int:canvas_id>/', views.display_canvas_defend, name='display_canvas_defend'),
 path('remove_challenge/<int:canvas_id>/', views.remove_challenge, name='remove_challenge'),
+path('remove_challenge_defend/<int:canvas_id>/', views.remove_challenge_defend, name='remove_challenge_defend'),
+path('remove_news/<int:canvas_id>/', views.remove_news, name='remove_news'),
 path('save_score/', views.save_score, name='save_score'),
 path('admin-leaderboards/', views.admin_leaderboards, name='admin_leaderboards'),
 path('professor-students/', views.professor_students, name='professor_students'),
 path('simulate-defend/', views.simulate_defend, name='simulate_defend'),
+path('update_window_state/', views.update_window_state, name='update_window_state'),
+path('professor-manage-students/', views.professor_manage_students, name='professor_manage_students'),
+path('professor-sections/', views.professor_sections, name='professor_sections'),
+path('add-course/', views.add_course, name='add_course'),
+path('export-data/', views.export_data_to_excel, name='export_data'),
+path('delete_course/<int:course_id>/', views.delete_course, name='delete_course'),
+path('profile/<int:user_id>/', views.profile_details, name='profile_details'),
+path('generate_network/', views.generate_network, name='generate_network'),
+path('generate_network_defend/', views.generate_network_defend, name='generate_network_defend'),
+path('mark_challenge_closed/<int:canvas_id>/', views.mark_challenge_closed, name='mark_challenge_closed'),
+path('logs/', views.logs, name='logs'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

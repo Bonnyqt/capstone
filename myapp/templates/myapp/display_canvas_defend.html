@@ -556,17 +556,20 @@ label {
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;  // CSRF token
     const category = myCanvasState.category;  // Get the category from your canvas state
 
-    fetch('{% url "save_score" %}', {  // URL of your Django view that saves the score
+    fetch('{% url "save_score" %}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken  // Send CSRF token for security
+            'X-CSRFToken': csrfToken
         },
-        body: JSON.stringify({ 
-            score: score, 
-            finished: finished, 
-            category: category  // Send the category to the server
-        })  // Send the score, finished status, and category as a JSON object
+        body: JSON.stringify({
+            score: score,
+            finished: finished,
+            category: '{{ canvas_state.category }}',  // Send the category to the server
+            correct_submissions: correctCount,
+            incorrect_submissions: incorrectCount,
+            canvas_state_title: '{{ canvas_state.title }}'  // Send the canvas state title to the server
+        })
     })
     .then(response => response.json())
     .then(data => {
@@ -577,7 +580,7 @@ label {
         console.error('Error saving score:', error);
         alert('An error occurred while saving your score.');
     });
-});
+})
 
 
       

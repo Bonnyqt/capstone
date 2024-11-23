@@ -29,6 +29,17 @@
 <body>
     {% include "myapp/admin/admin_sidebar.html" %}
 
+    {% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <!-- Other content -->
+{% endblock %}
+
     <div class="container mt-5"></div>
         <div class="row justify-content-center">
             <div class="col-md-8">

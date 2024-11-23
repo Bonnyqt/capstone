@@ -121,7 +121,7 @@
   text-decoration: none;
   cursor: pointer;
 }
-modal {
+.modal {
   display: none; /* Hidden by default */
   position: fixed; 
   z-index: 1; 
@@ -142,7 +142,7 @@ modal {
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
-  max-width: 1000px;
+  max-width: 1600px;
   opacity: 0; /* Initially hidden */
   transform: translateY(-20px); /* Position it slightly up for slide-in effect */
   transition: opacity 0.5s ease, transform 0.5s ease; /* Add both fade and slide effect */
@@ -244,11 +244,12 @@ modal {
                                             <img src="{{ user.userprofile.profile_image.url }}" alt="Profile Image" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
                                         </div>
                                         <div class="mt-3">
-                                            <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+                                            <h4>{{ user.first_name }}</h4>
                                             <strong style="color:green">{{ user.rank }}</strong>
+                                            
                                             <p class="text-muted font-size-sm">{{ user.userprofile.section }} | {{ user.userprofile.program }}</p>
-                                            <button class="btn btn-primary viewProfileBtn" data-name="{{ user.first_name }}" data-email="{{ user.email }}">View Profile</button>
-                                      
+                                            <button class="btn btn-primary" onclick="location.href='{% url 'profile_details' user.id %}'">View Profile</button>
+                                           
                                         </div>
                                     </div>
                                 </div>
@@ -266,33 +267,33 @@ modal {
             {% else %}
                 <!-- Show all users if no query is provided -->
                 {% for user in users %}
-                    <div class="col-lg-4">
-                        <div class="card mb-4">
-                            <div class="card-body position-relative">
-                                <div class="d-flex flex-column align-items-center text-center">
-                                    {% if user.userprofile.is_online %}
-                                        <span id="user-status-{{ user.id }}" class="badge bg-success status-badge">Online</span>
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-body position-relative">
+                            <div class="d-flex flex-column align-items-center text-center">
+                                {% if user.userprofile.is_online %}
+                                    <span id="user-status-{{ user.id }}" class="badge bg-success status-badge">Online</span>
+                                {% else %}
+                                    {% if user.is_active %}
+                                        <span id="user-status-{{ user.id }}" class="badge bg-danger status-badge">Offline</span>
                                     {% else %}
-                                        {% if user.is_active %}
-                                            <span id="user-status-{{ user.id }}" class="badge bg-danger status-badge">Offline</span>
-                                        {% else %}
-                                            <span id="user-status-{{ user.id }}" class="badge bg-warning status-badge">Not Verified</span>
-                                        {% endif %}
+                                        <span id="user-status-{{ user.id }}" class="badge bg-warning status-badge">Not Verified</span>
                                     {% endif %}
-                                    <div style="position: relative; width: 110px; height: 110px;">
-                                        <img src="{{ user.userprofile.profile_image.url }}" alt="Profile Image" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
-                                    </div>
-                                    <div class="mt-3">
-                                        <h4>{{ user.first_name }} {{ user.last_name }}</h4>
-                                        <strong style="color:green">{{ user.rank }}</strong>
-                                        <p class="text-muted font-size-sm">{{ user.userprofile.section }} | {{ user.userprofile.program }}</p>
-                                        <button class="btn btn-primary viewProfileBtn" data-name="{{ user.first_name }}" data-email="{{ user.email }}">View Profile</button>
-                                
-                                    </div>
+                                {% endif %}
+                                <div style="position: relative; width: 110px; height: 110px;">
+                                    <img src="{{ user.userprofile.profile_image.url }}" alt="Profile Image" class="rounded-circle p-1 bg-primary" width="110" height="110" style="object-fit: cover;">
+                                </div>
+                                <div class="mt-3">
+                                    <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+                                    <strong style="color:green">{{ user.rank }}</strong>
+                                    <p class="text-muted font-size-sm">{{ user.userprofile.section }} | {{ user.userprofile.program }}</p>
+                                    <!-- Button to Open Modal -->
+                                    <button class="btn btn-primary" onclick="location.href='{% url 'profile_details' user.id %}'">View Profile</button>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
                 {% endfor %}
             {% endif %}
         </div>
@@ -304,18 +305,7 @@ modal {
 
 
 
-<!-- Modal Structure -->
-<div id="profileModal" class="modal" style="z-index: 9998;">
-    <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <h2>User Profile</h2>
-        <div id="profileDetails">
-            
-       
-           
-        </div>
-    </div>
-</div>
+
   
             
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded back-to-top"><i class="bi bi-arrow-up"></i></a>
@@ -343,82 +333,6 @@ modal {
             }
         };
     
-        var modal = document.getElementById("profileModal");
-        var span = document.getElementsByClassName("close-btn")[0];
-    
-        document.querySelectorAll('.viewProfileBtn').forEach(function(btn) {
-            btn.onclick = function() {
-                modal.style.display = "block"; 
-                setTimeout(function() { 
-                    modal.classList.add('show');
-                    document.querySelector('.modal-content').classList.add('show');
-                }, 10); 
-    
-                var userName = this.getAttribute('data-name');
-                var userEmail = this.getAttribute('data-email');
-    
-                document.getElementById("profileDetails").innerHTML = `
-                    <p>Name: ${userName}</p>
-                    <p>Email: ${userEmail}</p>
-                     <canvas id="userChart" width="400" height="400" style="display: block; margin: auto;"></canvas>
-                `;
-    
-                var ctx = document.getElementById('userChart').getContext('2d');
-                var userChart = new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: ['SQL INJECTION', 'XSS ATTACKS', 'MALWARE'],
-                        datasets: [{
-                            label: 'User Data',
-                            data: [10, 20, 30],
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                            },
-                            title: {
-                                display: true,
-                                text: 'User Data Distribution'
-                            }
-                        }
-                    }
-                });
-    
-                document.getElementById('userChart').style.display = 'block';
-            }
-        });
-    
-        span.onclick = function() {
-            modal.classList.remove('show');
-            document.querySelector('.modal-content').classList.remove('show');
-            setTimeout(function() {
-                modal.style.display = "none"; 
-            }, 500);
-        }
-    
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.classList.remove('show');
-                document.querySelector('.modal-content').classList.remove('show');
-                setTimeout(function() {
-                    modal.style.display = "none"; 
-                }, 500);
-            }
-        }
     </script>
     
     

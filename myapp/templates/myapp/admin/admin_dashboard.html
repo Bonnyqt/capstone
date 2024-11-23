@@ -24,12 +24,12 @@
                             Administrator Dashboard | &nbsp;
                             <span id="currentDate" class="text-gray-600 small"></span>
                         </h1>
-                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="printReportBtn">
-                            <i class="fas fa-download fa-sm text-white-50"></i> Print Report
+                        <a href="{% url 'export_data' %}" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm">
+                            <i class="fas fa-download fa-sm text-white-50"></i> Export Data to Excel
                         </a>
                     </div>
                     <div class="row">
-                       <a href="{% url 'user_accounts' %}"> <div class="col-xl-3 col-md-6 mb-4">
+                       <a href="{% url 'user_accounts' %}"> <div class="col-xl-2 col-md-6 mb-4">
                             <div class="card border-left-primary shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
@@ -48,7 +48,8 @@
                             </div>
                         </a>
                         </div>
-                        <a href="{% url 'professor_accounts' %}"><div class="col-xl-3 col-md-6 mb-4">
+                        
+                        <a href="{% url 'professor_accounts' %}"><div class="col-xl-2 col-md-6 mb-4">
                             <div class="card border-left-warning shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
@@ -68,7 +69,7 @@
                             </a>
                             </div>     
                         </div>
-                        <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="col-xl-2 col-md-6 mb-4">
                             <div class="card border-left-info shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
@@ -80,11 +81,7 @@
                                                     <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ student_status }}</div>
                                                 </div>
                                                 <div class="col">
-                                                    <div class="progress progress-sm mr-2">
-                                                        <div class="progress-bar bg-info" role="progressbar"
-                                                            style="width: 10%" aria-valuenow="50" aria-valuemin="0"
-                                                            aria-valuemax="100"></div>
-                                                    </div>
+                                                   
                                                 </div>
                                             </div>
                                         </div>
@@ -96,7 +93,7 @@
                             </div>
                         </div>
                         
-                        <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="col-xl-2 col-md-6 mb-4">
                             <div class="card border-left-success shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
@@ -105,14 +102,10 @@
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col-auto">
                                                     <!-- Display the challenges_count directly -->
-                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ challenges_count }}</div>
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ total_count }}</div>
                                                 </div>
                                                 <div class="col">
-                                                    <div class="progress progress-sm mr-2">
-                                                        <div class="progress-bar bg-success" role="progressbar"
-                                                            style="width: 10%" aria-valuenow="50" aria-valuemin="0"
-                                                            aria-valuemax="100"></div>
-                                                    </div>
+                                                   
                                                 </div>
                                             </div>
                                         </div>
@@ -123,6 +116,133 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-xl-2 col-md-5 mb-4">
+                            <div class="card border-left-danger shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Top Challenge Answered:</div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <!-- Display the challenges_count directly -->
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{% if top_challenge %}
+                                                        <div class="h6 mb-0 mr-3 font-weight-bold text-gray-800">
+                                                            {{ top_challenge.canvas_state_title }}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="h6 mb-0 mr-3 font-weight-bold text-gray-800">No challenges answered yet</div>
+                                                    {% endif %}</div>
+                                                </div>
+                                                <div class="col">
+                                                   
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            
+                                            <i class="fas fa-gamepad" style="font-size:20px; color:#d13939;"></i>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-2 col-md-5 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-uppercase mb-1" style="color:#e6d706;">Top Category Answered:</div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <!-- Display the challenges_count directly -->
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
+
+                                                        {% if top_category %}
+                                                        <div class="h6 mb-0 mr-3 font-weight-bold text-gray-800">
+                                                            {{ top_category.category }}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="h6 mb-0 mr-3 font-weight-bold text-gray-800">No categories yet</div>
+                                                    {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                   
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            
+                                            <i class="fas fa-trophy" style="font-size:20px; color:#e6d706;"></i>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-12 col-lg-5">
+                            <div class="card shadow mb-4">
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        Submissions (Daily by Score)  
+                                       
+                                        
+                                    </h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                            aria-labelledby="dropdownMenuLink">
+                                            
+                                            <a class="dropdown-item" href="#"><span class="text-muted text-end">
+                                                Date Generated: 
+                                                {% if analysis_created_at %}
+                                                    {{ analysis_created_at|date:"F j, Y, g:i a" }}
+                                                {% else %}
+                                                    Not Available
+                                                {% endif %}
+                                            </span></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-pie pt-4 pb-2">
+                                        <canvas id="myBarChart"></canvas>
+                                       
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <h6 class="m-0 font-weight-bold text-primary ml-3">Score Analysis</h6>
+                                        <p >
+                                            {% if textAnalytics.bar_graph %}
+                                                {% for line in textAnalytics.bar_graph.splitlines %}
+                                                    {% if line %}
+                                                        
+                                                            <ul>
+                                                                {{ line }} <!-- Bullet point for registration data -->
+                                                            </ul>
+                                                        {% else %}
+                                                            <p>{{ line }}</p> <!-- Regular text for other lines -->
+                                                        {% endif %}
+                                             
+                                                {% endfor %}
+                                            {% else %}
+                                                <p>No analysis available for the area chart.</p>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+
                         
                     <div class="row">
                         <div class="col-xl-8 col-lg-7">
@@ -137,20 +257,54 @@
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                                             aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">Dropdown Header:</div>
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Something else here</a>
+                                            
+                                            <a class="dropdown-item" href="#"><span class="text-muted text-end">
+                                                Date Generated: 
+                                                {% if analysis_created_at %}
+                                                    {{ analysis_created_at|date:"F j, Y, g:i a" }}
+                                                {% else %}
+                                                    Not Available
+                                                {% endif %}
+                                            </span></a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card-body">
                                     <div class="chart-area">
+                                       
                                         <canvas id="myAreaChart"></canvas>
                                     </div>
                                 </div>
                                 <hr>
+                   
+                                <div>
+                                    <h6 class="m-0 font-weight-bold text-primary ml-3">Registration Analysis</h6>
+                                    <p >
+                                        {% if textAnalytics.areachart_graph %}
+                                            {% for line in textAnalytics.areachart_graph.splitlines %}
+                                                {% if line %}
+                                                    
+                                                        <ul>
+                                                            {{ line }} <!-- Bullet point for registration data -->
+                                                        </ul>
+                                                    {% else %}
+                                                        <p>{{ line }}</p> <!-- Regular text for other lines -->
+                                                    {% endif %}
+                                         
+                                            {% endfor %}
+                                        {% else %}
+                                            <p>No analysis available for the area chart.</p>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                
+                                
+                                
+                            
+                               
+                            
+                               
+            
                             </div>
                         </div>
                         <div class="col-xl-4 col-lg-8">
@@ -162,11 +316,15 @@
                                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">Dropdown Header:</div>
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Something else here</a>
+                                          
+                                            <a class="dropdown-item" href="#"><span class="text-muted text-end">
+                                                Date Generated: 
+                                                {% if analysis_created_at %}
+                                                    {{ analysis_created_at|date:"F j, Y, g:i a" }}
+                                                {% else %}
+                                                    Not Available
+                                                {% endif %}
+                                            </span></a>
                                         </div>
                                     </div>
                                 </div>
@@ -174,39 +332,34 @@
                                     <div class="chart-pie pt-4 pb-2">
                                         <!-- Add a custom height with inline styles or a custom class -->
                                         <canvas id="myPieChart"></canvas>
+                                      
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <h6 class="m-0 font-weight-bold text-primary ml-3">Category Analysis</h6>
+                                        <p>
+                                            {% if textAnalytics.pie_graph %}
+                                                {% for line in textAnalytics.pie_graph.splitlines %}
+                                                    {% if line %}
+                                                        
+                                                            <ul>
+                                                                {{ line }} <!-- Bullet point for registration data -->
+                                                            </ul>
+                                                        {% else %}
+                                                            <p>{{ line }}</p> <!-- Regular text for other lines -->
+                                                        {% endif %}
+                                             
+                                                {% endfor %}
+                                            {% else %}
+                                                <p>No analysis available for the area chart.</p>
+                                            {% endif %}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-xl-12 col-lg-5">
-                            <div class="card shadow mb-4">
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Submissions (Daily by Score)</h6>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                            aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">Dropdown Header:</div>
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="chart-pie pt-4 pb-2">
-                                        <canvas id="myBarChart"></canvas>
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                        </div>
+                       
                     </div>
            
         </div>
@@ -322,7 +475,7 @@
 
 </body>
 <script>
-    Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = '#858796';
 
 function number_format(number, decimals, dec_point, thousands_sep) {
@@ -451,14 +604,24 @@ fetch('/line-graph/')  // Replace with your actual URL
     var usersNames = {{ users_names|safe }};
     var totalScores = {{ total_scores|safe }};
     
+    // Filter out users with usernames ending with '.it@tip.edu.ph'
+    var filteredUsersNames = usersNames.filter(function(username) {
+        return !username.endsWith('.it@tip.edu.ph');
+    });
+
+    var filteredTotalScores = totalScores.filter(function(score, index) {
+        // Only keep the score if the corresponding username is not excluded
+        return !usersNames[index].endsWith('.it@tip.edu.ph');
+    });
+
     var ctxBar = document.getElementById("myBarChart");
     var myBarChart = new Chart(ctxBar, {
         type: 'bar',
         data: {
-            labels: usersNames,  // Usernames
+            labels: filteredUsersNames,  // Filtered usernames
             datasets: [{
                 label: 'Total Score',
-                data: totalScores,  // Total scores of each user
+                data: filteredTotalScores,  // Filtered total scores
                 backgroundColor: '#3498db',  // Bar color
                 hoverBackgroundColor: '#2980b9',  // Hover color
                 borderColor: '#2980b9',
@@ -488,6 +651,7 @@ fetch('/line-graph/')  // Replace with your actual URL
         },
     });
 </script>
+
 
 
 </html>

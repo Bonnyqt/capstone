@@ -68,7 +68,7 @@ TEMPLATES = [
     },
 ]
 
-
+OPENAI_API_KEY = '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'
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
 ASGI_APPLICATION = 'myproject.asgi.application'

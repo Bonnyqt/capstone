@@ -47,7 +47,7 @@ h1 {
     margin-bottom: 2rem;
 }
         :root {
-            --surface-color: #fff;
+           
             --curve: 40;
         }
         .categories {
@@ -65,7 +65,10 @@ h1 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
 }
-
+.card-finished {
+    background-color: #d4edda; /* Light green background */
+    border: 1px solid #c3e6cb; /* Green border */
+}
 .cards {
     display: flex;
     flex-wrap: wrap;
@@ -191,6 +194,32 @@ h1 {
         max-width: 100%;  /* Full width on very small screens */
     }
 }
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    z-index: 9999; /* Ensure it appears above all other elements */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#overlay .overlay-content {
+    text-align: center;
+}
+
+#overlay h2 {
+    font-size: 2em;
+    margin-bottom: 1rem;
+}
+
+#overlay p {
+    font-size: 1.2em;
+}
     </style>
 </head>
 <body>
@@ -198,7 +227,7 @@ h1 {
     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
       <div class="spinner"></div>
     </div>
-
+    <div id="snackbar" style="z-index: 9999;">You have finished this challenge. </div> 
     <div class="center-wrapper">
       <br><br> <br><br><br>
       
@@ -206,84 +235,110 @@ h1 {
       
       <h1 class="display-1 text-white mb-md-4 animated zoomIn" style="font-size: 50px;">DEFEND! SIMULATIONS</h1>
 
-  {% if challenges %}
-    <div class="categories">
-        <!-- Loop through the categories -->
-        {% for category in categories %}
-            <div class="category">
-                <h2 class="category-title" style="color:white;">{{ category }}</h2>
-                <ul class="cards">
-                    <!-- Filter challenges by category -->
-                    {% for challenge in challenges %}
-                    {% if challenge.category == category %}
-                        <li>
-                            <a href="javascript:void(0);" onclick="openWindow({{ challenge.id }})" 
-                            class="card {% if challenge.finished %}card-finished{% endif %}">
-                                <img src="{% static 'img/dasda.jpg' %}" class="card__image" alt="" />
-                                <div class="card__overlay">
-                                    <div class="card__header">
-                                        <svg class="card__arc" xmlns="http://www.w3.org/2000/svg"><path /></svg>
-                                        <div class="card__header-text">
-                                            <h3 class="card__title">
-                                                {{ challenge.title }} 
-                                                | 
-                                                <span class="badge 
-                                                    {% if challenge.difficulty == 'Easy' %}bg-success{% elif challenge.difficulty == 'Medium' %}bg-warning{% else %}bg-danger{% endif %}
-                                                    status-badge">
-                                                    {{ challenge.difficulty }}
-                                                </span>
-                                            </h3>
-                                            <span class="card__status">Date Published: {{ challenge.created_at|date:"d M Y, H:i" }}</span>
-                                        </div>
-                                    </div>
-                                    <p class="card__description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores, blanditiis? </p>
-                                </div>
-                            </a>
-                        </li>
-                    {% endif %}
-                {% endfor %}
-
-                </ul>
-            </div>
-        {% endfor %}
-    </div>
-{% else %}
-    <p class="text-center text-white">No challenges published yet.</p>
-{% endif %}
-
+      {% if profile_incomplete %}
+      <div class="alert text-center" style="color: white;">
+          <p>Your profile is incomplete. Please set up your profile in order to proceed.</p>
+        
+      </div>
+  {% elif not challenges %}
+      <p class="text-center text-white">No defending challenges published to your section yet.</p>
+  {% else %}
+      <div class="categories">
+          <!-- Loop through the categories -->
+          {% for category in categories %}
+              <div class="category">
+                  <h2 class="category-title" style="color:white;">{{ category }}</h2>
+                  <ul class="cards">
+                      {% for challenge in challenges %}
+                          {% if challenge.category == category %}
+                          <li>
+                              <a href="javascript:void(0);" onclick="checkFinished({{ challenge.id }}, '{{ challenge.finished }}')" class="card" style="--surface-color: 
+                              {% if challenge.finished %}#8ceda9{% else %}#fff{% endif %};">
+                                  <img src="{% static 'img/SIMULATE2.jpg' %}" class="card__image" alt="" />
+                                  <div class="card__overlay">
+                                      <div class="card__header">
+                                          <svg class="card__arc" xmlns="http://www.w3.org/2000/svg"><path /></svg>
+                                          <div class="card__header-text">
+                                              <h3 class="card__title">
+                                                  {{ challenge.title }} 
+                                                  | 
+                                                  <span class="badge 
+                                                      {% if challenge.difficulty == 'Easy' %}bg-success
+                                                      {% elif challenge.difficulty == 'Medium' %}bg-warning
+                                                      {% else %}bg-danger
+                                                      {% endif %} status-badge">
+                                                      {{ challenge.difficulty }}
+                                                  </span>
+                                              </h3>
+                                              <span class="card__status">Date Published: {{ challenge.created_at|date:"d M Y, H:i" }}</span>
+                                          </div>
+                                      </div>
+                                      <p class="card__description">
+                                        {% if challenge.title_definition %}
+                                        {{ challenge.title_definition }}
+                                    {% else %}
+                                        No definition available for this challenge yet.
+                                    {% endif %}
+                                      </p>
+                                  </div>
+                              </a>
+                          </li>
+                          {% endif %}
+                      {% endfor %}
+                  </ul>
+              </div>
+          {% endfor %}
+      </div>
+  {% endif %}
   
-      
-      
     </div>
 
+
+    <div id="overlay" style="display: none;">
+        <div class="overlay-content">
+            <h2>Another window is open</h2>
+            <p>Please close the current window to access this page.</p>
+        </div>
+    </div>
 </body>
 <script>
-let openedWindow = null;  // Store reference to the opened window
+    let openedWindow = null;  // Store reference to the opened window
 
-function openWindow(id) {
-    // Check if there is an opened window and it is not closed
-    if (openedWindow && !openedWindow.closed) {
-        alert('Please close or finish the current window before navigating again.');
-        return;  // Prevent opening a new window
+    function openWindow(id) {
+        // Construct the URL with the dynamic 'id'
+        const url = "{% url 'display_canvas_defend' canvas_id=0 %}".replace('0', id);
+        const windowFeatures = 'fullscreen=yes, scrollbars=yes, resizable=yes, width=' + screen.width + ', height=' + screen.height;
+
+        // Open the new window and store the reference
+        openedWindow = window.open(url, '_blank', windowFeatures);
+
+        // Optional: Add an event listener to check when the opened window is closed
+        openedWindow.addEventListener('unload', function() {
+            // After the window is closed, reset the reference to allow opening a new one
+            openedWindow = null;
+        });
     }
 
-    // Construct the URL with the dynamic 'id'
-    const url = "{% url 'display_canvas_defend' canvas_id=0 %}".replace('0', id);
-    const windowFeatures = 'fullscreen=yes, scrollbars=yes, resizable=yes, width=' + screen.width + ', height=' + screen.height;
+    function checkFinished(challengeId, isFinished) {
+        if (isFinished === 'True') {
+            // If challenge is finished, show the snackbar
+            showSnackbar();
+        } else {
+            // If challenge is not finished, open the window
+            openWindow(challengeId);
+        }
+    }
 
-    // Open the new window and store the reference
-    openedWindow = window.open(url, '_blank', windowFeatures);
+    function showSnackbar() {
+        var snackbar = document.getElementById("snackbar");
+        snackbar.className = "show";
 
-    // Optional: Add an event listener to check when the opened window is closed
-    openedWindow.addEventListener('unload', function() {
-        // After the window is closed, reset the reference to allow opening a new one
-        openedWindow = null;
-    });
-}
-
-  </script>
-  
-  
+        // After 3 seconds, remove the "show" class to hide the snackbar
+        setTimeout(function () {
+            snackbar.className = snackbar.className.replace("show", "");
+        }, 3000);
+    }
+</script>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'lib/wow/wow.min.js' %}"></script>

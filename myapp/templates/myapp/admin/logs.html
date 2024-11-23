@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CYBERCLASH | Logs</title>
+   
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>CYBERCLASH | Administrator</title>
+    <link href="{% static 'img/logo.png' %}" rel="icon">
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+</head>
+<body>
+    {% include 'myapp/admin/admin_sidebar.html'%}
+
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+    
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">ACTIVITY LOGS</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <form method="POST" action="{% url 'user_accounts' %}">
+                        {% csrf_token %}
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead class="table-grey">
+                                <tr>
+                                    <th>Action Type</th>
+                                    <th>Model Name</th>
+                                    <th>Field Name</th>
+                                    <th>Old Value</th>
+                                    <th>New Value</th>
+                                    <th>User</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in activity_logs %}
+                                <tr>
+                                    <td>{{ log.get_action_type_display }}</td>
+                                    <td>{{ log.model_name }}</td>
+                                    <td>{{ log.field_name }}</td>
+                                    <td>{{ log.old_value }}</td>
+                                    <td>{{ log.new_value }}</td>
+                                    <td>
+                                        {% if log.user %}
+                                            {{ log.user.username }}
+                                        {% else %}
+                                            System
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ log.created_at }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No activity logs found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </form>                 
+                </div>
+            </div>
+        </div>
+    
+    </div>
+    
+    <!-- /.container-fluid -->
+
+</div>
+
+
+</body>
+
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+    <script src="{% static 'vendor/chart.js/Chart.min.js' %}"></script>
+
+</html>

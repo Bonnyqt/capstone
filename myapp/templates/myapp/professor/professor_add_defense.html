@@ -333,7 +333,7 @@ label {
         stroke-dashoffset: -15;
     }
 }
-#canvasCategoryDropdown, #canvasDifficultyDropdown {
+#canvasCategoryDropdown, #canvasDifficultyDropdown, #canvasTime, #canvasSection, #canvasCategoryDropdown2 {
     width: 100%; /* Make it responsive */
     padding: 10px; /* Add padding for better usability */
     border: 1px solid #ccc; /* Light border */
@@ -345,7 +345,7 @@ label {
 }
 
 /* Add a custom dropdown arrow */
-#canvasCategoryDropdown::after, #canvasDifficultyDropdown::after {
+#canvasCategoryDropdown::after, #canvasDifficultyDropdown::after, #canvasTime::after, #canvasSection::after, #canvasCategoryDropdown2::after {
     content: '▼'; /* Custom arrow symbol */
     font-size: 12px; /* Adjust size */
     color: #007bff; /* Match theme color */
@@ -356,15 +356,76 @@ label {
 }
 
 /* On focus */
-#canvasCategoryDropdown:focus, #canvasDifficultyDropdown:focus {
+#canvasCategoryDropdown:focus, #canvasDifficultyDropdown:focus, #canvasTime:focus, #canvasSection:focus, #canvasCategoryDropdown2:focus{
     outline: none; /* Remove default focus */
     border-color: #007bff; /* Add a highlight color */
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add focus shadow */
 }
+#snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    bottom: 30px;
+    left: 50%;
+    font-size: 17px;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#snackbar {
+  visibility: hidden; /* Hidden by default. Visible on click */
+  min-width: 250px; /* Set a default minimum width */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  background-color: #06a3da; /* Black background color */
+  color: #fff; /* White text color */
+  text-align: center; /* Centered text */
+  border-radius: 2px; /* Rounded borders */
+  padding: 16px; /* Padding */
+  position: fixed; /* Sit on top of the screen */
+  left: 50%; /* Center the snackbar */
+  bottom: 30px; /* 30px from the bottom */
+  z-index: 9999;
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#snackbar.show {
+  visibility: visible; /* Show the snackbar */
+  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+  However, delay the fade out process for 2.5 seconds */
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
 
 /* Style for mobile responsiveness */
 @media (max-width: 600px) {
-    #canvasCategoryDropdown, #canvasDifficultyDropdown {
+    #canvasCategoryDropdown, #canvasDifficultyDropdown, #canvasTimer, #canvasSection, #canvasCategoryDropdown2 {
         font-size: 14px; /* Slightly smaller font size */
         padding: 8px; /* Adjust padding for smaller screens */
     }
@@ -479,12 +540,118 @@ label {
             <option value="Medium">Medium</option>
             <option value="Hard">Hard</option>
         </select>
+   
+        
+        <label for="canvasTime">Select Timer (Seconds):</label>
+        <select id="canvasTime">
+            <option value="30">30</option>
+            <option value="60">60</option>
+            <option value="90">90</option>
+        </select>
+      
+        <label for="canvasSection">Select sections to publish:</label>
+        <div id="canvasSection" class="section-checkbox-group">
+            <label class="checkbox-label">
+                <input type="checkbox" name="canvasSection" value="All" onclick="toggleAllSections(this)"> 
+                <span class="custom-checkbox"></span> Publish to all Sections
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" name="canvasSection" value="IT41S1"> 
+                <span class="custom-checkbox"></span> IT41S1
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" name="canvasSection" value="IT41S2"> 
+                <span class="custom-checkbox"></span> IT41S2
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" name="canvasSection" value="IT41S3"> 
+                <span class="custom-checkbox"></span> IT41S3
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" name="canvasSection" value="IT41S4"> 
+                <span class="custom-checkbox"></span> IT41S4
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" name="canvasSection" value="IT41S5"> 
+                <span class="custom-checkbox"></span> IT41S5
+            </label>
+        </div>
+        
         <br>
         <button id="saveTitleBtn">Save Title</button>
     </div>
 </div>
+
+
+<div id="snackbar">Generating network...</div>
+
+<div id="modalAI" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeAIModalBtn" style="position:fixed; top: 25px; right: 25px;">&times;</span>
+        <h2>Generate Network using AI</h2>
+
+        <label for="title">Title:</label>
+        <input type="text" id="title" placeholder="Enter title" required>
+
+        <label for="promptInput">Prompt:</label>
+        <input type="text" id="promptInput" placeholder="Enter prompt (e.g., 'Create XSS Attack network with 2 nodes')" required>
+        <label for="canvasCategoryDropdown2">Select Category:</label>
+        <select id="canvasCategoryDropdown2">
+            <option value="Web Exploitation">Web Exploitation</option>
+            <option value="Cloud Security">Cloud Security</option>
+            <option value="Reverse Engineering">Reverse Engineering</option>
+            <option value="General Skills">General Skills</option>
+        </select>
+        <label for="canvasDifficultyDropdown">Select Level of Difficulty:</label>
+        <select id="canvasDifficultyDropdown">
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+        </select>
+   
+        
+        <label for="canvasTime">Select Timer (Seconds):</label>
+        <select id="canvasTime">
+            <option value="30">30</option>
+            <option value="60">60</option>
+            <option value="90">90</option>
+        </select>
+      
+        <label for="canvasSection">Select sections to publish:</label>
+        <div id="canvasSection" class="section-checkbox-group">
+            <label class="checkbox-label">
+                <input type="checkbox" name="canvasSection" value="All" onclick="toggleAllSections(this)"> 
+                <span class="custom-checkbox"></span> Publish to all Sections
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" name="canvasSection" value="IT41S1"> 
+                <span class="custom-checkbox"></span> IT41S1
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" name="canvasSection" value="IT41S2"> 
+                <span class="custom-checkbox"></span> IT41S2
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" name="canvasSection" value="IT41S3"> 
+                <span class="custom-checkbox"></span> IT41S3
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" name="canvasSection" value="IT41S4"> 
+                <span class="custom-checkbox"></span> IT41S4
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" name="canvasSection" value="IT41S5"> 
+                <span class="custom-checkbox"></span> IT41S5
+            </label>
+        </div>
+<br>
+        <button id="generateNetworkBtn">Generate Network</button>
+    </div>
+</div>
+
     </center>
 
+  
     <div class="container-fluid">
 
         <!-- Page Heading -->
@@ -495,8 +662,12 @@ label {
                 <h6 class="m-0 font-weight-bold text-primary">ADD DEFEND! CHALLENGES</h6>
                 
             </div>
+
+            
+     
             <div class="card-body">
                 <div>
+                    <button id="generate">Use AI to Generate Simulation</button>
                     <button id="addNodeBtn">Add Node</button>
                     <button id="addWireBtn">Connect Nodes</button>
                     <button id="removeBtn">Remove Node</button>
@@ -528,6 +699,7 @@ label {
 document.getElementById('closeTitleModalBtn').addEventListener('click', () => {
     document.getElementById('titleModal').style.display = 'none';
 });
+
 
 </script>
 <script>
@@ -853,9 +1025,20 @@ document.getElementById("closeTitleModalBtn").onclick = function() {
     const canvasTitle = document.getElementById('canvasTitleInput').value.trim();
     const category = document.getElementById('canvasCategoryDropdown').value;
     const difficulty = document.getElementById('canvasDifficultyDropdown').value;
+    const canvasTime = document.getElementById('canvasTime').value;
+    
+    // Get selected sections
+    const selectedSections = Array.from(
+        document.querySelectorAll('#canvasSection input[type="checkbox"]:checked')
+    ).map(checkbox => checkbox.value);
 
     if (!canvasTitle) {
         alert('Please enter a title for the canvas.');
+        return;
+    }
+
+    if (selectedSections.length === 0) {
+        alert('Please select at least one section.');
         return;
     }
 
@@ -895,10 +1078,12 @@ document.getElementById("closeTitleModalBtn").onclick = function() {
         }
     });
 
-    const canvasStateDefend = {
+    const canvasState = {
         title: canvasTitle,
         category: category,
         difficulty: difficulty,
+        canvas_time: canvasTime,
+        canvas_section: selectedSections, // Store multiple sections
         nodes: nodes,
         wires: wiresData
     };
@@ -909,7 +1094,7 @@ document.getElementById("closeTitleModalBtn").onclick = function() {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCSRFToken()
         },
-        body: JSON.stringify(canvasStateDefend)
+        body: JSON.stringify(canvasState)
     }).then(response => {
         if (response.ok) {
             alert('Canvas state saved successfully!');
@@ -922,7 +1107,6 @@ document.getElementById("closeTitleModalBtn").onclick = function() {
         alert('An error occurred while saving the canvas state.');
     });
 });
-    
 
 
     // Function to get the CSRF token (used by Django for security)
@@ -1038,5 +1222,110 @@ document.getElementById("closeTitleModalBtn").onclick = function() {
     animatePacketThroughWires();
 });
 
+</script>
+
+
+<script>
+
+document.getElementById('generate').addEventListener('click', () => {
+    document.getElementById('modalAI').style.display = 'block'; // Show modal
+});
+
+// Close modal functionality
+document.getElementById('closeAIModalBtn').addEventListener('click', () => {
+    document.getElementById('modalAI').style.display = 'none';
+});
+
+document.getElementById('generateNetworkBtn').addEventListener('click', async () => {
+    const title = document.getElementById('title').value.trim();
+    const prompt = document.getElementById('promptInput').value.trim();
+    const category = document.getElementById('canvasCategoryDropdown2').value;
+    const difficulty = document.getElementById('canvasDifficultyDropdown').value;
+    const canvasTime = document.getElementById('canvasTime').value;
+    const canvasSections = Array.from(document.querySelectorAll('input[name="canvasSection"]:checked'))
+                                 .map(input => input.value); // Collect selected sections
+
+    // Debugging logs
+    console.log('Title:', title);
+    console.log('Prompt:', prompt);
+    console.log('Category:', category);
+    console.log('Difficulty:', difficulty);
+    console.log('Canvas Time:', canvasTime);
+    console.log('Canvas Sections:', canvasSections);
+
+    if (!title || !prompt || !category || !difficulty || !canvasTime || !canvasSections) {
+        alert("Please provide the necessary details first.");
+        return;
+    }
+
+    if (canvasSections.length === 0) {
+        alert("Please select at least one section.");
+        return;
+    }
+    const snackbar = document.getElementById('snackbar');
+    snackbar.className = "show"; // Display the snackbar
+    const snackbar2 = document.getElementById('snackbar2');
+    snackbar.className = "show"; // Display the snackbar
+    // Show loading indicator
+    const loadingMessage = document.createElement('div');
+    loadingMessage.textContent = "Generating network using AI...";
+    loadingMessage.id = 'loadingIndicator';
+    document.body.appendChild(loadingMessage);
+
+    // Make an API call to the backend to generate the network simulation
+    try {
+        const response = await fetch('/generate_network_defend/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken() // Ensure you have a CSRF token utility function
+            },
+            body: JSON.stringify({
+                title,
+                prompt,
+                category,
+                difficulty,
+                canvas_time: canvasTime,
+                canvas_section: canvasSections
+            })
+        });
+
+        const data = await response.json();
+        console.log('Response data:', data); // Log response for debugging
+
+        if (data.success) {
+            alert("Network generated successfully!");
+            document.getElementById('modalAI').style.display = 'none';
+        } else {
+            alert("Error generating network: " + data.error);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("An error occurred while generating the network.");
+    } finally {
+        // Hide the snackbar after 3 seconds
+        setTimeout(() => {
+            snackbar.className = ""; 
+        }, 3000); 
+    }
+});
+
+
+// Function to get CSRF token for security (for Django)
+function getCSRFToken() {
+    const name = 'csrftoken';
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 </script>
 </html>

@@ -60,10 +60,58 @@
                         
     </div>
 </div>
-</div></div></div>
-    
-</body>
 
+</div>
+</div><hr>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        {% if challenges %}
+    <!-- Loop through challenges if there are any -->
+    {% for challenge in challenges %}
+        <div class="col-xl-4 col-lg-4 col-md-6 mb-4"> <!-- Adjust the column size for responsiveness -->
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Title: {{ challenge.title }}</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                            aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="#" style="color:rgb(226, 70, 70)" onclick="deleteCanvasState({{ challenge.id }})">Remove News</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <!-- Display the image associated with the BlogPost -->
+                    <img src="{{ challenge.image.url }}" alt="Blog image" class="img-fluid"> <!-- Displaying the image -->
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+<div class="col-12">
+    <div class="alert alert-info" role="alert">
+        No News Published.
+    </div>
+</div>
+{% endif %}
+
+    </div>
+</div>
+</div>
+
+</body>
+<script>
+    function deleteCanvasState(challengeId) {
+        if (confirm("Are you sure you want to remove this news?")) {
+            window.location.href = `/remove_news/${challengeId}/`;  // Redirect to the delete URL
+        }
+    }
+</script>
 <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 

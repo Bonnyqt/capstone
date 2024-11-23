@@ -1,0 +1,155 @@
+{% load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERCLASH | Professor Sections</title>
+     <!-- Custom fonts for this template-->
+     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+     <link
+         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+         rel="stylesheet">
+ 
+     <!-- Custom styles for this template-->
+     <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+</head>
+<body>
+    {% include "myapp/professor/professor_sidebar.html" %}
+
+    {% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <!-- Other content -->
+{% endblock %}
+
+    <div class="container mt-5"></div>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-primary">ADD COURSES AND SECTIONS</h6>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data" action="{% url 'add_course' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Course Code</label>
+                                <input type="text" class="form-control" id="CourseCode" name="CourseCode" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Course Name</label>
+                                <input type="text" class="form-control" id="CourseName" name="CourseName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Course Description</label>
+                                <input type="text" class="form-control" id="CourseDesc" name="CourseDesc" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="Program" class="form-label">Program</label>
+                                <select class="form-control" id="Program" name="Program" required>
+                                    <option value="" disabled selected>Select a program</option>
+                                    <option value="BSIT">BSIT</option>
+                                    <option value="BSIS">BSIS</option>
+                                    <option value="BSCS">BSCS</option>
+                                    <option value="BSEMC">BSEMC</option>
+                                    <option value="BSDSA">BSDSA</option>
+                                    <!-- Add more options as needed -->
+                                </select>
+                            </div>
+                            
+
+                            <div class="mb-3">
+                                <label for="Section" class="form-label">Program</label>
+                                <select class="form-control" id="Section" name="Section" required>
+                                    <option value="" disabled selected>Select a section</option>
+                                    <option value="IT41S1">IT41S1</option>
+                                    <option value="IT41S2">IT41S2</option>
+                                    <option value="IT41S3">IT41S3</option>
+                                    <option value="IT41S4">IT41S4</option>
+                                    <option value="IT41S5">IT41S5</option>
+                                    <!-- Add more options as needed -->
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Publish Course</button>
+                        </form>
+                        
+    </div>
+</div>
+
+</div>
+</div>
+<hr>
+
+<div class="container-fluid">
+
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">COURSE MANAGEMENT <span id="currentDate" class="text-gray-600 small"></span></h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="table-grey">
+                        <tr>
+                            <th>Course Code</th>
+                            <th>Course Name</th>
+                            <th>Course Description</th>
+                            <th>Program</th>
+                            <th>Section</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in courses %}
+                        <tr>
+                            <td>{{ course.CourseCode }}</td>
+                            <td>{{ course.CourseName }}</td>
+                            <td>{{ course.CourseDesc }}</td>
+                            <td>{{ course.Program }}</td>
+                            <td>{{ course.Section }}</td>
+                            <td>
+                                <!-- Add a separate form for each row -->
+                                <form method="POST" action="{% url 'delete_course' course.id %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-danger" type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                  
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</div>
+   
+</body>
+
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+ 
+
+    <!-- Core plugin JavaScript-->
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+
+    <!-- Page level plugins -->
+    <script src="{% static 'vendor/chart.js/Chart.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+  
+    <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
+</html>

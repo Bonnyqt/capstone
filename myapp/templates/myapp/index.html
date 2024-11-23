@@ -130,7 +130,7 @@
                         </div>
                         <div class="ps-4">
                             <h5 class="text-white mb-0">YOUR PERFORMANCE (%)</h5>
-                            <h1 class="text-white mb-0" data-toggle="counter-up">12.4</h1>
+                            <h1 class="text-white mb-0" data-toggle="counter-up">{{ performance_percentage|floatformat:2 }}</h1>
                         </div>
                     </div>
                 </div>
@@ -206,7 +206,7 @@
         <div class="container py-5">
             <div class="section-title text-center position-relative pb-3 mb-5 mx-auto" style="max-width: 600px;">
                 <h5 class="fw-bold text-primary text-uppercase">Our Services</h5>
-                <h1 class="mb-0">Professionalized Services for Penetration Testing</h1>
+                <h1 class="mb-0">Professionalized Categories for Penetration Testing Simulations</h1>
             </div>
             <div class="row g-5">
                 <div class="col-lg-4 col-md-6 wow zoomIn" data-wow-delay="0.3s">
@@ -214,8 +214,8 @@
                         <div class="service-icon">
                             <i class="fa fa-shield-alt text-white"></i>
                         </div>
-                        <h4 class="mb-3">Cyber Security</h4>
-                        <p class="m-0">This platform provides real-time monitoring about cybersecurity</p>
+                        <h4 class="mb-3">Network Security</h4>
+                        <p class="m-0">Our platform offers advanced network security solutions to protect against cyber threats, ensuring the integrity and confidentiality of your data.</p>
                         <a class="btn btn-lg btn-primary rounded" href="">
                             <i class="bi bi-arrow-right"></i>
                         </a>
@@ -226,8 +226,8 @@
                         <div class="service-icon">
                             <i class="fa fa-chart-pie text-white"></i>
                         </div>
-                        <h4 class="mb-3">Data Analytics</h4>
-                        <p class="m-0">This platform displays the skills where you excel!</p>
+                        <h4 class="mb-3">Cloud Security</h4>
+                        <p class="m-0">We provide cloud security services to safeguard your data and applications in the cloud, with tools for encryption, access control, and threat detection.</p>
                         <a class="btn btn-lg btn-primary rounded" href="">
                             <i class="bi bi-arrow-right"></i>
                         </a>
@@ -238,9 +238,8 @@
                         <div class="service-icon">
                             <i class="fa fa-code text-white"></i>
                         </div>
-                        <h4 class="mb-3">Web Development</h4>
-                        <p class="m-0">The platform allows the user to enhance their skills with regards to web development.</p>
-                        <a class="btn btn-lg btn-primary rounded" href="">
+                        <h4 class="mb-3">Server Security</h4>
+                        <p class="m-0">Our server security platform focuses on securing your infrastructure by monitoring for vulnerabilities, applying patches, and ensuring optimal protection against cyber-attacks.
                             <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
@@ -250,8 +249,8 @@
                         <div class="service-icon">
                             <i class="fab fa-android text-white"></i>
                         </div>
-                        <h4 class="mb-3">Penetration Testing Simulation</h4>
-                        <p class="m-0">The simulation allows the user to visualize how the attack and defensive measurements occur.</p>
+                        <h4 class="mb-3">Database Security</h4>
+                        <p class="m-0">Our database security platform helps protect your sensitive information from unauthorized access and breaches through encryption, auditing, and access management</p>
                         <a class="btn btn-lg btn-primary rounded" href="">
                             <i class="bi bi-arrow-right"></i>
                         </a>
@@ -262,14 +261,37 @@
                         <div class="service-icon">
                             <i class="fa fa-search text-white"></i>
                         </div>
-                        <h4 class="mb-3">Skillset Optimization</h4>
-                        <p class="m-0">The data analytics provide your highest performance on a particular field.</p>
+                        <h4 class="mb-3">General Skills</h4>
+                        <p class="m-0">Our platform offers training in a wide range of cybersecurity and IT skills to help you stay ahead in the fast-evolving tech landscape.</p>
                         <a class="btn btn-lg btn-primary rounded" href="">
                             <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
                 </div>
-               
+                <div class="col-lg-4 col-md-6 wow zoomIn" data-wow-delay="0.6s">
+                    <div class="service-item bg-light rounded d-flex flex-column align-items-center justify-content-center text-center">
+                        <div class="service-icon">
+                            <i class="fa fa-search text-white"></i>
+                        </div>
+                        <h4 class="mb-3">Web Exploitation</h4>
+                        <p class="m-0">We provide hands-on web exploitation training, helping you understand common vulnerabilities and how to protect web applications from attacks.</p>
+                        <a class="btn btn-lg btn-primary rounded" href="">
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 wow zoomIn" data-wow-delay="0.6s">
+                    <div class="service-item bg-light rounded d-flex flex-column align-items-center justify-content-center text-center">
+                        <div class="service-icon">
+                            <i class="fa fa-search text-white"></i>
+                        </div>
+                        <h4 class="mb-3">Reverse Engineering</h4>
+                        <p class="m-0">Our platform offers courses and tools for reverse engineering, enabling you to analyze software, identify vulnerabilities, and enhance your cybersecurity skills.</p>
+                        <a class="btn btn-lg btn-primary rounded" href="">
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -320,47 +342,6 @@
             
 
                
-    <!-- Blog Start 
-      <div class="col-lg-4 wow slideInUp" data-wow-delay="0.6s">
-                    <div class="blog-item bg-light rounded overflow-hidden">
-                        <div class="blog-img position-relative overflow-hidden">
-                            <img class="img-fluid" src="{% static 'img/pent.jpg' %}" alt="">
-                            <a class="position-absolute top-0 start-0 bg-primary text-white rounded-end mt-5 py-2 px-4" href="https://portswigger.net/daily-swig/belgium-launches-nationwide-safe-harbor-for-ethical-hackers">Penetration Testing</a>
-                        </div>
-                        <div class="p-4">
-                            <div class="d-flex mb-3">
-                                <small class="me-3"><i class="far fa-user text-primary me-2"></i>Adam Bannister</small>
-                                <small><i class="far fa-calendar-alt text-primary me-2"></i>15 Feb, 2023</small>
-                            </div>
-                            <h4 class="mb-3">Belgium launches nationwide safe harbor for ethical hackers</h4>
-                            <p>"Belgium has become the first European country to adopt a national, comprehensive safe harbor framework for ethical hackers, according to the country’s cybersecurity agency."</p>
-                            <a class="text-uppercase" href="https://portswigger.net/daily-swig/belgium-launches-nationwide-safe-harbor-for-ethical-hackers">Read More <i class="bi bi-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 wow slideInUp" data-wow-delay="0.9s">
-                    <div class="blog-item bg-light rounded overflow-hidden">
-                        <div class="blog-img position-relative overflow-hidden">
-                            <img class="img-fluid" src="https://www.bleepstatic.com/content/hl-images/2024/09/05/Airgapped.jpg" alt="">
-                            <a class="position-absolute top-0 start-0 bg-primary text-white rounded-end mt-5 py-2 px-4" href="https://www.bleepingcomputer.com/news/security/new-rambo-attack-steals-data-using-ram-in-air-gapped-computers/?&web_view=true">New Form of Attack</a>
-                        </div>
-                        <div class="p-4">
-                            <div class="d-flex mb-3">
-                                <small class="me-3"><i class="far fa-user text-primary me-2"></i>Bill Tolas</small>
-                                <small><i class="far fa-calendar-alt text-primary me-2"></i>01 Jan, 2045</small>
-                            </div>
-                            <h4 class="mb-3">New RAMBO attack steals data using RAM in air-gapped computers</h4>
-                            <p>"A novel side-channel attack dubbed  "RAMBO" (Radiation of Air-gapped Memory Bus for Offense) generates electromagnetic radiation from a device's RAM to send data from air-gapped computers."</p>
-                            <a class="text-uppercase" href="https://www.bleepingcomputer.com/news/security/new-rambo-attack-steals-data-using-ram-in-air-gapped-computers/?&web_view=true">Read More <i class="bi bi-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    
-    -->
 
 
  

@@ -21,86 +21,101 @@
 
     <div class="container">
         <div class="row">
-            <!-- Loop through feedbacks excluding admin -->
-            {% for feedback in feedbacks %}
-            <!-- Each feedback card will occupy half of the row on large screens and full width on small screens -->
-            <div class="col-lg-6 col-md-12 mb-4">
-                <div class="card shadow">
-                    <!-- Card Header - Dropdown -->
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">{{ feedback.user.first_name }} | {{ feedback.user.email }}</h6>
-                        <div class="dropdown no-arrow">
-                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                 aria-labelledby="dropdownMenuLink">
-                                <div class="dropdown-header">Action:</div>
-                                <a class="dropdown-item" href="#" data-email="{{ feedback.user.email }}" onclick="redirectToEmailForm(this)">Send Email</a>
-
+            {% if feedbacks %}
+                <!-- Loop through feedbacks -->
+                {% for feedback in feedbacks %}
+                    <!-- Each feedback card will occupy half of the row on large screens and full width on small screens -->
+                    <div class="col-lg-6 col-md-12 mb-4">
+                        <div class="card shadow">
+                            <!-- Card Header - Dropdown -->
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    {% if feedback.user %}
+                                        {{ feedback.user.first_name }} | {{ feedback.user.email }}
+                                    {% else %}
+                                        {{ feedback.email }}  <!-- Use email from Feedback model for anonymous users -->
+                                    {% endif %}
+                                </h6>
+                                <div class="dropdown no-arrow">
+                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                                         aria-labelledby="dropdownMenuLink">
+                                        <div class="dropdown-header">Action:</div>
+                                        <a class="dropdown-item" href="#" data-email="{% if feedback.user %}{{ feedback.user.email }}{% else %}{{ feedback.email }}{% endif %}" onclick="redirectToEmailForm(this)">
+                                            Send Email
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <!-- Card Body -->
+                            <div class="card-body">
+                                {{ feedback.feedback }}
+                                <br>
+                                <small class="text-muted">{{ feedback.created_at|date:"d M Y, H:i" }}</small>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Card Body -->
-                    <div class="card-body">
-                        {{ feedback.feedback }}
-                        <br>
-                        <small class="text-muted">{{ feedback.created_at|date:"d M Y, H:i" }}</small>
-                    </div>
+                {% endfor %}
+            {% else %}
+            <div class="col-12">
+                <div class="alert alert-info" role="alert">
+                    No Feedbacks available yet. Wait for users to submit a feedback or a query.
                 </div>
             </div>
-            {% endfor %}
+            {% endif %}
         </div>
     </div>
     
+
 
 </body>
 
 <script>
     function redirectToEmailForm(element) {
-    var recipientEmail = element.getAttribute('data-email');
-    
-    // Redirect to the email form page with the recipient's email as a query parameter
-    var emailFormUrl = "{% url 'email' %}?recipient=" + encodeURIComponent(recipientEmail);
-    window.location.href = emailFormUrl;
-}
+        var recipientEmail = element.getAttribute('data-email');
+        
+        // Redirect to the email form page with the recipient's email as a query parameter
+        var emailFormUrl = "{% url 'email' %}?recipient=" + encodeURIComponent(recipientEmail);
+        window.location.href = emailFormUrl;
+    }
     function setRecipientEmail(element) {
-    var recipientEmail = element.getAttribute('data-email');
-    var recipientsSelect = document.getElementById('recipients');
-    
-    // Clear the previously selected recipients
-    for (var i = 0; i < recipientsSelect.options.length; i++) {
-        recipientsSelect.options[i].selected = false;
-    }
-
-    // Select the new recipient
-    for (var i = 0; i < recipientsSelect.options.length; i++) {
-        if (recipientsSelect.options[i].value === recipientEmail) {
-            recipientsSelect.options[i].selected = true;
-            break;
+        var recipientEmail = element.getAttribute('data-email');
+        var recipientsSelect = document.getElementById('recipients');
+        
+        // Clear the previously selected recipients
+        for (var i = 0; i < recipientsSelect.options.length; i++) {
+            recipientsSelect.options[i].selected = false;
         }
-    }
 
-    // Optional: scroll to the form or trigger modal popup
-    // document.getElementById("emailForm").scrollIntoView(); 
+        // Select the new recipient
+        for (var i = 0; i < recipientsSelect.options.length; i++) {
+            if (recipientsSelect.options[i].value === recipientEmail) {
+                recipientsSelect.options[i].selected = true;
+                break;
+            }
+        }
+
+        // Optional: scroll to the form or trigger modal popup
+        // document.getElementById("emailForm").scrollIntoView(); 
 }
-
 </script>
 <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
-    <!-- Core plugin JavaScript-->
-    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<!-- Core plugin JavaScript-->
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
 
-    <!-- Custom scripts for all pages-->
-    <script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+<!-- Custom scripts for all pages-->
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
 
-    <!-- Page level plugins -->
-    <script src="{% static 'vendor/chart.js/Chart.min.js' %}"></script>
+<!-- Page level plugins -->
+<script src="{% static 'vendor/chart.js/Chart.min.js' %}"></script>
 
-    <!-- Page level custom scripts -->
-    <script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
-    <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
+<!-- Page level custom scripts -->
+<script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
+<script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
 </html>

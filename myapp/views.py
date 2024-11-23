@@ -55,9 +55,14 @@ from django.db.models.functions import TruncMonth
 from .models import Course
 import pandas as pd
 from django.http import HttpResponse
+from dotenv import load_dotenv
+import os
 
+# Load the .env file
+load_dotenv()
 
-openai.api_key = settings.OPENAI_API_KEY
+# Access the OpenAI API key
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 
 def generate_analysis(data, chart_type):

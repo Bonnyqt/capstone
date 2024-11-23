@@ -1263,15 +1263,10 @@ def professor_view_challenges(request):
 
     
 
+
 import threading
 from django.utils.timezone import now
 from django.contrib.auth.models import User
-from django.contrib.sites.shortcuts import get_current_site
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 
 def login(request):
     if request.method == 'POST':
@@ -1296,7 +1291,7 @@ def login(request):
             else:
                 return render(request, 'myapp/login.html', {'alert': 'Invalid email or password'})
 
-        elif '' in request.POST:
+        elif 'signup' in request.POST:
             # Handle signup
             name = request.POST.get('name')
             email = request.POST.get('email')
@@ -1328,8 +1323,9 @@ def login(request):
             # Generate activation link
             token = account_activation_token.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
+            domain = get_current_site(request).domain if request else 'capstone-896j.onrender.com'
             protocol = 'https' if request.is_secure() else 'http'
-            link = f'https://capstone-896j.onrender.com/activate/{uid}/{token}/'
+            link = f'{protocol}://{domain}/activate/{uid}/{token}/'
 
             # Send email
             subject = 'Activate Your Account'
@@ -1341,7 +1337,7 @@ def login(request):
             plain_message = strip_tags(message)
             send_mail(subject, plain_message, 'your-email@gmail.com', [email], html_message=message)
 
-            return render(request, 'myapp/login.html', {'alert': 'Signup successful! You have 2 minutes or the link will expire.'})
+            return render(request, 'myapp/login.html', {'alert': 'Signup successful! Please check your email to activate your account'})
 
     # Handle GET request or POST without 'login' or 'signup' action
     return render(request, 'myapp/login.html')

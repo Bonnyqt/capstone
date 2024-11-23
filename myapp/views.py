@@ -622,10 +622,15 @@ def remove_challenge_defend(request, canvas_id):
 
 def display_canvas(request, canvas_id):
     if not request.user.is_authenticated:
-        return redirect('index')  # Use your URL name or path for the index page
+        return redirect('index')  # Redirect to the index page if not authenticated
     
     # Get the canvas state from the database, return 404 if not found
     canvas_state = get_object_or_404(CanvasState, id=canvas_id)
+
+    # Check if the user has already finished this challenge
+    user_score = Score.objects.filter(user=request.user, canvas_state_title=canvas_state.title).first()
+    if user_score and user_score.finished:
+        return redirect('simulate')  # Redirect to simulate page if the challenge is finished
 
     # Prepare the canvas state data, including the canvas time
     canvas_state_data = {
@@ -643,10 +648,15 @@ def display_canvas(request, canvas_id):
 
 def display_canvas_defend(request, canvas_id):
     if not request.user.is_authenticated:
-        return redirect('index')  # Use your URL name or path for the index page
+        return redirect('index')  # Redirect to the index page if not authenticated
     
     # Get the canvas state from the database, return 404 if not found
     canvas_state = get_object_or_404(CanvasStateDefend, id=canvas_id)
+
+    # Check if the user has already finished this challenge
+    user_score = Score.objects.filter(user=request.user, canvas_state_title=canvas_state.title).first()
+    if user_score and user_score.finished:
+        return redirect('simulate')  # Redirect to simulate page if the challenge is finished
 
     # Prepare the canvas state data, including the canvas time
     canvas_state_data = {
@@ -659,6 +669,7 @@ def display_canvas_defend(request, canvas_id):
 
     # Render the template with the canvas state data
     return render(request, 'myapp/display_canvas.html', {'canvas_state': canvas_state_data})
+
 @csrf_exempt
 def save_canvas_state(request):
     if request.method == 'POST':
@@ -933,13 +944,17 @@ def about(request):
         # If the user is not logged in, show no emails
         email_logs = []
         email_count = 0
-    user_role = "Student"  # Default role
+    user_role = "Guest"  # Default role for unauthenticated users
 
-    if request.user.is_superuser:
-        user_role = "Admin"
-    elif request.user.email.endswith('.it@tip.edu.ph'):
-        user_role = "Professor"
-    # Combine context dictionaries
+
+    if request.user.is_authenticated:
+        user_first_name = request.user.first_name
+        if request.user.is_superuser:
+            user_role = "Admin"
+        elif request.user.email.endswith('.it@tip.edu.ph'):
+            user_role = "Professor"
+        else:
+            user_role = "Student"
     context = {
         'user_role':user_role,
         'email_count': email_count,
@@ -1242,13 +1257,17 @@ def contact(request):
         email_logs = []
         email_count = 0
 
-    user_role = "Student"  # Default role
+    user_role = "Guest"  # Default role for unauthenticated users
 
-    if request.user.is_superuser:
-        user_role = "Admin"
-    elif request.user.email.endswith('.it@tip.edu.ph'):
-        user_role = "Professor"
-    # Combine context dictionaries
+
+    if request.user.is_authenticated:
+        user_first_name = request.user.first_name
+        if request.user.is_superuser:
+            user_role = "Admin"
+        elif request.user.email.endswith('.it@tip.edu.ph'):
+            user_role = "Professor"
+        else:
+            user_role = "Student"
     context = {
         'user_role':user_role,
         'email_count': email_count,
@@ -1535,7 +1554,7 @@ from django.contrib.auth.models import User
 from .models import EmailLog
 from django.db.models import Q
 
-
+@login_required
 def other_profiles(request):
     query = request.GET.get('q')
     

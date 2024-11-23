@@ -1440,6 +1440,7 @@ def professor_manage_students(request):
             email = request.POST.get(f'email_{user.id}')
             user.first_name = first_name
             user.email = email
+            user.username = email
             user.save()  # Save the updated user
         
         # Redirect to the same page to avoid resubmission

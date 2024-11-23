@@ -1266,6 +1266,12 @@ def professor_view_challenges(request):
 import threading
 from django.utils.timezone import now
 from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 def login(request):
     if request.method == 'POST':
@@ -1322,8 +1328,9 @@ def login(request):
             # Generate activation link
             token = account_activation_token.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            domain = 'https://capstone-896j.onrender.com' if settings.DEBUG else get_current_site(request).domain
-            link = f'{domain}/activate/{uid}/{token}/'
+            domain = get_current_site(request).domain  # Dynamically get the current domain
+            protocol = 'https' if request.is_secure() else 'http'
+            link = f'{protocol}://{domain}/activate/{uid}/{token}/'
 
             # Send email
             subject = 'Activate Your Account'

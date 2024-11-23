@@ -16,7 +16,7 @@ DEBUG = False
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOST")
+ALLOWED_HOSTS = ['capstone-896j.onrender.com','https://capstone-896j.onrender.com']
 CSRF_TRUSTED_ORIGINS = [
     "https://capstone-896j.onrender.com",  # Add your Render domain
 ]

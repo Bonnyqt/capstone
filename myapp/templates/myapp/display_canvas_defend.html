@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERCLASH | {{ canvas_state_defend.title }}</title>
+    <title>CYBERCLASH | {{ canvas_state.title }}</title>
     <link href="{% static 'img/logo.png' %}" rel="icon">
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
@@ -12,9 +12,24 @@
     <style>
         
         body {
-            background-color: #f0f4f8; /* Light background for the body */
-            font-family: 'Nunito', sans-serif;
-        }
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  height: 100vh;
+  display: flex;
+  
+  flex-direction: column;
+  background: url("/static/img/ss1.gif") no-repeat center center;
+    background-size: cover;
+    background-attachment: fixed;
+}
+.center-wrapper {
+  background: rgba(9, 30, 62, .7);
+
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
 
         .canvas {
     width: 100%; /* Adjusts to 90% of the parent container's width */
@@ -25,7 +40,7 @@
     background: linear-gradient(135deg, #042350cb, #3b73db); /* Gradient background */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Shadow effect */
     overflow: visible; /* Allow overflow */
-    max-width: 1600px; /* Ensures it doesn't exceed 1500px */
+    max-width: 1700px; /* Ensures it doesn't exceed 1500px */
     max-height: 720px; /* Ensures it doesn't exceed 720px */
 }
 
@@ -44,21 +59,7 @@
         margin: 5px auto; /* Smaller margins for mobile */
     }
 }
-        .node {
-            position: absolute; /* Ensure the node can be positioned freely */
-            padding: 10px;
-            background: #293B44;
-            border: 2px solid green; /* Set default border color to green */
-            transition: border-color 0.3s; 
-            border-radius: 50%;
-            text-align: center;
-            width: 50px;
-            height: 50px;
-            cursor: grab;
-            color: white;
-            z-index: 1;
-            transition: transform 0.2s; /* Scale effect */
-        }
+        
     
         .node:hover {
             transform: scale(1.1); /* Scale up on hover */
@@ -212,11 +213,12 @@ label {
     font-size: 12px; /* Keep smaller font size */
     color: #666; /* Text color */
 }
-.node-title {
-    margin-top: 17px;
-    font-weight: bold;
-    color: #ffffff;
+.node {
+    position: absolute;
+    text-align: center; /* Center the title and content */
 }
+
+
 .wire {
     stroke: rgb(255, 123, 0); /* Orange color */
     stroke-width: 3;          /* Thickness */
@@ -232,41 +234,161 @@ label {
         stroke-dashoffset: -15;
     }
 }
+#assessmentWrapper {
+    display: none; /* Hide the entire wrapper initially */
+    text-align: center;
+    margin: 20px auto;
+}
+
+.assessment-header {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #ffffff;
+    text-align: center;
+}
+
 #assessmentContainer {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;   /* Aligns the items horizontally (centered) */
-    align-items: center;       /* Aligns the items vertically (centered) */
-    margin: 20px auto;         /* Adds margin on top and bottom to create space */
-    width: 80%;                 /* Adjust width as needed */
-    height: auto;              /* Adjust height as needed */
-    padding: 10px;             /* Optional: add padding around the container */
+    flex-direction: row; /* Arrange items in a row */
+    justify-content: center;
+    align-items: center; /* Align items vertically in the center */
+    margin: 0; /* Remove margin to prevent offset issues */
+    width: 90%;
+    max-width: 100%; /* Allow more space for the row layout */
+    padding: 20px;
+    gap: 15px;
+    background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white for glass effect */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+    backdrop-filter: blur(10px); /* Blurring the background */
+    -webkit-backdrop-filter: blur(10px); /* Safari support */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Light border to enhance glass effect */
+    color: #fff; /* Text color */
+
+    /* Fixed positioning at the middle bottom */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000; /* Ensure it stays above other elements */
 }
+
+/* Media query for smaller screens (mobile) */
+@media (max-width: 768px) {
+    #assessmentContainer {
+        width: 95%; /* Use most of the viewport width */
+        padding: 15px; /* Adjust padding for smaller screens */
+        gap: 10px; /* Reduce gap between items */
+    }
+}
+
+/* Media query for very small screens (e.g., portrait mode on phones) */
+@media (max-width: 480px) {
+    #assessmentContainer {
+        width: 100%; /* Take full width */
+        max-width: none; /* Disable max-width to allow full width */
+        padding: 10px; /* Further reduce padding */
+        gap: 5px; /* Minimize gap between items */
+    }
+}
+
+/* Media query for larger screens (desktops) */
+@media (min-width: 1024px) {
+    #assessmentContainer {
+        width: 80%; /* Slightly smaller width for larger screens */
+        max-width: 1200px; /* Increase maximum width */
+    }
+}
+
+
+
+
+
+
+
 .assessment-block {
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 5px 10px; /* Reduced padding for smaller size */
-    font-size: 12px; /* Smaller font size */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(145deg, #e8e8e8, #ffffff); /* Subtle 3D light gradient */
+    border: 2px solid #d6d6d6; /* More pronounced border for elegance */
+    border-radius: 15px; /* Softer, pill-like corners */
+    padding: 20px; /* Spacious padding for better readability */
+    font-size: 16px;
+    font-weight: 500; /* Slightly bolder font for emphasis */
+    color: #4a4a4a; /* Cool-toned dark gray for modernity */
+/* Double shadow for 3D look */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-width: 100px; /* Sets a minimum width */
-    max-width: 120px; /* Limits the maximum width */
+    min-width: 150px;
+    max-width: 180px;
     text-align: center;
+    transition: all 0.3s ease;
+    cursor: grab; /* Indicate drag functionality */
+    user-select: none; /* Prevent accidental text selection */
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg); /* Neutral perspective */
+}
+
+.assessment-block:hover {
+    background: linear-gradient(145deg, #f9f9f9, #e4e4e4); /* Highlight effect */
+    transform: scale(1.1) rotateX(4deg) rotateY(-4deg); /* Playful 3D tilt on hover */
+    box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3), -6px -6px 15px rgba(255, 255, 255, 0.9); /* Deeper shadow for hover */
+}
+
+.assessment-block:active {
+    transform: scale(0.95); /* Squish effect on press */
+    background: linear-gradient(145deg, #dcdcdc, #f1f1f1); /* Pressed look */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2), -2px -2px 5px rgba(255, 255, 255, 0.7); /* Reduced shadow */
+    cursor: grabbing; /* Active grab state */
+}
+
+.assessment-block .icon {
+    font-size: 30px; /* Add space for an icon at the top */
+    margin-bottom: 10px; /* Spacing between icon and text */
+    color: #888; /* Neutral color for icons */
+    transition: color 0.3s ease;
+}
+
+.assessment-block:hover .icon {
+    color: #4a90e2; /* Highlight icon color on hover */
 }
 .assessment-node-title {
     font-weight: bold;
-    color: #007bff;
-    font-size: 12px; /* Adjusted font size */
-    margin-bottom: 5px;
+    color: #0056b3;
+    font-size: 14px;
+    margin-bottom: 8px;
+    text-transform: capitalize;
 }
+
 .assessment-tooltip {
-    font-size: 10px; /* Smaller font size */
+    font-size: 12px;
     color: #555;
+    line-height: 1.4;
+    margin-top: 5px;
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #assessmentContainer {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .assessment-block {
+        min-width: 100px;
+        max-width: 120px;
+        padding: 8px;
+    }
+
+    .assessment-node-title {
+        font-size: 12px;
+    }
+
+    .assessment-tooltip {
+        font-size: 10px;
+    }
+}
+
 .shadow__btn {
   padding: 10px 20px;
   border: none;
@@ -295,37 +417,108 @@ label {
     text-align: center;
     font-weight: bold;
 }
+
+#smallScreenOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    z-index: 9999;
+    text-align: center;
+    padding: 20px;
+}
+
+#smallScreenOverlay h1 {
+    font-size: 2em;
+    margin-top: 20%;
+}
+
+#smallScreenOverlay p {
+    font-size: 1.2em;
+}
+
+/* Show overlay when screen size is below 768px */
+@media screen and (max-width: 1280px) {
+    #smallScreenOverlay {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .center-wrapper,
+    .leaderboard {
+        display: none;
+    }
+}
+.simulation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    z-index: 1000; /* Ensure it appears on top */
+    cursor: pointer;
+}
+.simulation-overlay p {
+    margin: 0;
+    text-align: center;
+}
+
+
     </style>
 </head>
 <body>
+    <div id="simulationOverlay" class="simulation-overlay">
+        <p>Click anywhere to start the simulation</p>
+    </div>
+    <div id="smallScreenOverlay">
+        <p>Please use a larger device or resize your window to continue with the simulation.</p>
+    </div>
+   <div class="center-wrapper">
+  <br>
+    <h3 class="m-0 font-weight-bold" style="color:white; text-align:center;">{{ canvas_state.title }} Simulation</h3>
 
-    <div class="card shadow mb-4">
-        <div class="card-header py-3" style="display: flex;">
-            <h6 class="m-0 font-weight-bold text-primary">CHALLENGE: {{ canvas_state_defend.title }}</h6>
-            
-        </div>
-        <div class="card-body">
-            <div>         
-          
-               
-                
-                    <div id="assessmentContainer" class="assessment-container"></div>
-              
-               
-            </div>
+
             <div class="canvas" id="canvas">
-                <svg id="svgCanvas" width="1600" height="670" style="position: absolute; top: 0; left: 0;"></svg>
+                <svg id="svgCanvas" width="1700" height="670" style="position: absolute; top: 0; left: 0;"></svg>
                 <div class="packet" id="packet"></div> <!-- Packet element -->
             </div>
-            <button id="demoBtn" class="shadow__btn">CYMULATE!</button>
+
+           <div id="assessmentWrapper">
+   
+    <div id="assessmentContainer" class="assessment-container">
             <form method="post">
                 {% csrf_token %}
                 <button id="submitBtn" class="shadow__btn">Submit</button>
             </form>
-            </div> 
+            <form method="post">
+                {% csrf_token %}
+                <button id="exitBtn" class="shadow__btn">Exit</button>
+            </form>
+        
         </div>
+</div>
+            
+        
+          
+          
+        </div>
+
+
+        
     <script>
-        const myCanvasState = {{ canvas_state_defend|safe }};
+        const myCanvasState = {{ canvas_state|safe }};
         const nodes = myCanvasState.nodes;
         const wires = myCanvasState.wires;
         const packet = document.getElementById('packet');
@@ -338,6 +531,7 @@ label {
         });
     
         function addNode(iconClass, ipAddress, tooltipDescription, vulnerability, title, left, top, index) {
+    // Create the node container
     let node = document.createElement('div');
     node.classList.add('node');
     const nodeId = `node-${index}`; // Create a dynamic ID based on the index
@@ -348,7 +542,6 @@ label {
 
     node.innerHTML = `
         <i class="${iconClass}"></i>
-        <div class="node-title">${title}</div>
         <div class="tooltip">
             ${tooltipDescription}
             <div class="info-row">
@@ -357,7 +550,27 @@ label {
             </div>
         </div>
     `;
-    document.getElementById('canvas').appendChild(node);
+
+    // Append the node to the canvas
+    const canvas = document.getElementById('canvas');
+    canvas.appendChild(node);
+
+    // Create the title element as a sibling to the node
+    let nodeTitle = document.createElement('div');
+    nodeTitle.classList.add('node-title');
+    nodeTitle.textContent = title;
+
+    // Position the title element below the node
+    nodeTitle.style.position = 'absolute';
+    nodeTitle.style.left = left;
+    nodeTitle.style.top = `calc(${top} + 50px)`; // Adjust "50px" based on your node's height
+    nodeTitle.style.textAlign = 'center';
+    nodeTitle.style.fontSize = '12px'; // Adjust font size as needed
+    nodeTitle.style.width = '100px'; // Ensure the title has some width
+    nodeTitle.style.transform = 'translateX(-24%)'; // Center the title below the node
+
+    // Append the title to the canvas
+    canvas.appendChild(nodeTitle);
 }
 
         function drawWire(startX, startY, endX, endY) {
@@ -380,53 +593,248 @@ label {
             document.getElementById('svgCanvas').appendChild(endCircle);
         }
     </script>
-   <script>
+  <script>
+    // Global Variables
     const canvas = document.getElementById('canvas');
     const svgCanvas = document.getElementById('svgCanvas');
     const demoBtn = document.getElementById('demoBtn');
-    const submitBtn = document.getElementById('submitBtn');  // New submit button
+    const submitBtn = document.getElementById('submitBtn'); // Submit button
     let removeNodeMode = false;
+    let currentWireIndex = 0;
+    const assessedNodes = new Set();
+    const draggedBlocks = {};
+    const nodesToAssess = [];
+    let remainingTime;
+    const totalTime = parseInt("{{ canvas_state.canvas_time }}", 10); // Ensure canvas_time is parsed as an integer
+// Global variable to track nodes with assigned blocks
 
-    demoBtn.addEventListener('click', () => {
-        const nodes = document.querySelectorAll('.node');
-        if (nodes.length < 2) {
-            alert('Add at least two nodes to simulate packet transfer.');
-            return;
+document.addEventListener('DOMContentLoaded', () => {
+    const simulationOverlay = document.getElementById('simulationOverlay');
+    const packet = document.getElementById('packet'); // Ensure packet exists
+    toggleSubmitButton();
+    
+    if (!simulationOverlay) {
+        console.error('Simulation overlay not found!');
+        return;
+    }
+
+    // Add click event listener to the overlay
+    simulationOverlay.addEventListener('click', () => {
+        console.log('Overlay clicked, starting simulation...');
+        simulationOverlay.style.display = 'none';
+        if (typeof animatePacketThroughWires === 'function') {
+            animatePacketThroughWires();
+        } else {
+            console.error('animatePacketThroughWires function is not defined.');
         }
-        let currentWireIndex = 0;
-        const assessedNodes = new Set();
-        const draggedBlocks = {}; // Track the dragged blocks for later validation
-        function createAssessmentBlock(nodeId, tooltipText) {
-            if (assessedNodes.has(nodeId)) return;
-            assessedNodes.add(nodeId);
+    });
+
+    document.querySelectorAll('.node').forEach((node) => {
+        // Mark the node as unoccupied initially
+        node.setAttribute('data-occupied', 'false');
+
+        node.addEventListener('dragover', (e) => {
+            e.preventDefault(); // Allow drop only if unoccupied
+            if (node.getAttribute('data-occupied') === 'false') {
+                node.style.backgroundColor = 'grey'; // Change color if block can be dropped
+            }
+        });
+
+        node.addEventListener('dragleave', () => {
+            if (node.getAttribute('data-occupied') === 'false') {
+                node.style.backgroundColor = ''; // Reset color
+            }
+        });
+
+        node.addEventListener('drop', (e) => {
+            e.preventDefault();
+
+            // Prevent drop if the node is already occupied
+            if (node.getAttribute('data-occupied') === 'true') {
+                console.warn('Node is already occupied.');
+                return;
+            }
+
+            const nodeId = e.dataTransfer.getData('nodeId'); // Retrieve dragged nodeId
+            draggedBlocks[nodeId] = node.id; // Track block and node it was dropped onto
+
+            // Mark the node as occupied
+            node.setAttribute('data-occupied', 'true');
+
+            node.style.backgroundColor = 'grey'; // Indicate the block is dropped
+
+            // Remove the block from the assessment container
             const assessmentContainer = document.getElementById('assessmentContainer');
-            const assessmentBlock = document.createElement('div');
-            assessmentBlock.classList.add('assessment-block');
-            assessmentBlock.setAttribute('data-node-id', nodeId); 
-            assessmentBlock.innerHTML = `
-             
-                <div class="assessment-tooltip">${tooltipText}</div>`;
+            const blockToRemove = document.querySelector(`.assessment-block[data-node-id="${nodeId}"]`);
+            if (blockToRemove) {
+                assessmentContainer.removeChild(blockToRemove);
+            }
 
-            assessmentBlock.setAttribute('draggable', true);
-            assessmentBlock.addEventListener('dragstart', (e) => {
-                e.dataTransfer.setData('nodeId', nodeId);
-            });
-            assessmentContainer.appendChild(assessmentBlock);
+            toggleSubmitButton();
+        });
+    });
+});
+
+    
+    function createAssessmentBlock(nodeId, tooltipText) {
+        if (assessedNodes.has(nodeId)) return;
+        assessedNodes.add(nodeId);
+
+        const assessmentContainer = document.getElementById('assessmentContainer');
+
+        // Create the new assessment block
+        const assessmentBlock = document.createElement('div');
+        assessmentBlock.classList.add('assessment-block');
+        assessmentBlock.setAttribute('data-node-id', nodeId);
+
+        // Only show the tooltip description
+        assessmentBlock.innerHTML = `
+            <div class="assessment-tooltip">${tooltipText}</div>`;
+
+        assessmentBlock.setAttribute('draggable', true);
+        assessmentBlock.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('nodeId', nodeId);
+        });
+
+        // Append the new block to the container
+        assessmentContainer.appendChild(assessmentBlock);
+
+        // Randomize the order of all blocks in the container
+        randomizeAssessmentBlocks(assessmentContainer);
+        toggleSubmitButton();
+    }
+
+    // Function to randomize the order of blocks in the container
+    function randomizeAssessmentBlocks(container) {
+        // Convert container's children (NodeList) to an array
+        const blocks = Array.from(container.children);
+
+        // Shuffle the blocks array
+        for (let i = blocks.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [blocks[i], blocks[j]] = [blocks[j], blocks[i]];
         }
-        let lastWireIndex = wires.length - 1; 
-        let nodesToAssess = [];
-        const animatePacketThroughWires = () => {
+
+        // Clear the container and re-append the blocks in shuffled order
+        container.innerHTML = '';
+        blocks.forEach(block => container.appendChild(block));
+    }
+
+
+
+
+    let countdownTimer; // Global variable to track the countdown timer
+
+function startCountdown(duration) {
+    let countdownContainer = document.getElementById('countdownContainer');
+    if (!countdownContainer) {
+        countdownContainer = document.createElement('div');
+        countdownContainer.id = 'countdownContainer';
+        document.body.appendChild(countdownContainer);
+    }
+
+    countdownContainer.style.cssText = `
+        font-size: 24px;
+        color: #06152c;
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+    `;
+
+    let timeRemaining = duration;
+    remainingTime = timeRemaining;
+
+    const updateCountdown = () => {
+        countdownContainer.textContent = `Time remaining: ${timeRemaining}s`;
+
+        if (timeRemaining > 0) {
+            timeRemaining--;
+            remainingTime = timeRemaining;
+            countdownTimer = setTimeout(updateCountdown, 1000); // Track the timeout ID
+        } else {
+            countdownContainer.textContent = 'Time is up!';
+            submitBtn.disabled = true; // Disable submit button
+            autoSubmitChallenge(); // Trigger auto-submit
+        }
+    };
+
+    updateCountdown();
+}
+
+function autoSubmitChallenge() {
+    let score = 0;
+    let correctCount = 0;
+    let incorrectCount = 0;
+
+    // Remove all assessment blocks after timer expires
+    const assessmentContainer = document.getElementById('assessmentContainer');
+    const allAssessmentBlocks = assessmentContainer.querySelectorAll('.assessment-block');
+    allAssessmentBlocks.forEach(block => {
+        block.style.display = 'none'; // You can also remove the block if needed: block.remove();
+    });
+
+    // Calculate the score based on dragged blocks
+    for (const nodeId in draggedBlocks) {
+        const node = document.getElementById(draggedBlocks[nodeId]);
+
+        if (draggedBlocks[nodeId] === nodeId) {
+            node.style.backgroundColor = '#84a860'; // Correct
+            score += 5;
+            correctCount++;
+        } else {
+            node.style.backgroundColor = '#ed4a4a'; // Incorrect
+            incorrectCount++;
+        }
+    }
+
+    const multiplier = calculateMultiplier(0); // Use 0 for expired time
+    score *= multiplier;
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch('{% url "save_score_defend" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+            score,
+            finished: true,
+            category: '{{ canvas_state.category }}',
+            correct_submissions: correctCount,
+            incorrect_submissions: incorrectCount,
+            canvas_state_title: '{{ canvas_state.title }}'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Score saved:', data);
+        alert('Time is up! Your score has been saved automatically.');
+        exitBtn.style.display = 'block'; // Show exit button
+    })
+    .catch(error => {
+        console.error('Error saving score:', error);
+        alert('An error occurred while saving your score.');
+    });
+}
+
+
+
+    // Packet animation function
+    const animatePacketThroughWires = () => {
     const wire = wires[currentWireIndex];
     const startNode = document.getElementById(wire.start);
     const endNode = document.getElementById(wire.end);
 
-    // Track the nodes to assess
-    if (!nodesToAssess.includes(wire.start)) {
-        nodesToAssess.push(wire.start);
-    }
-    if (!nodesToAssess.includes(wire.end)) {
-        nodesToAssess.push(wire.end);
-    }
+    // Track nodes to assess
+    if (!nodesToAssess.includes(wire.start)) nodesToAssess.push(wire.start);
+    if (!nodesToAssess.includes(wire.end)) nodesToAssess.push(wire.end);
 
     const startX = parseInt(startNode.style.left) + 25;
     const startY = parseInt(startNode.style.top) + 25;
@@ -445,7 +853,7 @@ label {
     setTimeout(() => {
         const distanceX = endX - startX;
         const distanceY = endY - startY;
-        const duration = 1000; // 1 second
+        const duration = 100; // Duration of animation
         const startTime = performance.now();
 
         function animatePacket(timestamp) {
@@ -462,7 +870,6 @@ label {
                 requestAnimationFrame(animatePacket);
             } else {
                 packet.style.display = 'none';
-
                 tooltipStart.style.visibility = 'hidden';
                 tooltipStart.style.opacity = 0;
 
@@ -479,96 +886,100 @@ label {
 
                     currentWireIndex++;
 
-                    // Check if the last wire is completed and show assessment blocks
+                      // After the final packet animation ends
                     if (currentWireIndex === wires.length) {
-                        // Show assessment blocks for all nodes that were part of the animation
                         nodesToAssess.forEach((nodeId) => {
                             const node = document.getElementById(nodeId);
                             const tooltip = node.querySelector('.tooltip');
                             createAssessmentBlock(nodeId, tooltip.textContent);
                         });
 
-                        // Hide the demo button and show the submit button
-                        demoBtn.style.display = 'none';
                         submitBtn.style.display = 'block';
-                        startCountdown(30);
+                        toggleSubmitButton();
+                        // Get canvas time directly from the Django template and start the countdown
+                        const canvasTime = parseInt("{{ canvas_state.canvas_time }}", 10);
+                        const assessmentWrapper = document.getElementById('assessmentWrapper');
+        if (assessmentWrapper) {
+            assessmentWrapper.style.display = 'block'; // Show the entire wrapper
+        }    // Ensure countdown is visible after the animation
+                        startCountdown(canvasTime);
                     } else {
-                        // Continue animating the next wire
-                        animatePacketThroughWires();
+                        animatePacketThroughWires(); // Continue animation for the next wire
                     }
-                }, 2000);
+                }, 100);
             }
         }
 
         requestAnimationFrame(animatePacket);
-    }, 2000);
+    }, 100);
 };
 
-        // Allow nodes to accept assessment blocks
-        document.querySelectorAll('.node').forEach((node) => {
-            node.addEventListener('dragover', (e) => {
-                e.preventDefault(); // Allow drop
-                node.style.backgroundColor = 'grey';  // Change background color to grey when the block is dragged over
-            });
+    // Calculate multiplier based on remaining time
+    function calculateMultiplier(timeRemaining) {
+        if (timeRemaining <= 0) return 0;
+        if (timeRemaining <= 10) return 1.2;
+        if (timeRemaining <= 20) return 1.6;
+        if (timeRemaining <= 30) return 1.8;
+        if (timeRemaining <= 40) return 2.2;
+        if (timeRemaining <= 50) return 2.0;
+        if (timeRemaining <= 60) return 2.4;
+        if (timeRemaining <= 70) return 2.6;
+        if (timeRemaining <= 80) return 2.8;
+        if (timeRemaining <= 90) return 3.0;
+    }
+    const exitBtn = document.getElementById('exitBtn');
+    exitBtn.style.display = 'none'; 
+    // Submit button event listener
+    submitBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    submitBtn.style.display = 'none';
 
-            node.addEventListener('dragleave', (e) => {
-                node.style.backgroundColor = '';  // Reset background color when the block leaves the node
-            });
+    // Stop the countdown timer
+    if (countdownTimer) {
+        clearTimeout(countdownTimer); // Clear the timeout
+    }
 
-            node.addEventListener('drop', (e) => {
-                e.preventDefault();
-
-                const nodeId = e.dataTransfer.getData('nodeId'); // Retrieve the dragged nodeId
-                draggedBlocks[nodeId] = node.id;  // Track the dragged block and the node it was dropped onto
-
-                // Change background color to grey when the block is dropped onto the node
-                node.style.backgroundColor = 'grey';
-
-                // Remove the block from the assessment container (hide the block)
-                const assessmentContainer = document.getElementById('assessmentContainer');
-                const blockToRemove = document.querySelector(`.assessment-block[data-node-id="${nodeId}"]`);
-                if (blockToRemove) {
-                    assessmentContainer.removeChild(blockToRemove);
-                }
-            });
-        });
-        
-        submitBtn.addEventListener('click', (event) => {
-    event.preventDefault(); // Prevent the form from reloading the page
+    // Hide the countdown timer
+    const countdownContainer = document.getElementById('countdownContainer');
+    if (countdownContainer) {
+        countdownContainer.style.display = 'none';
+    }
 
     let score = 0;
-    let finished = true;  // Assume the user has finished the activity
+    let correctCount = 0;
+    let incorrectCount = 0;
 
-    // Iterate over all the dragged blocks and validate them
     for (const nodeId in draggedBlocks) {
         const node = document.getElementById(draggedBlocks[nodeId]);
 
-        // Check if the block was dropped onto the correct node
         if (draggedBlocks[nodeId] === nodeId) {
-            node.style.backgroundColor = '#84a860';  // Correct answer
-            score += 10;  // Add points for correct answers
+            node.style.backgroundColor = '#84a860'; // Correct
+            score += 5;
+            correctCount++;
         } else {
-            node.style.backgroundColor = '#ed4a4a';  // Incorrect answer
+            node.style.backgroundColor = '#ed4a4a'; // Incorrect
+            incorrectCount++;
         }
     }
 
-    // Send the score and finished status to the server via AJAX
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;  // CSRF token
-    const category = myCanvasState.category;  // Get the category from your canvas state
+    const multiplier = calculateMultiplier(remainingTime);
+    score *= multiplier;
 
-    fetch('{% url "save_score" %}', {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch('{% url "save_score_defend" %}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({
-            score: score,
-            finished: finished,
-            category: '{{ canvas_state.category }}',  // Send the category to the server
+            score,
+            finished: true,
+            category: '{{ canvas_state.category }}',
             correct_submissions: correctCount,
             incorrect_submissions: incorrectCount,
-            canvas_state_title: '{{ canvas_state.title }}'  // Send the canvas state title to the server
+            canvas_state_title: '{{ canvas_state.title }}'
         })
     })
     .then(response => response.json())
@@ -580,48 +991,37 @@ label {
         console.error('Error saving score:', error);
         alert('An error occurred while saving your score.');
     });
-})
 
+    // Show exit button
+    exitBtn.style.display = 'block';
+});
+    exitBtn.addEventListener('click', (event) => {
+    event.preventDefault();
 
-      
+    // Close the current window
+    window.close();
 
-        animatePacketThroughWires();
-    });
+    // Reload the parent window where the current window was opened
+    if (window.opener) {
+        window.opener.location.reload();  // Reload the parent window
+    }
+});
 
-
-    function startCountdown(duration) {
-    const countdownContainer = document.createElement('div');
-    countdownContainer.id = 'countdownContainer';
-    countdownContainer.style.fontSize = '18px';
-    countdownContainer.style.color = 'red';
-    countdownContainer.style.position = 'absolute';
-    countdownContainer.style.top = '10px';
-    countdownContainer.style.right = '10px';
-    countdownContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-    countdownContainer.style.padding = '5px 10px';
-    countdownContainer.style.borderRadius = '5px';
-    countdownContainer.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.2)';
-    document.body.appendChild(countdownContainer); // Add to the top-right corner of the page
-
-    let timeRemaining = duration;
-
-    const updateCountdown = () => {
-        countdownContainer.textContent = `Time remaining: ${timeRemaining}s`;
-
-        if (timeRemaining > 0) {
-            timeRemaining--;
-            setTimeout(updateCountdown, 1000); // Update countdown every second
-        } else {
-            countdownContainer.textContent = 'Time is up!';
-            // Additional actions when countdown ends (optional)
-            submitBtn.disabled = true; // Example: Disable the submit button
-        }
-    };
-
-    updateCountdown();
+    function toggleSubmitButton() {
+    const assessmentContainer = document.getElementById('assessmentContainer');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // Check if the container has any blocks
+    if (assessmentContainer.querySelectorAll('.assessment-block').length === 0) {
+        submitBtn.style.display = 'block'; // Show the button
+    } else {
+        submitBtn.style.display = 'none'; // Hide the button
+    }
 }
 
 </script>
+
+
 
 </body>
 

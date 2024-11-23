@@ -302,9 +302,15 @@ h1 {
     </div>
 </body>
 <script>
-    let openedWindow = null;  // Store reference to the opened window
+    let openedWindow = null; // Store reference to the opened window
 
     function openWindow(id) {
+        // Close the currently opened window if it exists and is not already closed
+        if (openedWindow && !openedWindow.closed) {
+            console.log("Closing the currently opened window.");
+            openedWindow.close();
+        }
+
         // Construct the URL with the dynamic 'id'
         const url = "{% url 'display_canvas_defend' canvas_id=0 %}".replace('0', id);
         const windowFeatures = 'fullscreen=yes, scrollbars=yes, resizable=yes, width=' + screen.width + ', height=' + screen.height;
@@ -312,11 +318,9 @@ h1 {
         // Open the new window and store the reference
         openedWindow = window.open(url, '_blank', windowFeatures);
 
-        // Optional: Add an event listener to check when the opened window is closed
-        openedWindow.addEventListener('unload', function() {
-            // After the window is closed, reset the reference to allow opening a new one
-            openedWindow = null;
-        });
+        if (!openedWindow) {
+            console.error("Failed to open the window. It might have been blocked by the browser.");
+        }
     }
 
     function checkFinished(challengeId, isFinished) {
@@ -330,7 +334,7 @@ h1 {
     }
 
     function showSnackbar() {
-        var snackbar = document.getElementById("snackbar");
+        const snackbar = document.getElementById("snackbar");
         snackbar.className = "show";
 
         // After 3 seconds, remove the "show" class to hide the snackbar

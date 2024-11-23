@@ -250,50 +250,61 @@ label {
 
 #assessmentContainer {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: row; /* Arrange items in a row */
     justify-content: center;
-    align-items: flex-start;
-    margin: 20px auto;
+    align-items: center; /* Align items vertically in the center */
+    margin: 0; /* Remove margin to prevent offset issues */
     width: 90%;
-    max-width: 1000px;
+    max-width: 100%; /* Allow more space for the row layout */
     padding: 20px;
     gap: 15px;
     background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white for glass effect */
-    border-radius: 10px;
+    border-radius: 10px; /* Rounded corners */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
     backdrop-filter: blur(10px); /* Blurring the background */
     -webkit-backdrop-filter: blur(10px); /* Safari support */
     border: 1px solid rgba(255, 255, 255, 0.3); /* Light border to enhance glass effect */
     color: #fff; /* Text color */
+
+    /* Fixed positioning at the middle bottom */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000; /* Ensure it stays above other elements */
 }
 
-
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-    #assessmentContainer {
-        width: 95%;
-        padding: 15px;
-        gap: 12px;
-    }
-}
-
+/* Media query for smaller screens (mobile) */
 @media (max-width: 768px) {
     #assessmentContainer {
-        width: 100%;
-        padding: 10px;
-        gap: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); /* Reduce shadow intensity for smaller screens */
+        width: 95%; /* Use most of the viewport width */
+        padding: 15px; /* Adjust padding for smaller screens */
+        gap: 10px; /* Reduce gap between items */
     }
 }
 
+/* Media query for very small screens (e.g., portrait mode on phones) */
 @media (max-width: 480px) {
     #assessmentContainer {
-        flex-direction: column; /* Stack items vertically for narrow screens */
-        align-items: center;
-        padding: 8px;
-        gap: 8px;
+        width: 100%; /* Take full width */
+        max-width: none; /* Disable max-width to allow full width */
+        padding: 10px; /* Further reduce padding */
+        gap: 5px; /* Minimize gap between items */
     }
 }
+
+/* Media query for larger screens (desktops) */
+@media (min-width: 1024px) {
+    #assessmentContainer {
+        width: 80%; /* Slightly smaller width for larger screens */
+        max-width: 1200px; /* Increase maximum width */
+    }
+}
+
+
+
+
+
 
 
 .assessment-block {
@@ -485,7 +496,7 @@ label {
             </div>
 
            <div id="assessmentWrapper">
-    <div id="assessmentHeader" class="assessment-header">Drag the blocks to the node</div>
+   
     <div id="assessmentContainer" class="assessment-container">
             <form method="post">
                 {% csrf_token %}
@@ -595,63 +606,75 @@ label {
     const nodesToAssess = [];
     let remainingTime;
     const totalTime = parseInt("{{ canvas_state.canvas_time }}", 10); // Ensure canvas_time is parsed as an integer
+// Global variable to track nodes with assigned blocks
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const simulationOverlay = document.getElementById('simulationOverlay');
-        const packet = document.getElementById('packet'); // Ensure packet exists
-        toggleSubmitButton();
-        // Verify the overlay element
-        if (!simulationOverlay) {
-            console.error('Simulation overlay not found!');
-            return;
+document.addEventListener('DOMContentLoaded', () => {
+    const simulationOverlay = document.getElementById('simulationOverlay');
+    const packet = document.getElementById('packet'); // Ensure packet exists
+    toggleSubmitButton();
+    
+    if (!simulationOverlay) {
+        console.error('Simulation overlay not found!');
+        return;
+    }
+
+    // Add click event listener to the overlay
+    simulationOverlay.addEventListener('click', () => {
+        console.log('Overlay clicked, starting simulation...');
+        simulationOverlay.style.display = 'none';
+        if (typeof animatePacketThroughWires === 'function') {
+            animatePacketThroughWires();
+        } else {
+            console.error('animatePacketThroughWires function is not defined.');
         }
+    });
 
-        // Add click event listener to the overlay
-        simulationOverlay.addEventListener('click', () => {
-            console.log('Overlay clicked, starting simulation...');
+    document.querySelectorAll('.node').forEach((node) => {
+        // Mark the node as unoccupied initially
+        node.setAttribute('data-occupied', 'false');
 
-            // Hide the overlay
-            simulationOverlay.style.display = 'none';
-
-            // Start the packet animation simulation
-            if (typeof animatePacketThroughWires === 'function') {
-                animatePacketThroughWires();
-            } else {
-                console.error('animatePacketThroughWires function is not defined.');
+        node.addEventListener('dragover', (e) => {
+            e.preventDefault(); // Allow drop only if unoccupied
+            if (node.getAttribute('data-occupied') === 'false') {
+                node.style.backgroundColor = 'grey'; // Change color if block can be dropped
             }
         });
 
-        // Allow nodes to accept assessment blocks
-        document.querySelectorAll('.node').forEach((node) => {
-            node.addEventListener('dragover', (e) => {
-                e.preventDefault(); // Allow drop
-                node.style.backgroundColor = 'grey'; // Change background color when block is dragged over
-            });
+        node.addEventListener('dragleave', () => {
+            if (node.getAttribute('data-occupied') === 'false') {
+                node.style.backgroundColor = ''; // Reset color
+            }
+        });
 
-            node.addEventListener('dragleave', () => {
-                node.style.backgroundColor = ''; // Reset background color
-            });
+        node.addEventListener('drop', (e) => {
+            e.preventDefault();
 
-            node.addEventListener('drop', (e) => {
-                e.preventDefault();
+            // Prevent drop if the node is already occupied
+            if (node.getAttribute('data-occupied') === 'true') {
+                console.warn('Node is already occupied.');
+                return;
+            }
 
-                const nodeId = e.dataTransfer.getData('nodeId'); // Retrieve dragged nodeId
-                draggedBlocks[nodeId] = node.id; // Track block and node it was dropped onto
+            const nodeId = e.dataTransfer.getData('nodeId'); // Retrieve dragged nodeId
+            draggedBlocks[nodeId] = node.id; // Track block and node it was dropped onto
 
-                // Change background color to grey when block is dropped
-                node.style.backgroundColor = 'grey';
+            // Mark the node as occupied
+            node.setAttribute('data-occupied', 'true');
 
-                // Remove the block from the assessment container
-                const assessmentContainer = document.getElementById('assessmentContainer');
-                const blockToRemove = document.querySelector(`.assessment-block[data-node-id="${nodeId}"]`);
-                if (blockToRemove) {
-                    assessmentContainer.removeChild(blockToRemove);
-                }
-                toggleSubmitButton();
+            node.style.backgroundColor = 'grey'; // Indicate the block is dropped
 
-            });
+            // Remove the block from the assessment container
+            const assessmentContainer = document.getElementById('assessmentContainer');
+            const blockToRemove = document.querySelector(`.assessment-block[data-node-id="${nodeId}"]`);
+            if (blockToRemove) {
+                assessmentContainer.removeChild(blockToRemove);
+            }
+
+            toggleSubmitButton();
         });
     });
+});
+
     
     function createAssessmentBlock(nodeId, tooltipText) {
         if (assessedNodes.has(nodeId)) return;
@@ -700,8 +723,9 @@ label {
 
 
 
-    function startCountdown(duration) {
-    // Create or ensure the countdown container exists
+    let countdownTimer; // Global variable to track the countdown timer
+
+function startCountdown(duration) {
     let countdownContainer = document.getElementById('countdownContainer');
     if (!countdownContainer) {
         countdownContainer = document.createElement('div');
@@ -709,18 +733,17 @@ label {
         document.body.appendChild(countdownContainer);
     }
 
-    // Style the countdown container to ensure it's visible
     countdownContainer.style.cssText = `
         font-size: 24px;
         color: #06152c;
-        position: fixed; /* Use fixed to ensure it's always visible */
+        position: fixed;
         top: 10px;
         right: 10px;
         padding: 5px 10px;
         border-radius: 5px;
         background-color: rgba(255, 255, 255, 0.9);
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-        z-index: 1000; /* Ensure it appears above other elements */
+        z-index: 1000;
     `;
 
     let timeRemaining = duration;
@@ -732,16 +755,74 @@ label {
         if (timeRemaining > 0) {
             timeRemaining--;
             remainingTime = timeRemaining;
-            setTimeout(updateCountdown, 1000);
+            countdownTimer = setTimeout(updateCountdown, 1000); // Track the timeout ID
         } else {
             countdownContainer.textContent = 'Time is up!';
-            submitBtn.disabled = true; // Disable submit button when time is up
+            submitBtn.disabled = true; // Disable submit button
+            autoSubmitChallenge(); // Trigger auto-submit
         }
     };
 
     updateCountdown();
 }
 
+function autoSubmitChallenge() {
+    let score = 0;
+    let correctCount = 0;
+    let incorrectCount = 0;
+
+    // Remove all assessment blocks after timer expires
+    const assessmentContainer = document.getElementById('assessmentContainer');
+    const allAssessmentBlocks = assessmentContainer.querySelectorAll('.assessment-block');
+    allAssessmentBlocks.forEach(block => {
+        block.style.display = 'none'; // You can also remove the block if needed: block.remove();
+    });
+
+    // Calculate the score based on dragged blocks
+    for (const nodeId in draggedBlocks) {
+        const node = document.getElementById(draggedBlocks[nodeId]);
+
+        if (draggedBlocks[nodeId] === nodeId) {
+            node.style.backgroundColor = '#84a860'; // Correct
+            score += 5;
+            correctCount++;
+        } else {
+            node.style.backgroundColor = '#ed4a4a'; // Incorrect
+            incorrectCount++;
+        }
+    }
+
+    const multiplier = calculateMultiplier(0); // Use 0 for expired time
+    score *= multiplier;
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch('{% url "save_score" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+            score,
+            finished: true,
+            category: '{{ canvas_state.category }}',
+            correct_submissions: correctCount,
+            incorrect_submissions: incorrectCount,
+            canvas_state_title: '{{ canvas_state.title }}'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Score saved:', data);
+        alert('Time is up! Your score has been saved automatically.');
+        exitBtn.style.display = 'block'; // Show exit button
+    })
+    .catch(error => {
+        console.error('Error saving score:', error);
+        alert('An error occurred while saving your score.');
+    });
+}
 
 
 
@@ -772,7 +853,7 @@ label {
     setTimeout(() => {
         const distanceX = endX - startX;
         const distanceY = endY - startY;
-        const duration = 1000; // Duration of animation
+        const duration = 100; // Duration of animation
         const startTime = performance.now();
 
         function animatePacket(timestamp) {
@@ -825,12 +906,12 @@ label {
                     } else {
                         animatePacketThroughWires(); // Continue animation for the next wire
                     }
-                }, 4000);
+                }, 100);
             }
         }
 
         requestAnimationFrame(animatePacket);
-    }, 4000);
+    }, 100);
 };
 
     // Calculate multiplier based on remaining time
@@ -850,57 +931,70 @@ label {
     exitBtn.style.display = 'none'; 
     // Submit button event listener
     submitBtn.addEventListener('click', (event) => {
-        event.preventDefault();
-        submitBtn.style.display = 'none';
-        let score = 0;
-        let correctCount = 0;
-        let incorrectCount = 0;
+    event.preventDefault();
+    submitBtn.style.display = 'none';
 
-        for (const nodeId in draggedBlocks) {
-            const node = document.getElementById(draggedBlocks[nodeId]);
+    // Stop the countdown timer
+    if (countdownTimer) {
+        clearTimeout(countdownTimer); // Clear the timeout
+    }
 
-            if (draggedBlocks[nodeId] === nodeId) {
-                node.style.backgroundColor = '#84a860'; // Correct
-                score += 5;
-                correctCount++;
-            } else {
-                node.style.backgroundColor = '#ed4a4a'; // Incorrect
-                incorrectCount++;
-            }
+    // Hide the countdown timer
+    const countdownContainer = document.getElementById('countdownContainer');
+    if (countdownContainer) {
+        countdownContainer.style.display = 'none';
+    }
+
+    let score = 0;
+    let correctCount = 0;
+    let incorrectCount = 0;
+
+    for (const nodeId in draggedBlocks) {
+        const node = document.getElementById(draggedBlocks[nodeId]);
+
+        if (draggedBlocks[nodeId] === nodeId) {
+            node.style.backgroundColor = '#84a860'; // Correct
+            score += 5;
+            correctCount++;
+        } else {
+            node.style.backgroundColor = '#ed4a4a'; // Incorrect
+            incorrectCount++;
         }
+    }
 
-        const multiplier = calculateMultiplier(remainingTime);
-        score *= multiplier;
+    const multiplier = calculateMultiplier(remainingTime);
+    score *= multiplier;
 
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-        fetch('{% url "save_score" %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
-            body: JSON.stringify({
-                score,
-                finished: true,
-                category: '{{ canvas_state.category }}',
-                correct_submissions: correctCount,
-                incorrect_submissions: incorrectCount,
-                canvas_state_title: '{{ canvas_state.title }}'
-            })
+    fetch('{% url "save_score" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+            score,
+            finished: true,
+            category: '{{ canvas_state.category }}',
+            correct_submissions: correctCount,
+            incorrect_submissions: incorrectCount,
+            canvas_state_title: '{{ canvas_state.title }}'
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Score saved:', data);
-            alert('Your score has been saved!');
-        })
-        .catch(error => {
-            console.error('Error saving score:', error);
-            alert('An error occurred while saving your score.');
-        });
-        exitBtn.style.display = 'block'; 
-        
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Score saved:', data);
+        alert('Your score has been saved!');
+    })
+    .catch(error => {
+        console.error('Error saving score:', error);
+        alert('An error occurred while saving your score.');
     });
+
+    // Show exit button
+    exitBtn.style.display = 'block';
+});
     exitBtn.addEventListener('click', (event) => {
     event.preventDefault();
 

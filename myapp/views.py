@@ -1313,8 +1313,8 @@ def login(request):
     # Generate activation link
             token = account_activation_token.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            domain = 'https://capstone-896j.onrender.com' if settings.DEBUG else get_current_site(request).domain
-            link = f'http://{domain}/activate/{uid}/{token}/'
+            domain = 'capstone-896j.onrender.com' if settings.DEBUG else get_current_site(request).domain
+            link = f'https://{domain}/activate/{uid}/{token}/'
 
     # Send email
             subject = 'Activate Your Account'

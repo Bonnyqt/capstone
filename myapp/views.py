@@ -1661,7 +1661,7 @@ def profile_view(request):
 
     # Get email logs for the logged-in user
     email_logs = EmailLog.objects.filter(recipients__icontains=user.email).order_by('-sent_at')
-
+    user_profile = request.user.userprofile
     # Count new emails for the logged-in user
     email_count = email_logs.filter(is_new=True).count()
 
@@ -1721,6 +1721,7 @@ def profile_view(request):
     context = {
         'email_count': email_count,
         'email_logs': email_logs,
+        'user_profile': user_profile,
         'categories': categories,
         'submission_counts': submission_counts,
         'total_score': total_score,

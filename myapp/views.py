@@ -1049,12 +1049,17 @@ def simulate(request):
 
     # Get distinct categories based on filtered challenges
     categories = set([challenge['category'] for challenge in challenges])
-    user_role = "Student"  # Default role
+    user_role = "Guest"  # Default role for unauthenticated users
 
-    if request.user.is_superuser:
-        user_role = "Admin"
-    elif request.user.email.endswith('.it@tip.edu.ph'):
-        user_role = "Professor"
+
+    if request.user.is_authenticated:
+        user_first_name = request.user.first_name
+        if request.user.is_superuser:
+            user_role = "Admin"
+        elif request.user.email.endswith('.it@tip.edu.ph'):
+            user_role = "Professor"
+        else:
+            user_role = "Student"
     context = {
         'challenges': challenges,
         'email_count': email_count,
@@ -1153,12 +1158,17 @@ def simulate_defend(request):
 
     # Get distinct categories based on filtered challenges
     categories = set([challenge['category'] for challenge in challenges])
-    user_role = "Student"  # Default role
+    user_role = "Guest"  # Default role for unauthenticated users
 
-    if request.user.is_superuser:
-        user_role = "Admin"
-    elif request.user.email.endswith('.it@tip.edu.ph'):
-        user_role = "Professor"
+
+    if request.user.is_authenticated:
+        user_first_name = request.user.first_name
+        if request.user.is_superuser:
+            user_role = "Admin"
+        elif request.user.email.endswith('.it@tip.edu.ph'):
+            user_role = "Professor"
+        else:
+            user_role = "Student"
     context = {
         'challenges': challenges,
         'user_role':user_role,

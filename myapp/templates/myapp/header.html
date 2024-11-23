@@ -105,7 +105,7 @@
             <!-- Dropdown for logged in user -->
             <div class="dropdown">
                 <a class="btn btn-primary dropdown-toggle py-2 px-4" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                   Student: {{ request.user.first_name }}
+                    {{ user_role }}: {{ request.user.first_name }}
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="userDropdown" style="z-index: 999;">
                     <li><a class="dropdown-item" href="{% url 'profile_view' %}">Profile</a></li>

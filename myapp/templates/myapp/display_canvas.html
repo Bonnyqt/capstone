@@ -740,9 +740,13 @@ function startCountdown(duration) {
         top: 10px;
         right: 10px;
         padding: 5px 10px;
-        border-radius: 5px;
-        background-color: rgba(255, 255, 255, 0.9);
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+         background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white for glass effect */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+    backdrop-filter: blur(10px); /* Blurring the background */
+    -webkit-backdrop-filter: blur(10px); /* Safari support */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Light border to enhance glass effect */
+    color: #fff; /* Text color */
         z-index: 1000;
     `;
 

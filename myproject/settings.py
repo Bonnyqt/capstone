@@ -11,12 +11,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = os.environ.get('SECRET_KEY')
-#DEBUG = os.environ.get("DEBUG", "False") == "true"
-#ALLOWED_HOSTS = os.environ.get("ALLOWED_HOST").split(" ")
-SECRET_KEY = 'tR2KWjP-dIiazOaMz8Jc9QHjZUtVWGzbzvye8Aqo3mmwaLtR8NJ9TOFysu3SMoh5078'
-DEBUG = True
-ALLOWED_HOSTS = ['*','127.0.0.1:8000']
+SECRET_KEY = os.environ.get('SECRET_KEY')
+DEBUG = os.environ.get("DEBUG", "False") == "true"
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOST").split(" ")
+#SECRET_KEY = 'tR2KWjP-dIiazOaMz8Jc9QHjZUtVWGzbzvye8Aqo3mmwaLtR8NJ9TOFysu3SMoh5078'
+#DEBUG = True
+#ALLOWED_HOSTS = ['*','127.0.0.1:8000']
 CSRF_TRUSTED_ORIGINS = [
     "https://capstone-896j.onrender.com",  # Add your Render domain
 ]
@@ -60,7 +60,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'myproject.urls'
-
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5 MB
 TEMPLATES = [
      {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

@@ -883,7 +883,17 @@ def index(request):
         # Calculate the performance percentage
         total_correct = Score.objects.filter(user=user).aggregate(total_correct=Sum('correct_submissions'))['total_correct'] or 0
         total_submissions = Score.objects.filter(user=user).aggregate(total_submissions=Sum('correct_submissions') + Sum('incorrect_submissions'))['total_submissions'] or 1  # Avoid division by zero
-        
+    user_role = "Guest"  # Default role for unauthenticated users
+
+
+    if request.user.is_authenticated:
+        user_first_name = request.user.first_name
+        if request.user.is_superuser:
+            user_role = "Admin"
+        elif request.user.email.endswith('.it@tip.edu.ph'):
+            user_role = "Professor"
+        else:
+            user_role = "Student"
         performance_percentage = (total_correct / total_submissions) * 100 if total_submissions > 0 else 0
     else:
         # If the user is not logged in, show no emails and set score to 0
@@ -898,6 +908,7 @@ def index(request):
     # Combine context dictionaries
     context = {
         'email_count': email_count,
+        'user_role':user_role,
         'email_logs': email_logs,
         'blogposts': blogposts,  # Include blogposts in the context
         'total_score': total_score,  # Pass total score to the template
@@ -922,9 +933,15 @@ def about(request):
         # If the user is not logged in, show no emails
         email_logs = []
         email_count = 0
+    user_role = "Student"  # Default role
 
+    if request.user.is_superuser:
+        user_role = "Admin"
+    elif request.user.email.endswith('.it@tip.edu.ph'):
+        user_role = "Professor"
     # Combine context dictionaries
     context = {
+        'user_role':user_role,
         'email_count': email_count,
         'email_logs': email_logs,
  
@@ -1017,11 +1034,17 @@ def simulate(request):
 
     # Get distinct categories based on filtered challenges
     categories = set([challenge['category'] for challenge in challenges])
+    user_role = "Student"  # Default role
 
+    if request.user.is_superuser:
+        user_role = "Admin"
+    elif request.user.email.endswith('.it@tip.edu.ph'):
+        user_role = "Professor"
     context = {
         'challenges': challenges,
         'email_count': email_count,
         'email_logs': email_logs,
+        'user_role':user_role,
         'categories': categories,
     }
     return render(request, 'myapp/simulate.html', context)
@@ -1115,9 +1138,15 @@ def simulate_defend(request):
 
     # Get distinct categories based on filtered challenges
     categories = set([challenge['category'] for challenge in challenges])
+    user_role = "Student"  # Default role
 
+    if request.user.is_superuser:
+        user_role = "Admin"
+    elif request.user.email.endswith('.it@tip.edu.ph'):
+        user_role = "Professor"
     context = {
         'challenges': challenges,
+        'user_role':user_role,
         'email_count': email_count,
         'email_logs': email_logs,
         'categories': categories,
@@ -1182,12 +1211,18 @@ def leaderboards(request):
 
     # Fetch the top 3 users
     top_three = user_scores[:3]
+    user_role = "Student"  # Default role
 
+    if request.user.is_superuser:
+        user_role = "Admin"
+    elif request.user.email.endswith('.it@tip.edu.ph'):
+        user_role = "Professor"
     context = {
         'top_three': top_three,
         'user_scores': user_scores,
         'email_count': email_count,
         'email_logs': email_logs,
+        'user_role': user_role,
         'user':user
     }
 
@@ -1207,9 +1242,15 @@ def contact(request):
         email_logs = []
         email_count = 0
 
+    user_role = "Student"  # Default role
 
+    if request.user.is_superuser:
+        user_role = "Admin"
+    elif request.user.email.endswith('.it@tip.edu.ph'):
+        user_role = "Professor"
     # Combine context dictionaries
     context = {
+        'user_role':user_role,
         'email_count': email_count,
         'email_logs': email_logs,
     }
@@ -1540,11 +1581,17 @@ def other_profiles(request):
     else:
         email_logs = []
         email_count = 0
+    user_role = "Student"  # Default role
 
+    if request.user.is_superuser:
+        user_role = "Admin"
+    elif request.user.email.endswith('.it@tip.edu.ph'):
+        user_role = "Professor"
     context = {
         'users': users,  # Pass the annotated users with scores and ranks
         'email_count': email_count,
         'email_logs': email_logs,
+        'user_role':user_role,
         'query': query,  # Pass the search query to the template
     }
 
@@ -1665,7 +1712,12 @@ def profile_view(request):
 # Prepare data for the chart
     categories = [entry['category'] for entry in category_counts]  # Category names
     submission_counts = [entry['count'] for entry in category_counts]  # Counts per category
+    user_role = "Student"  # Default role
 
+    if request.user.is_superuser:
+        user_role = "Admin"
+    elif request.user.email.endswith('.it@tip.edu.ph'):
+        user_role = "Professor"
     context = {
         'email_count': email_count,
         'email_logs': email_logs,
@@ -1683,6 +1735,7 @@ def profile_view(request):
         'split_graph_sections': split_graph_sections,
         'analysis': analysis,
         'textAnalytics': textAnalytics,
+        'user_role':user_role,
     }
 
     return render(request, 'myapp/profile.html', context)
@@ -1787,13 +1840,19 @@ def profile_details(request, user_id):
     # Calculate rank number based on scores of all users
     rankno = next((index + 1 for index, score in enumerate(all_scores) if score['user'] == user_id), None)
     category_counts = Counter(entry['category'] for entry in category_submission_counts)
+    user_role = "Student"  # Default role
 
+    if request.user.is_superuser:
+        user_role = "Admin"
+    elif request.user.email.endswith('.it@tip.edu.ph'):
+        user_role = "Professor"
 # Prepare the labels and counts for the pie chart
     category_labels = list(category_counts.keys())
     category_counts_values = list(category_counts.values())
     context = {
         'user_profile': user_profile,
         'scores': scores,
+        'user_role':user_role,
         'total_score': total_score,
         'top_category': top_category['category'] if top_category else "N/A",
         'performance_percent': round(performance_percent, 2),

@@ -1473,6 +1473,8 @@ def custom_404(request, exception=None):
     return render(request, '404.html', status=404)
 
 def professor_manage_students(request):
+    if not (request.user.is_superuser or request.user.email.endswith('.it@tip.edu.ph')):
+        return redirect('index')  # Redirect to index if neither condition is met
     # Base queryset: exclude superusers and users with email ending in '.it@tip.edu.ph'
     users = User.objects.filter(is_superuser=False).exclude(email__endswith='.it@tip.edu.ph')
 
@@ -2067,6 +2069,8 @@ def admin_leaderboards(request):
 
 @login_required
 def professor_students(request):
+    if not (request.user.is_superuser or request.user.email.endswith('.it@tip.edu.ph')):
+        return redirect('index')  # Redirect to index if neither condition is met
     # Fetch users excluding those with email ending in '.it@tip.edu.ph'
     users = User.objects.filter(is_superuser=False).exclude(email__endswith='.it@tip.edu.ph')
 
@@ -2403,6 +2407,8 @@ def send_email_view(request):
 
 
 def professor_announce_email(request):
+    if not (request.user.is_superuser or request.user.email.endswith('.it@tip.edu.ph')):
+        return redirect('index')  # Redirect to index if neither condition is met
     if request.method == 'POST':
         recipients = request.POST.getlist('recipients')
         subject = request.POST.get('subject')

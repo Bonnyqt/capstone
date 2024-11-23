@@ -16,8 +16,10 @@ DEBUG = False
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOST").split(" ")
-
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOST")
+CSRF_TRUSTED_ORIGINS = [
+    "https://capstone-896j.onrender.com",  # Add your Render domain
+]
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',

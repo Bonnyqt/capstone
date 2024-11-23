@@ -1,7 +1,7 @@
 
 from pathlib import Path
 import os
-
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,9 +14,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-n^r_qkj2tjc$fz439l#xmqy2ux(3*^i12ngib6*k9=)e5it36h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['https://cyberclash.onrender.com', 'https://cyberclash.onrender.com']
+ALLOWED_HOSTS = ['*','0.0.0.0','localhost', '127.0.0.1']
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
@@ -82,12 +82,14 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+   'default': {
+       'ENGINE': 'django.db.backends.sqlite3',
+       'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
+
+DATABASES["default"] = dj_database_url.parse('postgresql://cyberclash_user:YqnNUvvvxRBQs6suu136F992dM6QnpIY@dpg-ct0otibtq21c73eh6b60-a.oregon-postgres.render.com/cyberclash')
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

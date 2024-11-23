@@ -12,11 +12,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = False
+DEBUG = os.environ.get("DEBUG", "False") == "true"
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS = ['capstone-896j.onrender.com','https://capstone-896j.onrender.com']
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOST").split(" ")
+
 CSRF_TRUSTED_ORIGINS = [
     "https://capstone-896j.onrender.com",  # Add your Render domain
 ]
@@ -32,13 +33,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles' 
 STATIC_ROOT = 'staticfiles'
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STORAGES = {
-    # ...
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
 # Application definition
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 INSTALLED_APPS = [

@@ -1,0 +1,303 @@
+
+        body {
+            background-color: #f0f4f8; /* Light background for the body */
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .canvas {
+            width: 1600px;
+            height: 720px;
+            border: 2px dashed #ccc;
+            position: relative;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #293b44cb, #3e4c58); /* Gradient background */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Shadow effect */
+            overflow: visible; /* Allow overflow */
+        }
+
+        .node {
+            position: absolute; /* Ensure the node can be positioned freely */
+            padding: 10px;
+            background: #293B44;
+            border: 2px solid green; /* Set default border color to green */
+ 
+            transition: border-color 0.3s; 
+            border-radius: 50%;
+            text-align: center;
+            width: 50px;
+            height: 50px;
+            cursor: grab;
+            color: white;
+            z-index: 1;
+            transition: transform 0.2s; /* Scale effect */
+        }
+
+        .node:hover {
+            transform: scale(1.1); /* Scale up on hover */
+        }
+
+        .node i {
+            font-size: 20px;
+        }
+
+        .tooltip {
+            z-index: 9999;
+        position: absolute;
+        bottom: 120%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 6px;
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.2s;
+        max-width: 300px;
+        white-space: normal;
+        word-wrap: break-word;
+        text-align: center;
+    }
+
+    .tooltip::after {
+        z-index: 9999;
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+    }
+
+    .node:hover .tooltip {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    /* New styles for IP address and vulnerability */
+    .tooltip .ip-address {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #00ff7f; /* Light green for IP address */
+    }
+
+    .tooltip .vulnerability {
+        margin-top: 8px;
+        font-size: 14px;
+        color: #ff6347; /* Tomato color for vulnerability */
+        font-style: italic;
+    }
+
+        
+
+        button {
+            padding: 10px 20px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s; /* Button hover effect */
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .packet {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+            display: none;
+            z-index: 10;
+            transition: transform 0.3s; /* Animation for packet */
+        }
+
+        /* Modal styles */
+        /* Center the modal in the middle of the screen */
+        .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 10; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background */
+    display: flex;
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    padding: 20px; /* Padding around the modal */
+}
+
+.modal-content {
+    background-color: #fefefe; /* White background */
+    border-radius: 10px; /* Rounded corners */
+    padding: 20px; /* Padding inside modal */
+    border: 1px solid #888; /* Light border */
+    width: 100%; /* Full width */
+    max-width: 500px; /* Maximum width */
+    text-align: center; /* Center text */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+    animation: fadeIn 0.3s; /* Fade in animation */
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Close button style */
+.close {
+    color: #aaa; /* Close button color */
+    float: right; /* Position to the right */
+    font-size: 28px; /* Close button size */
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black; /* Change color on hover/focus */
+    text-decoration: none; /* Remove underline */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+/* Button styles */
+button {
+    background-color: #007bff; /* Primary button color */
+    color: white; /* Text color */
+    border: none; /* No borders */
+    padding: 10px 20px; /* Padding */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Transition effect */
+}
+
+button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Input field styles */
+input[type="text"] {
+    width: 100%; /* Full width */
+    padding: 10px; /* Padding */
+    margin: 8px 0; /* Margin above and below */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 4px; /* Rounded corners */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+/* Label styles */
+label {
+    font-weight: bold; /* Bold labels */
+    margin-top: 10px; /* Space above labels */
+    display: block; /* Each label on a new line */
+}
+
+/* Icon styles */
+.icon-container {
+    display: flex; /* Use flexbox for alignment */
+    flex-wrap: wrap; /* Allow icons to wrap to the next line */
+    justify-content: space-around; /* Distribute space around icons */
+    padding: 10px; /* Add padding for better spacing */
+}
+
+.icon {
+    font-size: 40px; /* Icon size */
+    color: #007bff; /* Icon color */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: color 0.3s, transform 0.3s; /* Smooth transitions */
+    margin: 10px; /* Add margin for spacing between icons */
+}
+
+.icon:hover {
+    color: #0056b3; /* Darker color on hover */
+    transform: scale(1.1); /* Slightly increase size on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .modal-content {
+        width: 90%; /* Adjust width on smaller screens */
+    }
+
+    .icon {
+        font-size: 30px; /* Smaller icon size for mobile */
+    }
+
+    .icon-container {
+        justify-content: space-between; /* Change alignment for mobile if needed */
+    }
+
+    button {
+        padding: 8px 16px; /* Smaller button padding */
+    }
+}
+
+/* Style the close button */
+#closeModalBtn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#closeModalBtn:hover {
+    background-color: #0056b3;
+}
+.details-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center align text */
+    margin-top: 5px; /* Space between icon and details */
+    font-size: 12px; /* Smaller font for details */
+    text-align: center; /* Center align text */
+}
+
+.info-row {
+    display: flex; /* Use flexbox for row layout */
+    gap: 50px; /* Space between items */
+}
+
+.ip-address,
+.vulnerability {
+    font-size: 12px; /* Keep smaller font size */
+    color: #666; /* Text color */
+}
+
+.node-title {
+    margin-top: 7px;
+    font-weight: bold;
+    color: #ffffff; /* Color for the title */
+}
+
+
+.wire {
+    stroke: rgb(255, 123, 0); /* Orange color */
+    stroke-width: 3;          /* Thickness */
+    stroke-dasharray: 10, 5;  /* Dashed line with 10px dash and 5px gap */
+    stroke-linecap: round;    /* Rounded ends for a cleaner look */
+    animation: moveWire 2s infinite linear; /* Dash movement for animation */
+}
+
+@keyframes moveWire {
+    0% {
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dashoffset: -15;
+    }
+}
+

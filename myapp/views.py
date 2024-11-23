@@ -1263,32 +1263,35 @@ def professor_view_challenges(request):
 
     
 
+import threading
+from django.utils.timezone import now
+from django.contrib.auth.models import User
+
 def login(request):
     if request.method == 'POST':
         if 'login' in request.POST:
-        # Handle login
+            # Handle login
             email = request.POST.get('email')
             password = request.POST.get('password')
             user = authenticate(request, username=email, password=password)
             if user is not None:
                 auth_login(request, user)
-            
-            # Check if the user is a superuser (admin)
+
+                # Check if the user is a superuser (admin)
                 if user.is_superuser:
                     return redirect('admin_dashboard')  # Redirect to admin dashboard
 
-            # Check if the email belongs to a professor
+                # Check if the email belongs to a professor
                 if email.endswith('.it@tip.edu.ph'):
                     return redirect('professor_dashboard')  # Redirect to professor's dashboard
 
-            # Redirect regular users to the index page
+                # Redirect regular users to the index page
                 return redirect('index')
             else:
                 return render(request, 'myapp/login.html', {'alert': 'Invalid email or password'})
 
-        
         elif 'signup' in request.POST:
-    # Handle signup
+            # Handle signup
             name = request.POST.get('name')
             email = request.POST.get('email')
             password = request.POST.get('password')
@@ -1297,39 +1300,55 @@ def login(request):
             if not email.endswith('@tip.edu.ph'):
                 return render(request, 'myapp/login.html', {'alert': 'Email must end with @tip.edu.ph'})
 
-            if DjangoUser.objects.filter(username=email).exists():
+            if User.objects.filter(username=email).exists():
                 return render(request, 'myapp/login.html', {'alert': 'Email already exists'})
 
-            user = DjangoUser.objects.create_user(username=email, email=email, password=password)
+            user = User.objects.create_user(username=email, email=email, password=password)
             user.first_name = name
             user.is_active = False  # Deactivate account until it is confirmed
             user.save()
 
-    # Create or update the UserProfile instance
+            # Create or update the UserProfile instance
             user_profile, created = UserProfile.objects.get_or_create(user=user)
             user_profile.accepted_data_privacy = data_privacy_accepted  # Set acceptance status
             user_profile.save()
 
-    # Generate activation link
+            # Start a thread to delete the user after 2 minutes if not activated
+            def delete_unactivated_user(user_id):
+                threading.Timer(120, lambda: remove_user_if_inactive(user_id)).start()
+
+            delete_unactivated_user(user.pk)
+
+            # Generate activation link
             token = account_activation_token.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            domain = 'capstone-896j.onrender.com' if settings.DEBUG else get_current_site(request).domain
-            link = f'https://{domain}/activate/{uid}/{token}/'
+            domain = 'https://capstone-896j.onrender.com' if settings.DEBUG else get_current_site(request).domain
+            link = f'{domain}/activate/{uid}/{token}/'
 
-    # Send email
+            # Send email
             subject = 'Activate Your Account'
             message = render_to_string('myapp/activation_email.html', {
                 'user': user,
                 'domain': domain,
                 'link': link,
-        })
-        plain_message = strip_tags(message)
-        send_mail(subject, plain_message, 'your-email@gmail.com', [email], html_message=message)
+            })
+            plain_message = strip_tags(message)
+            send_mail(subject, plain_message, 'your-email@gmail.com', [email], html_message=message)
 
-        return render(request, 'myapp/login.html', {'alert': 'Signup successful! Please check your email to activate your account'})
+            return render(request, 'myapp/login.html', {'alert': 'Signup successful! You have 2 minutes or the link will expire.'})
 
-# Handle GET request or POST without 'login' or 'signup' action
+    # Handle GET request or POST without 'login' or 'signup' action
     return render(request, 'myapp/login.html')
+
+
+def remove_user_if_inactive(user_id):
+    try:
+        user = User.objects.get(pk=user_id)
+        if not user.is_active:  # If the user is still inactive
+            user.delete()
+            print(f"Deleted user with ID {user_id} due to inactivity.")
+    except User.DoesNotExist:
+        print(f"User with ID {user_id} does not exist or has already been activated.")
 
   
     

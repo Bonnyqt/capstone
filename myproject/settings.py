@@ -27,7 +27,9 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
     # Add other hashers if needed
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 # Application definition
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 INSTALLED_APPS = [

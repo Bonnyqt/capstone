@@ -125,7 +125,7 @@ def generate_network(request):
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are a helpful assistant that generates network nodes and wires. Each node should have an id, iconClass(fas fa), title, ipAddress(IP: ), tooltip(the flow of the network), vulnerability (Vuln: ), and position (random position: left, top). Each wire connects two nodes using start and end (like id: node-0) and has coordinates (startX, startY, endX, endY). Only return the JSON object with 'nodes' and 'wires'."},
+                    {"role": "system", "content": "You are a helpful assistant that generates network nodes and wires. Each node should have an id, iconClass(fas fa), title(name of the node), ipAddress(IP: ), tooltip(the flow of the network), vulnerability (Vuln: High, Medium, Low), and position (random position: left, top). Each wire connects two nodes using start and end (like id: node-0) and has coordinates (startX, startY, endX, endY). Only return the JSON object with 'nodes' and 'wires'."},
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=1000
@@ -190,7 +190,7 @@ def generate_network_defend(request):
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are a helpful assistant that generates network nodes and wires. Each node should have an id, iconClass(fas fa), title, ipAddress(IP: ), tooltip(the flow of the network), vulnerability (Vuln: ), and position (random position: left, top). Each wire connects two nodes using start and end (like id: node-0) and has coordinates (startX, startY, endX, endY). Only return the JSON object with 'nodes' and 'wires'."},
+                    {"role": "system", "content": "You are a helpful assistant that generates network nodes and wires. Each node should have an id, iconClass(fas fa), title(name of the node), ipAddress(IP: ), tooltip(the flow of the network), vulnerability (Vuln: High, Medium, Low), and position (random position: left, top). Each wire connects two nodes using start and end (like id: node-0) and has coordinates (startX, startY, endX, endY). Only return the JSON object with 'nodes' and 'wires'."},
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=1000
@@ -994,7 +994,6 @@ def simulate(request):
     # Check if profile setup is incomplete
     profile_incomplete = not (user_profile and user_profile.program and user_profile.section and user_profile.course_code)
 
-    # If profile setup is incomplete, show a setup message
     if profile_incomplete:
         return render(request, 'myapp/simulate.html', {
             'profile_incomplete': True,
@@ -1011,31 +1010,34 @@ def simulate(request):
     # Fetch scores for the authenticated user
     user_scores = Score.objects.filter(user=user)
 
-    # Filter canvas states to include those for all users or matching the user's section
+    # Check if the tutorial challenge is finished
+    tutorial_title = "TUTORIAL"  # Replace with the exact fixed title of the tutorial challenge
+    tutorial = CanvasState.objects.filter(title=tutorial_title).first()
+    tutorial_finished = False
+    if tutorial:
+        tutorial_score = user_scores.filter(canvas_state_title=tutorial.title).first()
+        tutorial_finished = tutorial_score.finished if tutorial_score else False
+
+    # Filter canvas states to exclude the tutorial challenge
     canvas_states = CanvasState.objects.filter(
-        Q(canvas_section__icontains="All") | 
+        Q(canvas_section__icontains="All") |
         Q(canvas_section__icontains=user_profile.section)
-    )
-    
+    ).exclude(title=tutorial_title)
+
     challenges = []
-    
+
     for canvas_state in canvas_states:
         score = user_scores.filter(canvas_state_title=canvas_state.title).first()
-        finished = score.finished if score else False  # If there's no matching score, consider it unfinished
+        finished = score.finished if score else False
 
-        # Check if the challenge is new or unpublished (based on created_at or a similar field)
-        if canvas_state.created_at > user.last_login:  # Or other logic to check "new" challenges
-            # Only generate a definition if it's a new challenge
+        if canvas_state.created_at > user.last_login:
             if not canvas_state.title_definition:
                 challenge_message = generate_encouraging_text(canvas_state.title)
                 canvas_state.title_definition = challenge_message
-                canvas_state.save()  # Save the AI-generated definition to the database
+                canvas_state.save()
 
-        # Check if the challenge is closed by the user
-        closed_by_user = False  # Default to False
-        if score and score.finished:
-            closed_by_user = True  # Mark it closed if finished (this means the user attempted and finished the challenge)
-        
+        closed_by_user = score.finished if score else False
+
         challenges.append({
             'id': canvas_state.id,
             'title': canvas_state.title,
@@ -1043,14 +1045,12 @@ def simulate(request):
             'difficulty': canvas_state.difficulty,
             'created_at': canvas_state.created_at,
             'finished': finished,
-            'title_definition': canvas_state.title_definition,  # Add generated message
-            'closed_by_user': closed_by_user,  # Add closed_by_user flag
+            'title_definition': canvas_state.title_definition,
+            'closed_by_user': closed_by_user,
         })
 
-    # Get distinct categories based on filtered challenges
     categories = set([challenge['category'] for challenge in challenges])
-    user_role = "Guest"  # Default role for unauthenticated users
-
+    user_role = "Guest"
 
     if request.user.is_authenticated:
         user_first_name = request.user.first_name
@@ -1060,14 +1060,17 @@ def simulate(request):
             user_role = "Professor"
         else:
             user_role = "Student"
+
     context = {
-        'challenges': challenges,
+        'challenges': challenges if tutorial_finished else [],  # Show challenges only if tutorial is finished
+        'tutorial': tutorial if not tutorial_finished else None,  # Show tutorial if not finished
         'email_count': email_count,
         'email_logs': email_logs,
-        'user_role':user_role,
+        'user_role': user_role,
         'categories': categories,
     }
     return render(request, 'myapp/simulate.html', context)
+
 
 
 def mark_challenge_closed(request, canvas_id):
@@ -1106,7 +1109,6 @@ def simulate_defend(request):
     # Check if profile setup is incomplete
     profile_incomplete = not (user_profile and user_profile.program and user_profile.section and user_profile.course_code)
 
-    # If profile setup is incomplete, show a setup message
     if profile_incomplete:
         return render(request, 'myapp/simulate.html', {
             'profile_incomplete': True,
@@ -1123,29 +1125,34 @@ def simulate_defend(request):
     # Fetch scores for the authenticated user
     user_scores = Score.objects.filter(user=user)
 
-    # Filter canvas states to include those for all users or matching the user's section
-    canvas_states = CanvasStateDefend.objects.filter(
-        Q(canvas_section__icontains="All") | 
-        Q(canvas_section__icontains=user_profile.section)
-    )
+    # Check if the tutorial challenge is finished
+    tutorial_title = "TUTORIAL"  # Replace with the exact fixed title of the tutorial challenge
+    tutorial = CanvasStateDefend.objects.filter(title=tutorial_title).first()
+    tutorial_finished = False
+    if tutorial:
+        tutorial_score = user_scores.filter(canvas_state_title=tutorial.title).first()
+        tutorial_finished = tutorial_score.finished if tutorial_score else False
 
-    # Check if there are new challenges to process
-    new_challenges = False
+    # Filter canvas states to exclude the tutorial challenge
+    canvas_states = CanvasStateDefend.objects.filter(
+        Q(canvas_section__icontains="All") |
+        Q(canvas_section__icontains=user_profile.section)
+    ).exclude(title=tutorial_title)
+
     challenges = []
-    
+
     for canvas_state in canvas_states:
         score = user_scores.filter(canvas_state_title=canvas_state.title).first()
-        finished = score.finished if score else False  # If there's no matching score, consider it unfinished
+        finished = score.finished if score else False
 
-        # Check if the challenge is new or unpublished (based on created_at or a similar field)
-        if canvas_state.created_at > user.last_login:  # Or other logic to check "new" challenges
-            new_challenges = True
-            # Only generate a definition if it's a new challenge
+        if canvas_state.created_at > user.last_login:
             if not canvas_state.title_definition:
                 challenge_message = generate_encouraging_text(canvas_state.title)
                 canvas_state.title_definition = challenge_message
-                canvas_state.save()  # Save the AI-generated definition to the database
-        
+                canvas_state.save()
+
+        closed_by_user = score.finished if score else False
+
         challenges.append({
             'id': canvas_state.id,
             'title': canvas_state.title,
@@ -1153,13 +1160,12 @@ def simulate_defend(request):
             'difficulty': canvas_state.difficulty,
             'created_at': canvas_state.created_at,
             'finished': finished,
-            'title_definition': canvas_state.title_definition,  # Add generated message
+            'title_definition': canvas_state.title_definition,
+            'closed_by_user': closed_by_user,
         })
 
-    # Get distinct categories based on filtered challenges
     categories = set([challenge['category'] for challenge in challenges])
-    user_role = "Guest"  # Default role for unauthenticated users
-
+    user_role = "Guest"
 
     if request.user.is_authenticated:
         user_first_name = request.user.first_name
@@ -1169,11 +1175,13 @@ def simulate_defend(request):
             user_role = "Professor"
         else:
             user_role = "Student"
+
     context = {
-        'challenges': challenges,
-        'user_role':user_role,
+        'challenges': challenges if tutorial_finished else [],  # Show challenges only if tutorial is finished
+        'tutorial': tutorial if not tutorial_finished else None,  # Show tutorial if not finished
         'email_count': email_count,
         'email_logs': email_logs,
+        'user_role': user_role,
         'categories': categories,
     }
     return render(request, 'myapp/simulate_defend.html', context)

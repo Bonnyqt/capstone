@@ -475,7 +475,49 @@ label {
     text-align: center;
 }
 
+    #snackbar {
+  visibility: hidden; /* Hidden by default. Visible on click */
+  min-width: 250px; /* Set a default minimum width */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  background-color: #06a3da; /* Black background color */
+  color: #fff; /* White text color */
+  text-align: center; /* Centered text */
+  border-radius: 2px; /* Rounded borders */
+  padding: 16px; /* Padding */
+  position: fixed; /* Sit on top of the screen */
+  left: 50%; /* Center the snackbar */
+  bottom: 30px; /* 30px from the bottom */
+}
 
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#snackbar.show {
+  visibility: visible; /* Show the snackbar */
+  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+  However, delay the fade out process for 2.5 seconds */
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
     </style>
 </head>
 <body>
@@ -489,15 +531,16 @@ label {
   <br>
     <h3 class="m-0 font-weight-bold" style="color:white; text-align:center;">{{ canvas_state.title }} Simulation</h3>
 
-
+    <div id="snackbar" style="z-index: 9999;">Drag the blocks to the node.</div> 
             <div class="canvas" id="canvas">
                 <svg id="svgCanvas" width="1700" height="670" style="position: absolute; top: 0; left: 0;"></svg>
                 <div class="packet" id="packet"></div> <!-- Packet element -->
             </div>
 
            <div id="assessmentWrapper">
-   
+           
     <div id="assessmentContainer" class="assessment-container">
+        
             <form method="post">
                 {% csrf_token %}
                 <button id="submitBtn" class="shadow__btn">Submit</button>
@@ -857,7 +900,7 @@ function autoSubmitChallenge() {
     setTimeout(() => {
         const distanceX = endX - startX;
         const distanceY = endY - startY;
-        const duration = 3000; // Duration of animation
+        const duration = 3000   ; // Duration of animation
         const startTime = performance.now();
 
         function animatePacket(timestamp) {
@@ -907,6 +950,7 @@ function autoSubmitChallenge() {
             assessmentWrapper.style.display = 'block'; // Show the entire wrapper
         }    // Ensure countdown is visible after the animation
                         startCountdown(canvasTime);
+                        snackbar()
                     } else {
                         animatePacketThroughWires(); // Continue animation for the next wire
                     }
@@ -917,6 +961,17 @@ function autoSubmitChallenge() {
         requestAnimationFrame(animatePacket);
     }, 3000);
 };
+
+    function snackbar() {
+  // Get the snackbar DIV
+  var x = document.getElementById("snackbar");
+
+  // Add the "show" class to DIV
+  x.className = "show";
+
+  // After 3 seconds, remove the show class from DIV
+  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+}
 
     // Calculate multiplier based on remaining time
     function calculateMultiplier(timeRemaining) {

@@ -443,6 +443,7 @@ label {
  <center>  
     <div id="iconModal" class="modal">
         <div class="modal-content">
+            
             <h2>Select Icon</h2>
             <div id="iconList" class="icon-container">
                 <!-- User icons -->
@@ -521,7 +522,7 @@ label {
 <div id="titleModal" class="modal">
     <div class="modal-content">
         <span class="close" id="closeTitleModalBtn" style="position:fixed;position: absolute; top: 25px; right: 25px;">&times;</span>
-        <h2>Enter Canvas Title</h2>
+        <h2> Publish Network </h2>
         <input type="text" id="canvasTitleInput" placeholder="Enter title" required>
 
         <label for="canvasCategoryDropdown">Select Category:</label>
@@ -586,7 +587,7 @@ label {
 
 <div id="modalAI" class="modal">
     <div class="modal-content">
-        <span class="close" id="closeAIModalBtn" style="position:fixed; top: 25px; right: 25px;">&times;</span>
+        <span class="close" id="closeAIModalBtn" style="position:fixed;position: absolute; top: 25px; right: 25px;">&times;</span>
         <h2>Generate Network using AI</h2>
 
         <label for="title">Title:</label>
@@ -666,7 +667,7 @@ label {
      
             <div class="card-body">
                 <div>
-                    <button id="generate">Use AI to Generate Simulation</button>
+                    <button id="generate">Generate and Publish using AI</button>
                     <button id="addNodeBtn">Add Node</button>
                     <button id="addWireBtn">Connect Nodes</button>
                     <button id="removeBtn">Remove Node</button>
@@ -1292,7 +1293,7 @@ document.getElementById('generateNetworkBtn').addEventListener('click', async ()
         console.log('Response data:', data); // Log response for debugging
 
         if (data.success) {
-            alert("Network generated successfully!");
+            alert("Network generated and published successfully!");
             document.getElementById('modalAI').style.display = 'none';
         } else {
             alert("Error generating network: " + data.error);

@@ -238,7 +238,38 @@ h1 {
       {% if profile_incomplete %}
       <div class="alert text-center" style="color: white;">
           <p>Your profile is incomplete. Please set up your profile in order to proceed.</p>
-        
+      </div>
+  {% elif tutorial and not tutorial_finished %}
+      <div class="alert text-center" style="color: white;">
+          <p>You need to complete the tutorial challenge to unlock other challenges.</p>
+      </div>
+      <div class="categories">
+          <div class="category">
+              <h2 class="category-title" style="color:white;">Tutorial Challenge</h2>
+              <ul class="cards">
+                  <li>
+                      <a href="javascript:void(0);" onclick="checkFinished({{ tutorial.id }}, '{{ tutorial.finished }}')" class="card" style="--surface-color: #fff;">
+                          <img src="{% static 'img/SIMULATE.jpg' %}" class="card__image" alt="Tutorial" />
+                          <div class="card__overlay">
+                              <div class="card__header">
+                                  <svg class="card__arc" xmlns="http://www.w3.org/2000/svg"><path /></svg>
+                                  <div class="card__header-text">
+                                      <h3 class="card__title">{{ tutorial.title }}</h3>
+                                      <span class="card__status">Date Published: {{ tutorial.created_at|date:"d M Y, H:i" }}</span>
+                                  </div>
+                              </div>
+                              <p class="card__description">
+                                  {% if tutorial.title_definition %}
+                                      {{ tutorial.title_definition }}
+                                  {% else %}
+                                      No definition available for this tutorial yet.
+                                  {% endif %}
+                              </p>
+                          </div>
+                      </a>
+                  </li>
+              </ul>
+          </div>
       </div>
   {% elif not challenges %}
       <p class="text-center text-white">No attacking challenges published to your section yet.</p>
@@ -274,11 +305,11 @@ h1 {
                                           </div>
                                       </div>
                                       <p class="card__description">
-                                        {% if challenge.title_definition %}
-                                        {{ challenge.title_definition }}
-                                    {% else %}
-                                        No definition available for this challenge yet.
-                                    {% endif %}
+                                          {% if challenge.title_definition %}
+                                              {{ challenge.title_definition }}
+                                          {% else %}
+                                              No definition available for this challenge yet.
+                                          {% endif %}
                                       </p>
                                   </div>
                               </a>

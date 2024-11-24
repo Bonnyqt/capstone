@@ -475,7 +475,49 @@ label {
     text-align: center;
 }
 
+#snackbar {
+  visibility: hidden; /* Hidden by default. Visible on click */
+  min-width: 250px; /* Set a default minimum width */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  background-color: #06a3da; /* Black background color */
+  color: #fff; /* White text color */
+  text-align: center; /* Centered text */
+  border-radius: 2px; /* Rounded borders */
+  padding: 16px; /* Padding */
+  position: fixed; /* Sit on top of the screen */
+  left: 50%; /* Center the snackbar */
+  bottom: 30px; /* 30px from the bottom */
+}
 
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#snackbar.show {
+  visibility: visible; /* Show the snackbar */
+  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+  However, delay the fade out process for 2.5 seconds */
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
     </style>
 </head>
 <body>
@@ -487,6 +529,7 @@ label {
     </div>
    <div class="center-wrapper">
   <br>
+  <div id="snackbar" style="z-index: 9999;">Drag the blocks to the node.</div>
     <h3 class="m-0 font-weight-bold" style="color:white; text-align:center;">{{ canvas_state.title }} Simulation</h3>
 
 
@@ -896,6 +939,7 @@ function autoSubmitChallenge() {
 
                         submitBtn.style.display = 'block';
                         toggleSubmitButton();
+                        snackbar()
                         // Get canvas time directly from the Django template and start the countdown
                         const canvasTime = parseInt("{{ canvas_state.canvas_time }}", 10);
                         const assessmentWrapper = document.getElementById('assessmentWrapper');
@@ -913,6 +957,18 @@ function autoSubmitChallenge() {
         requestAnimationFrame(animatePacket);
     }, 3000);
 };
+
+
+function snackbar() {
+  // Get the snackbar DIV
+  var x = document.getElementById("snackbar");
+
+  // Add the "show" class to DIV
+  x.className = "show";
+
+  // After 3 seconds, remove the show class from DIV
+  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+}
 
     // Calculate multiplier based on remaining time
     function calculateMultiplier(timeRemaining) {

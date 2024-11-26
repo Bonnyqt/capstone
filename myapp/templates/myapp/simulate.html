@@ -230,7 +230,7 @@ h1 {
     <div id="snackbar" style="z-index: 9999;">You have finished this challenge. </div> 
     <div class="center-wrapper">
       <br><br> <br><br><br>
-      
+      <div id="snackbar2" style="z-index: 9999;">You made too many attempts to this challenge. </div> 
      
       
       <h1 class="display-1 text-white mb-md-4 animated zoomIn" style="font-size: 50px;">ATTACK! SIMULATIONS</h1>
@@ -283,8 +283,10 @@ h1 {
                       {% for challenge in challenges %}
                           {% if challenge.category == category %}
                           <li>
-                              <a href="javascript:void(0);" onclick="checkFinished({{ challenge.id }}, '{{ challenge.finished }}')" class="card" style="--surface-color: 
-                              {% if challenge.finished %}#8ceda9{% else %}#fff{% endif %};">
+                            <a href="javascript:void(0);" onclick="checkFinished({{ challenge.id }}, '{{ challenge.finished }}', '{{ challenge.locked }}')" class="card" style="--surface-color: 
+                            {% if challenge.locked %}#ffcccc
+                            {% elif challenge.finished %}#8ceda9
+                            {% else %}#fff{% endif %};">
                                   <img src="{% static 'img/SIMULATE.jpg' %}" class="card__image" alt="" />
                                   <div class="card__overlay">
                                       <div class="card__header">
@@ -354,25 +356,38 @@ h1 {
         }
     }
 
-    function checkFinished(challengeId, isFinished) {
-        if (isFinished === 'True') {
-            // If challenge is finished, show the snackbar
-            showSnackbar();
-        } else {
-            // If challenge is not finished, open the window
-            openWindow(challengeId);
-        }
+    function checkFinished(challengeId, isFinished, isLocked) {
+    if (isLocked === 'True') {
+        // If the challenge is locked, show the snackbar2
+        showSnackbar2();
+    } else if (isFinished === 'True') {
+        // If challenge is finished, show the snackbar
+        showSnackbar();
+    } else {
+        // If challenge is not finished, open the window
+        openWindow(challengeId);
     }
+}
 
-    function showSnackbar() {
-        const snackbar = document.getElementById("snackbar");
-        snackbar.className = "show";
+function showSnackbar() {
+    const snackbar = document.getElementById("snackbar");
+    snackbar.className = "show";
 
-        // After 3 seconds, remove the "show" class to hide the snackbar
-        setTimeout(function () {
-            snackbar.className = snackbar.className.replace("show", "");
-        }, 3000);
-    }
+    // After 3 seconds, remove the "show" class to hide the snackbar
+    setTimeout(function () {
+        snackbar.className = snackbar.className.replace("show", "");
+    }, 3000);
+}
+
+function showSnackbar2() {
+    const snackbar2 = document.getElementById("snackbar2");
+    snackbar2.className = "show"; // Show the second snackbar
+
+    // After 3 seconds, remove the "show" class to hide the snackbar2
+    setTimeout(function () {
+        snackbar2.className = snackbar2.className.replace("show", "");
+    }, 3000);
+}
 </script>
 
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

@@ -37,7 +37,6 @@ class StudentAnalysis(models.Model):
     challenge_definition = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    
 class CanvasState(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # Associate with a user if needed
     title = models.CharField(max_length=100)
@@ -49,9 +48,12 @@ class CanvasState(models.Model):
     nodes = JSONField()  # Store nodes as JSON
     wires = JSONField()  # Store wire connections as JSON
     created_at = models.DateTimeField(auto_now_add=True)
+    access_count = models.PositiveIntegerField(default=0)  # Track number of accesses
+    locked = models.BooleanField(default=False)  # Whether the challenge is locked
 
     def __str__(self):
         return self.title
+
 
 
 class CanvasStateDefend(models.Model):
@@ -65,6 +67,8 @@ class CanvasStateDefend(models.Model):
     nodes = JSONField()  # Store nodes as JSON
     wires = JSONField()  # Store wire connections as JSON
     created_at = models.DateTimeField(auto_now_add=True)
+    access_count = models.PositiveIntegerField(default=0)  # Track number of accesses
+    locked = models.BooleanField(default=False)  # Whether the challenge is locked
 
     def __str__(self):
         return self.title

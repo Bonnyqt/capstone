@@ -590,6 +590,8 @@ def save_score(request):
             return JsonResponse({'status': 'failed', 'message': str(e)}, status=500)
     return JsonResponse({'status': 'failed', 'message': 'Invalid request method'}, status=400)
 
+
+
 def remove_news(request, canvas_id):
     # Get the CanvasState object or return 404 if not found
     canvas_state = get_object_or_404(BlogPost, id=canvas_id)
@@ -623,9 +625,20 @@ def remove_challenge_defend(request, canvas_id):
 def display_canvas(request, canvas_id):
     if not request.user.is_authenticated:
         return redirect('index')  # Redirect to the index page if not authenticated
-    
+
     # Get the canvas state from the database, return 404 if not found
     canvas_state = get_object_or_404(CanvasState, id=canvas_id)
+
+    # Check if the challenge is locked
+    if canvas_state.locked:
+        return redirect('simulate')  # Redirect to index or show a "locked" message
+
+    # Increment access count and lock if needed
+    if not Score.objects.filter(user=request.user, canvas_state_title=canvas_state.title, finished=True).exists():
+        canvas_state.access_count += 1
+        if canvas_state.access_count >= 3:
+            canvas_state.locked = True
+        canvas_state.save()
 
     # Check if the user has already finished this challenge
     user_score = Score.objects.filter(user=request.user, canvas_state_title=canvas_state.title).first()
@@ -643,15 +656,27 @@ def display_canvas(request, canvas_id):
 
     # Render the template with the canvas state data
     return render(request, 'myapp/display_canvas.html', {'canvas_state': canvas_state_data})
+
 
 
 
 def display_canvas_defend(request, canvas_id):
     if not request.user.is_authenticated:
         return redirect('index')  # Redirect to the index page if not authenticated
-    
+
     # Get the canvas state from the database, return 404 if not found
     canvas_state = get_object_or_404(CanvasStateDefend, id=canvas_id)
+
+    # Check if the challenge is locked
+    if canvas_state.locked:
+        return redirect('simulate_defend')  # Redirect to index or show a "locked" message
+
+    # Increment access count and lock if needed
+    if not Score.objects.filter(user=request.user, canvas_state_title=canvas_state.title, finished=True).exists():
+        canvas_state.access_count += 1
+        if canvas_state.access_count >= 3:
+            canvas_state.locked = True
+        canvas_state.save()
 
     # Check if the user has already finished this challenge
     user_score = Score.objects.filter(user=request.user, canvas_state_title=canvas_state.title).first()
@@ -668,7 +693,7 @@ def display_canvas_defend(request, canvas_id):
     }
 
     # Render the template with the canvas state data
-    return render(request, 'myapp/display_canvas.html', {'canvas_state': canvas_state_data})
+    return render(request, 'myapp/display_canvas_defend.html', {'canvas_state': canvas_state_data})
 
 @csrf_exempt
 def save_canvas_state(request):
@@ -1047,6 +1072,7 @@ def simulate(request):
             'finished': finished,
             'title_definition': canvas_state.title_definition,
             'closed_by_user': closed_by_user,
+            'locked': canvas_state.locked,
         })
 
     categories = set([challenge['category'] for challenge in challenges])
@@ -1162,6 +1188,7 @@ def simulate_defend(request):
             'finished': finished,
             'title_definition': canvas_state.title_definition,
             'closed_by_user': closed_by_user,
+            'locked': canvas_state.locked,
         })
 
     categories = set([challenge['category'] for challenge in challenges])

@@ -392,7 +392,7 @@ label {
 .shadow__btn {
   padding: 10px 20px;
   border: none;
-  font-size: 17px;
+  font-size: 26px;
   color: #fff;
   border-radius: 7px;
   letter-spacing: 4px;
@@ -805,7 +805,6 @@ function startCountdown(duration) {
             countdownTimer = setTimeout(updateCountdown, 1000); // Track the timeout ID
         } else {
             countdownContainer.textContent = 'Time is up!';
-            submitBtn.disabled = true; // Disable submit button
             autoSubmitChallenge(); // Trigger auto-submit
         }
     };
@@ -863,6 +862,7 @@ function autoSubmitChallenge() {
     .then(data => {
         console.log('Score saved:', data);
         alert('Time is up! Your score has been saved automatically.');
+        submitBtn.style.display = 'none'; 
         exitBtn.style.display = 'block'; // Show exit button
     })
     .catch(error => {

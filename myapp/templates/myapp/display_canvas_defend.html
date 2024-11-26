@@ -801,7 +801,7 @@ function startCountdown(duration) {
             countdownTimer = setTimeout(updateCountdown, 1000); // Track the timeout ID
         } else {
             countdownContainer.textContent = 'Time is up!';
-            submitBtn.disabled = true; // Disable submit button
+   
             autoSubmitChallenge(); // Trigger auto-submit
         }
     };
@@ -840,7 +840,7 @@ function autoSubmitChallenge() {
 
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    fetch('{% url "save_score_defend" %}', {
+    fetch('{% url "save_score" %}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -859,7 +859,8 @@ function autoSubmitChallenge() {
     .then(data => {
         console.log('Score saved:', data);
         alert('Time is up! Your score has been saved automatically.');
-        exitBtn.style.display = 'block'; // Show exit button
+        exitBtn.style.display = 'block';
+        submitBtn.style.display = 'none'; // Show exit button
     })
     .catch(error => {
         console.error('Error saving score:', error);
@@ -1023,7 +1024,7 @@ function snackbar() {
 
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    fetch('{% url "save_score_defend" %}', {
+    fetch('{% url "save_score" %}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -277,50 +277,51 @@ h1 {
   <div class="categories">
     <!-- Loop through the categories -->
     {% for category in categories %}
-        <div class="category">
-            <h2 class="category-title" style="color:white;">{{ category }}</h2>
-            <ul class="cards">
-                {% for challenge in challenges %}
-                    {% if challenge.category == category %}
-                    <li>
-                      <a href="javascript:void(0);" onclick="checkFinished({{ challenge.id }}, '{{ challenge.finished }}', '{{ challenge.locked }}')" class="card" style="--surface-color: 
-                      {% if challenge.locked %}#ffcccc
-                      {% elif challenge.finished %}#8ceda9
-                      {% else %}#fff{% endif %};">
-                            <img src="{% static 'img/SIMULATE.jpg' %}" class="card__image" alt="" />
-                            <div class="card__overlay">
-                                <div class="card__header">
-                                    <svg class="card__arc" xmlns="http://www.w3.org/2000/svg"><path /></svg>
-                                    <div class="card__header-text">
-                                        <h3 class="card__title">
-                                            {{ challenge.title }} 
-                                            | 
-                                            <span class="badge 
-                                                {% if challenge.difficulty == 'Easy' %}bg-success
-                                                {% elif challenge.difficulty == 'Medium' %}bg-warning
-                                                {% else %}bg-danger
-                                                {% endif %} status-badge">
-                                                {{ challenge.difficulty }}
-                                            </span>
-                                        </h3>
-                                        <span class="card__status">Date Published: {{ challenge.created_at|date:"d M Y, H:i" }}</span>
-                                    </div>
+    <div class="category">
+        <h2 class="category-title" style="color:white;">{{ category }}</h2>
+        <ul class="cards">
+            {% for challenge in challenges %}
+                {% if challenge.category == category %}
+                <li>
+                    <a href="javascript:void(0);" onclick="checkFinished({{ challenge.id }}, '{{ challenge.finished }}', '{{ challenge.locked }}')" class="card" style="--surface-color: 
+                    {% if challenge.locked %}#ffcccc
+                    {% elif challenge.finished %}#8ceda9
+                    {% else %}#fff{% endif %};">
+                        <img src="{% static 'img/SIMULATE.jpg' %}" class="card__image" alt="" />
+                        <div class="card__overlay">
+                            <div class="card__header">
+                                <svg class="card__arc" xmlns="http://www.w3.org/2000/svg"><path /></svg>
+                                <div class="card__header-text">
+                                    <h3 class="card__title">
+                                        {{ challenge.title }} 
+                                        | 
+                                        <span class="badge 
+                                            {% if challenge.difficulty == 'Easy' %}bg-success
+                                            {% elif challenge.difficulty == 'Medium' %}bg-warning
+                                            {% else %}bg-danger
+                                            {% endif %} status-badge">
+                                            {{ challenge.difficulty }}
+                                        </span>
+                                    </h3>
+                                    <span class="card__status">Date Published: {{ challenge.created_at|date:"d M Y, H:i" }}</span>
                                 </div>
-                                <p class="card__description">
-                                    {% if challenge.title_definition %}
-                                        {{ challenge.title_definition }}
-                                    {% else %}
-                                        No definition available for this challenge yet.
-                                    {% endif %}
-                                </p>
                             </div>
-                        </a>
-                    </li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        </div>
-    {% endfor %}
+                            <p class="card__description">
+                                {% if challenge.title_definition %}
+                                    {{ challenge.title_definition }}
+                                {% else %}
+                                    No definition available for this challenge yet.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </a>
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endfor %}
+
 </div>
   {% endif %}
   

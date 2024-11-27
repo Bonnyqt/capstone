@@ -621,6 +621,9 @@ def remove_challenge_defend(request, canvas_id):
 
     # Redirect to a page (e.g., a list of challenges or a success message)
     return redirect('professor_view_challenges')
+from .models import CanvasState, Score, CanvasInteraction
+from django.shortcuts import get_object_or_404, redirect, render
+from .models import CanvasState, Score, CanvasInteraction
 
 def display_canvas(request, canvas_id):
     if not request.user.is_authenticated:
@@ -629,22 +632,33 @@ def display_canvas(request, canvas_id):
     # Get the canvas state from the database, return 404 if not found
     canvas_state = get_object_or_404(CanvasState, id=canvas_id)
 
-    # Check if the challenge is locked
-    if canvas_state.locked:
-        return redirect('simulate')  # Redirect to index or show a "locked" message
-
-    # Increment access count and lock if needed
-    if not Score.objects.filter(user=request.user, canvas_state_title=canvas_state.title, finished=True).exists():
-        canvas_state.access_count += 1
-        if canvas_state.access_count >= 3:
-            canvas_state.locked = True
-        canvas_state.save()
-
     # Check if the user has already finished this challenge
     user_score = Score.objects.filter(user=request.user, canvas_state_title=canvas_state.title).first()
     if user_score and user_score.finished:
         return redirect('simulate')  # Redirect to simulate page if the challenge is finished
 
+    # Track canvas interaction - increment access count and handle locking
+    canvas_interaction, created = CanvasInteraction.objects.get_or_create(
+        user=request.user, canvas_state=canvas_state
+    )
+
+    if created:  # If the interaction is newly created, initialize the access_count to 1
+        canvas_interaction.access_count = 1
+        canvas_interaction.save()
+    else:  # If the interaction already exists, increment the access count
+        canvas_interaction.access_count += 1
+        canvas_interaction.save()
+
+        # Lock the canvas if access count exceeds 3
+        if canvas_interaction.access_count >= 3:
+            # Lock the canvas state
+            canvas_interaction.locked = True
+            canvas_interaction.save()
+
+            # Optionally, log or send feedback for the user if desired
+            print(f"Canvas {canvas_state.title} has been locked after {canvas_interaction.access_count} accesses.")
+    if canvas_interaction.locked:
+        return redirect('simulate') 
     # Prepare the canvas state data, including the canvas time
     canvas_state_data = {
         'category': canvas_state.category,
@@ -660,40 +674,57 @@ def display_canvas(request, canvas_id):
 
 
 
+
 def display_canvas_defend(request, canvas_id):
     if not request.user.is_authenticated:
         return redirect('index')  # Redirect to the index page if not authenticated
 
     # Get the canvas state from the database, return 404 if not found
-    canvas_state = get_object_or_404(CanvasStateDefend, id=canvas_id)
-
-    # Check if the challenge is locked
-    if canvas_state.locked:
-        return redirect('simulate_defend')  # Redirect to index or show a "locked" message
-
-    # Increment access count and lock if needed
-    if not Score.objects.filter(user=request.user, canvas_state_title=canvas_state.title, finished=True).exists():
-        canvas_state.access_count += 1
-        if canvas_state.access_count >= 3:
-            canvas_state.locked = True
-        canvas_state.save()
+    canvas_state_defend = get_object_or_404(CanvasStateDefend, id=canvas_id)
 
     # Check if the user has already finished this challenge
-    user_score = Score.objects.filter(user=request.user, canvas_state_title=canvas_state.title).first()
+    user_score = Score.objects.filter(user=request.user, canvas_state_title=canvas_state_defend.title).first()
     if user_score and user_score.finished:
         return redirect('simulate')  # Redirect to simulate page if the challenge is finished
 
+    # Track canvas interaction - increment access count and handle locking
+    canvas_interaction, created = CanvasInteraction.objects.get_or_create(
+        user=request.user, canvas_state_defend=canvas_state_defend  # Use canvas_state_defend instead of canvas_state
+    )
+
+    if created:  # If the interaction is newly created, initialize the access_count to 1
+        canvas_interaction.access_count = 1
+        canvas_interaction.save()
+    else:  # If the interaction already exists, increment the access count
+        canvas_interaction.access_count += 1
+        canvas_interaction.save()
+
+        # Lock the canvas if access count exceeds 3
+        if canvas_interaction.access_count >= 3:
+            # Lock the canvas interaction
+            canvas_interaction.locked = True
+            canvas_interaction.save()
+
+            # Optionally, lock the canvas state as well
+            canvas_state_defend.locked = True
+            canvas_state_defend.save()
+
+            # Optionally, log or send feedback for the user if desired
+            print(f"Canvas {canvas_state_defend.title} has been locked after {canvas_interaction.access_count} accesses.")
+    if canvas_interaction.locked:
+        return redirect('simulate_defend')
     # Prepare the canvas state data, including the canvas time
     canvas_state_data = {
-        'category': canvas_state.category,
-        'title': canvas_state.title,
-        'nodes': canvas_state.nodes,  # Directly use the Python list from JSONField
-        'wires': canvas_state.wires,  # Directly use the Python list from JSONField
-        'canvas_time': canvas_state.canvas_time  # Include the canvas time from the database
+        'category': canvas_state_defend.category,
+        'title': canvas_state_defend.title,
+        'nodes': canvas_state_defend.nodes,  # Directly use the Python list from JSONField
+        'wires': canvas_state_defend.wires,  # Directly use the Python list from JSONField
+        'canvas_time': canvas_state_defend.canvas_time  # Include the canvas time from the database
     }
 
     # Render the template with the canvas state data
     return render(request, 'myapp/display_canvas_defend.html', {'canvas_state': canvas_state_data})
+
 
 @csrf_exempt
 def save_canvas_state(request):
@@ -1007,6 +1038,8 @@ def generate_encouraging_text(title):
 from django.shortcuts import render, redirect
 from django.db.models import Q
 from .models import UserProfile, EmailLog, Score, CanvasState
+from django.db.models import Q
+
 def simulate(request):
     if not request.user.is_authenticated:
         return redirect('index')  # Redirect to login or homepage if unauthenticated
@@ -1063,6 +1096,10 @@ def simulate(request):
 
         closed_by_user = score.finished if score else False
 
+        # Check if the challenge is locked for the current user
+        canvas_interaction = CanvasInteraction.objects.filter(user=user, canvas_state=canvas_state).first()
+        is_locked = canvas_interaction.locked if canvas_interaction else False
+        
         challenges.append({
             'id': canvas_state.id,
             'title': canvas_state.title,
@@ -1072,7 +1109,7 @@ def simulate(request):
             'finished': finished,
             'title_definition': canvas_state.title_definition,
             'closed_by_user': closed_by_user,
-            'locked': canvas_state.locked,
+            'locked': is_locked,  # Store the locked state for the challenge
         })
 
     categories = set([challenge['category'] for challenge in challenges])
@@ -1099,6 +1136,7 @@ def simulate(request):
 
 
 
+
 def mark_challenge_closed(request, canvas_id):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'User not authenticated'}, status=401)
@@ -1120,7 +1158,6 @@ def mark_challenge_closed(request, canvas_id):
 
     # Handle other request methods if needed
     return JsonResponse({'error': 'Invalid method'}, status=405)
-
 
 
 def simulate_defend(request):
@@ -1179,6 +1216,9 @@ def simulate_defend(request):
 
         closed_by_user = score.finished if score else False
 
+        # Check if the challenge is locked for this user
+        locked = CanvasInteraction.objects.filter(user=user, canvas_state_defend=canvas_state, locked=True).exists()
+
         challenges.append({
             'id': canvas_state.id,
             'title': canvas_state.title,
@@ -1188,7 +1228,7 @@ def simulate_defend(request):
             'finished': finished,
             'title_definition': canvas_state.title_definition,
             'closed_by_user': closed_by_user,
-            'locked': canvas_state.locked,
+            'locked': locked,  # Add locked status to the challenge data
         })
 
     categories = set([challenge['category'] for challenge in challenges])
@@ -1212,6 +1252,7 @@ def simulate_defend(request):
         'categories': categories,
     }
     return render(request, 'myapp/simulate_defend.html', context)
+
 
 
 @login_required
@@ -1356,10 +1397,14 @@ def professor_announce(request):
 
 @login_required
 def professor_view_challenges(request):
+    # Redirect if the user doesn't meet the required conditions
     if not (request.user.is_superuser or request.user.email.endswith('.it@tip.edu.ph')):
-        return redirect('index')  # Redirect to index if neither condition is met
-    challenges = CanvasState.objects.all()
-    canvas_states = CanvasStateDefend.objects.all()
+        return redirect('index')
+    
+    # Filter challenges based on the logged-in user
+    challenges = CanvasState.objects.filter(user=request.user)
+    canvas_states = CanvasStateDefend.objects.filter(user=request.user)  # Assuming similar structure
+
     context = {
         'challenges': challenges,
         'canvas_states': canvas_states,
@@ -1577,13 +1622,14 @@ def add_course(request):
         program = request.POST.get('Program')
         section = request.POST.get('Section')
 
-        # Save to the database
+        # Save to the database, associating with the logged-in user
         Course.objects.create(
             CourseCode=course_code,
             CourseName=course_name,
             CourseDesc=course_desc,
             Program=program,
             Section=section,
+            published_by=request.user,  # Associate the course with the logged-in user
         )
 
         # Add a success message
@@ -1952,11 +1998,15 @@ def profile_details(request, user_id):
 def professor_sections(request):
     if not (request.user.is_superuser or request.user.email.endswith('.it@tip.edu.ph')):
         return redirect('index')  # Redirect to index if neither condition is met
-    courses = Course.objects.all()
+    
+    # Filter courses based on the logged-in user
+    courses = Course.objects.filter(published_by=request.user)
+    
     context = {
         'courses': courses,
     }
     return render(request, 'myapp/professor/professor_sections.html', context)
+
 
 def delete_course(request, course_id):
     if not (request.user.is_superuser or request.user.email.endswith('.it@tip.edu.ph')):

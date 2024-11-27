@@ -9,11 +9,12 @@ from django.conf import settings
 from jsonfield import JSONField  # Use this to store JSON data
 
 class Course(models.Model):
-    CourseCode = models.CharField(max_length=100)
-    CourseName = models.CharField(max_length=200)
+    CourseCode = models.CharField(max_length=20)
+    CourseName = models.CharField(max_length=100)
     CourseDesc = models.TextField()
-    Program = models.CharField(max_length=200)
+    Program = models.CharField(max_length=100)
     Section = models.CharField(max_length=50)
+    published_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.CourseName
@@ -48,11 +49,11 @@ class CanvasState(models.Model):
     nodes = JSONField()  # Store nodes as JSON
     wires = JSONField()  # Store wire connections as JSON
     created_at = models.DateTimeField(auto_now_add=True)
-    access_count = models.PositiveIntegerField(default=0)  # Track number of accesses
-    locked = models.BooleanField(default=False)  # Whether the challenge is locked
 
     def __str__(self):
         return self.title
+
+
 
 
 
@@ -67,11 +68,26 @@ class CanvasStateDefend(models.Model):
     nodes = JSONField()  # Store nodes as JSON
     wires = JSONField()  # Store wire connections as JSON
     created_at = models.DateTimeField(auto_now_add=True)
-    access_count = models.PositiveIntegerField(default=0)  # Track number of accesses
-    locked = models.BooleanField(default=False)  # Whether the challenge is locked
 
     def __str__(self):
         return self.title
+
+
+class CanvasInteraction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Links interaction to a user
+    canvas_state = models.ForeignKey(CanvasState, null=True, blank=True, on_delete=models.CASCADE)  # Links interaction to a specific CanvasState
+    canvas_state_defend = models.ForeignKey(CanvasStateDefend, null=True, blank=True, on_delete=models.CASCADE)  # Links interaction to a specific CanvasStateDefend
+    clicked_at = models.DateTimeField(auto_now_add=True)  # Timestamp for when the canvas was clicked
+    locked = models.BooleanField(default=False)  # Whether the challenge was locked at the time of click
+    access_count = models.PositiveIntegerField(default=0)  # Tracks number of accesses at the time of click
+
+    def __str__(self):
+        # Return which canvas the user interacted with
+        if self.canvas_state:
+            return f"User: {self.user.username}, Canvas: {self.canvas_state.title}, Clicked at: {self.clicked_at}"
+        elif self.canvas_state_defend:
+            return f"User: {self.user.username}, Canvas: {self.canvas_state_defend.title}, Clicked at: {self.clicked_at}"
+        return f"User: {self.user.username}, Clicked at: {self.clicked_at}"
 
 class Score(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # Links score to a user
@@ -84,6 +100,7 @@ class Score(models.Model):
     incorrect_submissions = models.IntegerField(default=0)  # Tracks incorrect submissions
     canvas_state_title = models.CharField(max_length=100, null=True, blank=True)  # Field for CanvasState title
     closed_by_user = models.BooleanField(default=False)  
+    
     def __str__(self):
         return f"User: {self.user.username}, Score: {self.score}, Finished: {self.finished}, Category: {self.category}, Correct: {self.correct_submissions}, Incorrect: {self.incorrect_submissions}, Date: {self.date_submitted}, Canvas Title: {self.canvas_state_title}"
 

@@ -1,6 +1,24 @@
 {% load static %}
 
 <div class="container-fluid position-relative p-0">
+    {% if user_role == 'Admin' %}
+    <div class="admin-card position-fixed top-0 end-0 m-2 px-3 py-2 bg-light border rounded shadow-sm text-center" 
+        style="z-index: 2; margin-top: 110px !important;">
+        <p class="mb-1 text-dark"><strong>You are navigating as an Admin</strong></p>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-primary btn-sm px-2 py-1" style="font-size: 0.75rem;">Return to Dashboard</a>
+    </div>
+    {% elif user_role == 'Professor' %}
+    <div class="admin-card position-fixed top-0 end-0 m-2 px-3 py-2 bg-light border rounded shadow-sm text-center" 
+        style="z-index: 2; margin-top: 110px !important;">
+        <p class="mb-1 text-dark"><strong>You are navigating as a Professor</strong></p>
+        <a href="{% url 'professor_dashboard' %}" class="btn btn-primary btn-sm px-2 py-1" style="font-size: 0.75rem;">Return to Dashboard</a>
+    </div>
+    {% endif %}
+    
+    
+
+
+    
     <nav class="navbar navbar-expand-lg navbar-dark px-5 py-3 py-lg-0 custom-navbar" style="background: rgba(7, 30, 77, 0.158); backdrop-filter: blur(6px);">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span class="fa fa-bars"></span>
@@ -121,8 +139,8 @@
             {% endif %}
         </div>
     </nav>
-    
 </div>
+
 <script>
     function myFunction() {
   // Get the snackbar DIV

@@ -1662,12 +1662,24 @@ def other_profiles(request):
     }
 
     return render(request, 'myapp/other_profiles.html', context)
+from django.core.paginator import Paginator
 
 def logs(request):
     if not request.user.is_superuser:
         return redirect('index')
-    activity_logs = ActivityLog.objects.all().order_by('-created_at')  # You can filter based on user, date, etc.
-    return render(request, 'myapp/admin/logs.html', {'activity_logs': activity_logs})
+
+    # Fetch all activity logs, ordered by the most recent first
+    activity_logs = ActivityLog.objects.all().order_by('-created_at')
+
+    # Set up pagination: 10 logs per page
+    paginator = Paginator(activity_logs, 10)
+
+    # Get the current page number from the request, default to 1
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'myapp/admin/logs.html', {'page_obj': page_obj})
+
 
 
 from django.db.models import Sum, Count, Q
@@ -2176,19 +2188,26 @@ def user_accounts(request):
         for user in users:
             first_name = request.POST.get(f'first_name_{user.id}')
             email = request.POST.get(f'email_{user.id}')
+            
+            # Ensure both first_name and email are provided
+            if not first_name or not email:
+                continue  # Skip if any required field is empty
+            
             user.first_name = first_name
             user.email = email
-            user.username = email
+            user.username = email  # Set the username to the email
             user.save()  # Save the updated user
             
         # Redirect to the same page to avoid resubmission
         return redirect('user_accounts')
+
     feedbacks = Feedback.objects.all()  # Fetch all feedback
     feedback_count = feedbacks.count()  # Get the count of feedback
+    
     # Render the data to the template
     return render(request, 'myapp/admin/user_accounts.html', {
         'users': users,
-        'feedback_count':feedback_count,
+        'feedback_count': feedback_count,
         'feedbacks': feedbacks,
     })
 

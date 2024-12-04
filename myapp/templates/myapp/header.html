@@ -37,13 +37,13 @@
                     <h1 class="m-0"><img style="width:80px; height:80px; margin-top:3px;" src="{% static 'img/logo.png'%}" alt=""></h1>
                 </a>
     
-                <div class="nav-item dropdown mx-5">
-                    <a href="{% url 'simulate' %}" class="nav-link dropdown-toggle {% if request.resolver_match.url_name == 'simulate' %}active{% endif %}" data-bs-toggle="dropdown">Cymulate</a>
-                    <div class="dropdown-menu m-0">
-                        <a href="{% url 'simulate' %}" class="dropdown-item">ATTACK!</a>
-                        <a href="{% url 'simulate_defend' %}" class="dropdown-item">DEFEND!</a>
-                    </div>
-                </div>
+               
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'simulate' %}" class="nav-item nav-link mx-5 {% if request.resolver_match.url_name == 'simulate' %}active{% endif %}">Cymulate</a>
+                {% else %}
+                <a onclick="myFunction()" class="btn nav-item nav-link mx-5 {% if request.resolver_match.url_name == 'simulate' %}active{% endif %}">Cymulate</a>
+                {% endif %}
+              
                 
                 <a href="{% url 'about' %}" class="nav-item nav-link mx-5 {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a>
                 
@@ -265,6 +265,29 @@
 
 /* Show the snackbar when clicking on a button (class added with JavaScript) */
 #snackbar2.show {
+  visibility: visible; /* Show the snackbar */
+  /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+  However, delay the fade out process for 2.5 seconds */
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+#snackbar3 {
+  visibility: hidden; /* Hidden by default. Visible on click */
+  min-width: 250px; /* Set a default minimum width */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  background-color: #06a3da; /* Black background color */
+  color: #fff; /* White text color */
+  text-align: center; /* Centered text */
+  border-radius: 2px; /* Rounded borders */
+  padding: 16px; /* Padding */
+  position: fixed; /* Sit on top of the screen */
+  left: 50%; /* Center the snackbar */
+  bottom: 30px; /* 30px from the bottom */
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#snackbar3.show {
   visibility: visible; /* Show the snackbar */
   /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
   However, delay the fade out process for 2.5 seconds */

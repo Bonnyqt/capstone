@@ -65,6 +65,7 @@ load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 
+
 def generate_analysis(data, chart_type):
     """
     Generate an analysis based on the provided data and chart type.
@@ -107,6 +108,51 @@ def generate_data_checksum(data):
     """Generate a checksum for the data to track changes"""
     data_str = json.dumps(data, sort_keys=True)
     return hashlib.md5(data_str.encode('utf-8')).hexdigest()
+
+
+
+
+@csrf_exempt
+def submit_score(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        canvas_state_id = data.get('canvas_state_id')
+        user_wires = json.loads(data.get('user_wires', '[]'))
+
+        try:
+            canvas_state = CanvasState.objects.get(id=canvas_state_id)
+            correct_wires = canvas_state.wires
+
+            normalized_correct_wires = {tuple(sorted([wire['start'], wire['end']])) for wire in correct_wires}
+            normalized_user_wires = {tuple(sorted([wire['start'], wire['end']])) for wire in user_wires}
+
+            correct_submissions = normalized_correct_wires & normalized_user_wires
+            incorrect_submissions = normalized_user_wires - normalized_correct_wires
+
+            total_score = len(correct_submissions) * 10
+
+            Score.objects.create(
+                user=request.user,
+                score=total_score,
+                category=canvas_state.category,
+                correct_submissions=len(correct_submissions),
+                incorrect_submissions=len(incorrect_submissions),
+                canvas_state_title=canvas_state.title,
+                finished=True,
+            )
+
+            return JsonResponse({
+                'success': True,
+                'score': total_score,
+                'correct_wires': ['-'.join(wire) for wire in correct_submissions],
+                'incorrect_wires': ['-'.join(wire) for wire in incorrect_submissions],
+            })
+
+        except CanvasState.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'CanvasState not found.'})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
 
 
 
@@ -625,12 +671,21 @@ from .models import CanvasState, Score, CanvasInteraction
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import CanvasState, Score, CanvasInteraction
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
+from myapp.models import CanvasState, Score, CanvasInteraction
+
 def display_canvas(request, canvas_id):
     if not request.user.is_authenticated:
         return redirect('index')  # Redirect to the index page if not authenticated
 
     # Get the canvas state from the database, return 404 if not found
     canvas_state = get_object_or_404(CanvasState, id=canvas_id)
+
+    # Check if the challenge is overdue based on the due date
+    current_time = timezone.now()
+    if canvas_state.due_date and canvas_state.due_date < current_time:
+        return redirect('simulate')  # Redirect if the challenge is overdue
 
     # Check if the user has already finished this challenge
     user_score = Score.objects.filter(user=request.user, canvas_state_title=canvas_state.title).first()
@@ -650,26 +705,32 @@ def display_canvas(request, canvas_id):
         canvas_interaction.save()
 
         # Lock the canvas if access count exceeds 3
-        if canvas_interaction.access_count >= 3:
+        if canvas_interaction.access_count >= 1000:
             # Lock the canvas state
             canvas_interaction.locked = True
             canvas_interaction.save()
 
             # Optionally, log or send feedback for the user if desired
             print(f"Canvas {canvas_state.title} has been locked after {canvas_interaction.access_count} accesses.")
+
+    # Redirect to simulate if the canvas is locked
     if canvas_interaction.locked:
-        return redirect('simulate') 
+        return redirect('simulate')
+
     # Prepare the canvas state data, including the canvas time
     canvas_state_data = {
         'category': canvas_state.category,
         'title': canvas_state.title,
         'nodes': canvas_state.nodes,  # Directly use the Python list from JSONField
         'wires': canvas_state.wires,  # Directly use the Python list from JSONField
-        'canvas_time': canvas_state.canvas_time  # Include the canvas time from the database
+        'canvas_time': canvas_state.canvas_time,
+        'canvas_id': canvas_id,
+        'canvas_scenario': canvas_state.canvas_scenario,
     }
 
     # Render the template with the canvas state data
     return render(request, 'myapp/display_canvas.html', {'canvas_state': canvas_state_data})
+
 
 
 
@@ -734,28 +795,29 @@ def save_canvas_state(request):
         category = data.get('category')
         difficulty = data.get('difficulty')
         canvas_time = data.get('canvas_time')
-        canvas_sections = data.get('canvas_section')  # List of selected sections
+        canvas_sections = data.get('canvas_section')
         nodes = data.get('nodes')
         wires = data.get('wires')
+        due_date = data.get('due_date')  # Retrieve due date
+        canvas_scenario = data.get('canvas_scenario')  # Retrieve scenario description
 
-        # Convert list of sections to comma-separated string
         canvas_sections_str = ','.join(canvas_sections)
 
-        # Save the canvas state
         canvas_state = CanvasState.objects.create(
             user=request.user,
             title=title,
             category=category,
             difficulty=difficulty,
             canvas_time=canvas_time,
-            canvas_section=canvas_sections_str,  # Store sections
+            canvas_section=canvas_sections_str,
             nodes=nodes,
-            wires=wires
+            wires=wires,
+            due_date=due_date,  # Save due date
+            canvas_scenario=canvas_scenario  # Save scenario description
         )
 
         return JsonResponse({'status': 'success', 'message': 'Canvas state saved successfully!'})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
-
 
 
 def user_list(request):
@@ -1035,11 +1097,6 @@ def generate_encouraging_text(title):
     
     return response['choices'][0]['message']['content'].strip()
 
-from django.shortcuts import render, redirect
-from django.db.models import Q
-from .models import UserProfile, EmailLog, Score, CanvasState
-from django.db.models import Q
-
 def simulate(request):
     if not request.user.is_authenticated:
         return redirect('index')  # Redirect to login or homepage if unauthenticated
@@ -1084,6 +1141,8 @@ def simulate(request):
 
     challenges = []
 
+    current_time = timezone.now()  # Get the current time for overdue checking
+
     for canvas_state in canvas_states:
         score = user_scores.filter(canvas_state_title=canvas_state.title).first()
         finished = score.finished if score else False
@@ -1100,16 +1159,21 @@ def simulate(request):
         canvas_interaction = CanvasInteraction.objects.filter(user=user, canvas_state=canvas_state).first()
         is_locked = canvas_interaction.locked if canvas_interaction else False
         
+        # Check if the challenge is overdue (only if due_date is not None)
+        is_overdue = canvas_state.due_date and canvas_state.due_date < current_time
+
         challenges.append({
             'id': canvas_state.id,
             'title': canvas_state.title,
             'category': canvas_state.category,
             'difficulty': canvas_state.difficulty,
             'created_at': canvas_state.created_at,
+            'due_date': canvas_state.due_date,
             'finished': finished,
             'title_definition': canvas_state.title_definition,
             'closed_by_user': closed_by_user,
             'locked': is_locked,  # Store the locked state for the challenge
+            'is_overdue': is_overdue,  # Add the overdue state for each challenge
         })
 
     categories = set([challenge['category'] for challenge in challenges])

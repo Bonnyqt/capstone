@@ -38,24 +38,23 @@ class StudentAnalysis(models.Model):
     challenge_definition = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
 class CanvasState(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Associate with a user if needed
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
-    category = models.CharField(max_length=100)  # Field for category
+    category = models.CharField(max_length=100)
     difficulty = models.CharField(max_length=50)
     title_definition = models.CharField(max_length=200)
-    canvas_section = models.CharField(max_length=50)  # Field for difficulty level
-    canvas_time = models.IntegerField()  # Field for canvas timer (in seconds)
-    nodes = JSONField()  # Store nodes as JSON
-    wires = JSONField()  # Store wire connections as JSON
+    canvas_section = models.CharField(max_length=50)
+    canvas_time = models.IntegerField()
+    due_date = models.DateTimeField(null=True, blank=True)  # New field for the deadline
+    nodes = JSONField()
+    wires = JSONField()
+    canvas_scenario = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
-
-
-
-
 
 class CanvasStateDefend(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # Associate with a user if needed

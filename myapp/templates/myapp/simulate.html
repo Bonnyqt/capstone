@@ -232,8 +232,8 @@ h1 {
       <br><br> <br><br><br>
       <div id="snackbar2" style="z-index: 9999;">You made too many attempts to this challenge. </div> 
      
-      
-      <h1 class="display-1 text-white mb-md-4 animated zoomIn" style="font-size: 50px;">ATTACK! SIMULATIONS</h1>
+      <div id="snackbar3" style="z-index: 9999;">This challenge is beyond its due. </div> 
+      <h1 class="display-1 text-white mb-md-4 animated zoomIn" style="font-size: 50px;">CYMULATIONS</h1>
 
       {% if profile_incomplete %}
       <div class="alert text-center" style="color: white;">
@@ -272,7 +272,7 @@ h1 {
           </div>
       </div>
   {% elif not challenges %}
-      <p class="text-center text-white">No attacking challenges published to your section yet.</p>
+      <p class="text-center text-white">No challenges published to your section yet.</p>
   {% else %}
       <div class="categories">
           <!-- Loop through the categories -->
@@ -280,46 +280,53 @@ h1 {
           <div class="category">
               <h2 class="category-title" style="color:white;">{{ category }}</h2>
               <ul class="cards">
-                  {% for challenge in challenges %}
-                      {% if challenge.category == category %}
-                      <li>
-                          <a href="javascript:void(0);" onclick="checkFinished({{ challenge.id }}, '{{ challenge.finished }}', '{{ challenge.locked }}')" class="card" 
-                          style="--surface-color: 
-                              {% if challenge.locked %} #ffcccc 
-                              {% elif challenge.finished %} #8ceda9 
-                              {% else %} #fff 
-                              {% endif %};">
-                                <img src="{% static 'img/SIMULATE.jpg' %}" class="card__image" alt="" />
-                                <div class="card__overlay">
-                                    <div class="card__header">
-                                        <svg class="card__arc" xmlns="http://www.w3.org/2000/svg"><path /></svg>
-                                        <div class="card__header-text">
-                                            <h3 class="card__title">
-                                                {{ challenge.title }} 
-                                                | 
-                                                <span class="badge 
-                                                    {% if challenge.difficulty == 'Easy' %}bg-success
-                                                    {% elif challenge.difficulty == 'Medium' %}bg-warning
-                                                    {% else %}bg-danger
-                                                    {% endif %} status-badge">
-                                                    {{ challenge.difficulty }}
-                                                </span>
-                                            </h3>
-                                            <span class="card__status">Date Published: {{ challenge.created_at|date:"d M Y, H:i" }}</span>
-                                        </div>
-                                    </div>
-                                    <p class="card__description">
-                                        {% if challenge.title_definition %}
-                                            {{ challenge.title_definition }}
-                                        {% else %}
-                                            No definition available for this challenge yet.
-                                        {% endif %}
-                                    </p>
-                                </div>
-                            </a>
-                        </li>
+                {% for challenge in challenges %}
+    {% if challenge.category == category %}
+        <li>
+            <a href="javascript:void(0);" onclick="checkFinished(
+                {{ challenge.id }},
+                '{{ challenge.finished }}',
+                '{{ challenge.locked }}',
+                '{{ challenge.due_date|date:"Y-m-d H:i:s" }}'  
+            )" class="card" style="--surface-color: 
+                {% if challenge.locked %} #ffcccc 
+                {% elif challenge.finished %} #8ceda9 
+                {% elif challenge.is_overdue %} #ffb74c
+                {% else %} #fff 
+                {% endif %};">
+                <img src="{% static 'img/SIMULATE.jpg' %}" class="card__image" alt="" />
+                <div class="card__overlay">
+                    <div class="card__header">
+                        <svg class="card__arc" xmlns="http://www.w3.org/2000/svg"><path /></svg>
+                        <div class="card__header-text">
+                            <h3 class="card__title" style="color:rgb(36, 36, 36)">
+                                {{ challenge.title }} 
+                                | 
+                                <span class="badge 
+                                    {% if challenge.difficulty == 'Easy' %}bg-success
+                                    {% elif challenge.difficulty == 'Medium' %}bg-warning
+                                    {% else %}bg-danger
+                                    {% endif %} status-badge">
+                                    {{ challenge.difficulty }}
+                                </span>
+                            </h3>
+                            <span class="card__status" style="color:rgb(36, 36, 36)">Due Date: {{ challenge.due_date|date:"d M Y, h:i A" }}</span>
+                        </div>
+                    </div>
+                    <p class="card__description" style="color:rgb(36, 36, 36)">
+                        {% if challenge.title_definition %}
+                            {{ challenge.title_definition }}
+                        {% else %}
+                            No definition available for this challenge yet.
                         {% endif %}
-                    {% endfor %}
+                    </p>
+                </div>
+            </a>
+        </li>
+    {% endif %}
+{% endfor %}
+
+            
                 </ul>
             </div>
       {% endfor %}
@@ -338,29 +345,37 @@ h1 {
     </div>
 </body>
 <script>
-    let openedWindow = null; // Store reference to the opened window
+let openedWindow = null; // Store reference to the opened window
 
-    function openWindow(id) {
-        // Close the currently opened window if it exists and is not already closed
-        if (openedWindow && !openedWindow.closed) {
-            console.log("Closing the currently opened window.");
-            openedWindow.close();
-        }
-
-        // Construct the URL with the dynamic 'id'
-        const url = "{% url 'display_canvas' canvas_id=0 %}".replace('0', id);
-        const windowFeatures = 'fullscreen=yes, scrollbars=yes, resizable=yes, width=' + screen.width + ', height=' + screen.height;
-
-        // Open the new window and store the reference
-        openedWindow = window.open(url, '_blank', windowFeatures);
-
-        if (!openedWindow) {
-            console.error("Failed to open the window. It might have been blocked by the browser.");
-        }
+function openWindow(id) {
+    // Close the currently opened window if it exists and is not already closed
+    if (openedWindow && !openedWindow.closed) {
+        console.log("Closing the currently opened window.");
+        openedWindow.close();
     }
 
-    function checkFinished(challengeId, isFinished, isLocked) {
-    if (isLocked === 'True') {
+    // Construct the URL with the dynamic 'id'
+    const url = "{% url 'display_canvas' canvas_id=0 %}".replace('0', id);
+    const windowFeatures = 'fullscreen=yes, scrollbars=yes, resizable=yes, width=' + screen.width + ', height=' + screen.height;
+
+    // Open the new window and store the reference
+    openedWindow = window.open(url, '_blank', windowFeatures);
+
+    if (!openedWindow) {
+        console.error("Failed to open the window. It might have been blocked by the browser.");
+    }
+}
+
+function checkFinished(challengeId, isFinished, isLocked, dueDate) {
+    const currentDate = new Date();
+
+    // Parse the due date passed from the template
+    const challengeDueDate = new Date(dueDate); 
+
+    // If the challenge is past due
+    if (challengeDueDate < currentDate) {
+        showSnackbar3();  // Show snackbar3 if the challenge is overdue
+    } else if (isLocked === 'True') {
         // If the challenge is locked, show the snackbar2
         showSnackbar2();
     } else if (isFinished === 'True') {
@@ -391,6 +406,17 @@ function showSnackbar2() {
         snackbar2.className = snackbar2.className.replace("show", "");
     }, 3000);
 }
+
+function showSnackbar3() {
+    const snackbar3 = document.getElementById("snackbar3");
+    snackbar3.className = "show"; // Show the third snackbar for overdue challenge
+
+    // After 3 seconds, remove the "show" class to hide the snackbar3
+    setTimeout(function () {
+        snackbar3.className = snackbar3.className.replace("show", "");
+    }, 3000);
+}
+
 </script>
 
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

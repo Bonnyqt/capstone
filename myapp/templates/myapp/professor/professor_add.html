@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERCLASH | Add ATTACK! Challenge</title>
+    <title>CYBERCLASH | Add Cymulation Challenges</title>
     <link href="{% static 'img/logo.png' %}" rel="icon">
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
@@ -177,7 +177,7 @@
     padding: 20px; /* Padding inside modal */
     border: 1px solid #888; /* Light border */
     width: 100%; /* Full width */
-    max-width: 500px; /* Maximum width */
+    max-width: 800px; /* Maximum width */
     text-align: center; /* Center text */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Shadow for depth */
     animation: fadeIn 0.3s; /* Fade in animation */
@@ -333,7 +333,7 @@ label {
         stroke-dashoffset: -15;
     }
 }
-#canvasCategoryDropdown, #canvasDifficultyDropdown, #canvasTime, #canvasSection, #canvasCategoryDropdown2 {
+#canvasCategoryDropdown, #canvasDifficultyDropdown, #canvasTime, #canvasSection, #canvasCategoryDropdown2, #canvasDeadline,#canvasScenario {
     width: 100%; /* Make it responsive */
     padding: 10px; /* Add padding for better usability */
     border: 1px solid #ccc; /* Light border */
@@ -345,7 +345,7 @@ label {
 }
 
 /* Add a custom dropdown arrow */
-#canvasCategoryDropdown::after, #canvasDifficultyDropdown::after, #canvasTime::after, #canvasSection::after, #canvasCategoryDropdown2::after {
+#canvasCategoryDropdown::after, #canvasDifficultyDropdown::after, #canvasTime::after, #canvasSection::after, #canvasCategoryDropdown2::after, #canvasDeadline::after {
     content: '▼'; /* Custom arrow symbol */
     font-size: 12px; /* Adjust size */
     color: #007bff; /* Match theme color */
@@ -356,7 +356,7 @@ label {
 }
 
 /* On focus */
-#canvasCategoryDropdown:focus, #canvasDifficultyDropdown:focus, #canvasTime:focus, #canvasSection:focus, #canvasCategoryDropdown2:focus{
+#canvasCategoryDropdown:focus, #canvasDifficultyDropdown:focus, #canvasTime:focus, #canvasSection:focus, #canvasCategoryDropdown2:focus, #canvasDeadline:focus{
     outline: none; /* Remove default focus */
     border-color: #007bff; /* Add a highlight color */
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add focus shadow */
@@ -425,10 +425,43 @@ label {
 
 /* Style for mobile responsiveness */
 @media (max-width: 600px) {
-    #canvasCategoryDropdown, #canvasDifficultyDropdown, #canvasTimer, #canvasSection, #canvasCategoryDropdown2 {
+    #canvasCategoryDropdown, #canvasDifficultyDropdown, #canvasTimer, #canvasSection, #canvasCategoryDropdown2, #canvasDeadline {
         font-size: 14px; /* Slightly smaller font size */
         padding: 8px; /* Adjust padding for smaller screens */
     }
+}
+.icon-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px; /* Space between icons */
+}
+
+.icon-node {
+    text-align: center;
+    width: 80px; /* Adjust width as needed */
+}
+
+.icon-node .icon {
+    font-size: 32px; /* Adjust icon size as needed */
+    color: #555; /* Default color */
+    margin-bottom: 5px; /* Space between icon and title */
+}
+
+.icon-title {
+    display: block;
+    font-size: 14px; /* Adjust text size as needed */
+    color: #333; /* Title color */
+}
+.flex-row {
+    display: flex;
+    gap: 20px; /* Space between items */
+    margin-bottom: 15px; /* Optional spacing below */
+}
+
+.flex-item {
+    flex: 1; /* Equal width for items */
+    display: flex;
+    flex-direction: column; /* Stack label and select vertically */
 }
 
     </style>
@@ -445,59 +478,277 @@ label {
         <div class="modal-content">
             
             <h2>Select Icon</h2>
-            <div id="iconList" class="icon-container">
-                <!-- User icons -->
-                <i class="fas fa-user icon" data-icon="fas fa-user" title="User"></i>
-                <i class="fas fa-user-secret icon" data-icon="fas fa-user-secret" title="User Secret"></i>
-                
-                <!-- Development and Security icons -->
-                <i class="fas fa-code icon" data-icon="fas fa-code" title="Code"></i>
-                <i class="fas fa-virus icon" data-icon="fas fa-virus" title="Virus"></i>
-                <i class="fas fa-fingerprint icon" data-icon="fas fa-fingerprint" title="Fingerprint"></i>
-                <i class="fas fa-globe icon" data-icon="fas fa-globe" title="Globe"></i>
-                <i class="fas fa-cloud icon" data-icon="fas fa-cloud" title="Cloud"></i>
-                <i class="fas fa-database icon" data-icon="fas fa-database" title="Database"></i>
-                
-                <!-- Security and Malware -->
-                <i class="fas fa-shield-alt icon" data-icon="fas fa-shield-alt" title="Firewall"></i>
-                <i class="fas fa-skull-crossbones icon" data-icon="fas fa-skull-crossbones" title="Malware"></i>
-                <i class="fas fa-bug icon" data-icon="fas fa-bug" title="Bug/Exploit"></i>
-                <i class="fas fa-lock icon" data-icon="fas fa-lock" title="Encryption"></i>
-                
-                <!-- Networking and Server Icons -->
-                <i class="fas fa-network-wired icon" data-icon="fas fa-network-wired" title="Network"></i>
-                <i class="fas fa-server icon" data-icon="fas fa-server" title="Server"></i>
-                <i class="fas fa-satellite-dish icon" data-icon="fas fa-satellite-dish" title="Communications"></i>
-                
-                <!-- Verification and Protection -->
-                <i class="fas fa-file-signature icon" data-icon="fas fa-file-signature" title="Signature Verification"></i>
-                <i class="fas fa-user-shield icon" data-icon="fas fa-user-shield" title="User Protection"></i>
-                <i class="fas fa-robot icon" data-icon="fas fa-robot" title="Automated Threats"></i>
-                
-                <!-- Access and Firewall -->
-                <i class="fas fa-key icon" data-icon="fas fa-key" title="Access Control"></i>
-                <i class="fas fa-firewall icon" data-icon="fas fa-firewall" title="Firewall Protection"></i>
-                
-                <!-- Power and Virus Protection -->
-                <i class="fas fa-bolt icon" data-icon="fas fa-bolt" title="Power/Threats"></i>
-                <i class="fas fa-shield-virus icon" data-icon="fas fa-shield-virus" title="Virus Protection"></i>
-                
-                <!-- Warnings and Data -->
-                <i class="fas fa-exclamation-triangle icon" data-icon="fas fa-exclamation-triangle" title="Warning/Error"></i>
-                <i class="fas fa-exchange-alt icon" data-icon="fas fa-exchange-alt" title="Data Transfer"></i>
-                
-                <!-- Lock and Network Signal -->
-                <i class="fas fa-unlock-alt icon" data-icon="fas fa-unlock-alt" title="Unlock Access"></i>
-                <i class="fas fa-user-lock icon" data-icon="fas fa-user-lock" title="User Lock"></i>
-                <i class="fas fa-signal icon" data-icon="fas fa-signal" title="Signal Strength/Network"></i>
-                
-                <!-- Performance and Data Analysis -->
-                <i class="fas fa-tachometer-alt icon" data-icon="fas fa-tachometer-alt" title="Performance Monitoring"></i>
-                <i class="fas fa-network-wired icon" data-icon="fas fa-network-wired" title="Wired Network"></i>
-                <i class="fas fa-chart-line icon" data-icon="fas fa-chart-line" title="Data Analysis"></i>
-            </div>
-            
-            <button id="closeModalBtn">Close</button>
+            <div class="col-lg-12">
+                <div class="card z-depth-3">
+                 <div class="card-body">
+                 <ul class="nav nav-pills nav-pills-primary nav-justified">
+                     <li class="nav-item">
+                         <a href="javascript:void();" data-target="#profile" data-toggle="pill" class="nav-link active show"><i class="icon-user"></i> <span class="hidden-xs">Devices</span></a>
+                     </li>
+                     <li class="nav-item">
+                         <a href="javascript:void();" data-target="#messages" data-toggle="pill" class="nav-link"><i class="icon-envelope-open"></i> <span class="hidden-xs">Attacks</span></a>
+                     </li>
+                     <li class="nav-item">
+                         <a href="javascript:void();" data-target="#edit" data-toggle="pill" class="nav-link"><i class="icon-note"></i> <span class="hidden-xs">Defenses </span></a>
+                     </li>
+                 </ul>
+                 <hr>
+                 <div class="tab-content p-3">
+                     
+                    <div class="tab-pane active show" id="profile">
+                        <div id="iconList" class="icon-container">
+                            <div class="icon-container">
+                                <div class="icon-node">
+                                    <i class="fas fa-user icon" data-icon="fas fa-user" title="User"></i>
+                                    <span class="icon-title">User</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-user-secret icon" data-icon="fas fa-user-secret" title="Attacker"></i>
+                                    <span class="icon-title">Attacker</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-code icon" data-icon="fas fa-code" title="Web"></i>
+                                    <span class="icon-title">Web</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-laptop icon" data-icon="fas fa-laptop" title="Laptop"></i>
+                                    <span class="icon-title">Laptop</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-mobile-alt icon" data-icon="fas fa-mobile-alt" title="Mobile"></i>
+                                    <span class="icon-title">Mobile</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-tv icon" data-icon="fas fa-tv" title="Television"></i>
+                                    <span class="icon-title">Television</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-tablet-alt icon" data-icon="fas fa-tablet-alt" title="Tablet"></i>
+                                    <span class="icon-title">Tablet</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-wifi icon" data-icon="fas fa-wifi" title="Router"></i>
+                                    <span class="icon-title">Router</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-camera icon" data-icon="fas fa-camera" title="Camera"></i>
+                                    <span class="icon-title">Camera</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-headphones icon" data-icon="fas fa-headphones" title="Headphones"></i>
+                                    <span class="icon-title">Headphones</span>
+                                </div>
+                                <!-- More icons related to networking, servers, and devices -->
+                                <div class="icon-node">
+                                    <i class="fas fa-desktop icon" data-icon="fas fa-desktop" title="Desktop"></i>
+                                    <span class="icon-title">Desktop</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-server icon" data-icon="fas fa-server" title="Server"></i>
+                                    <span class="icon-title">Server</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-database icon" data-icon="fas fa-database" title="Database"></i>
+                                    <span class="icon-title">Database</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-network-wired icon" data-icon="fas fa-network-wired" title="Router"></i>
+                                    <span class="icon-title">Router</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-random icon" data-icon="fas fa-random" title="Switch"></i>
+                                    <span class="icon-title">Switch</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-cogs icon" data-icon="fas fa-cogs" title="IoT Device"></i>
+                                    <span class="icon-title">IoT Device</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-cloud icon" data-icon="fas fa-cloud" title="Cloud"></i>
+                                    <span class="icon-title">Cloud</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-lock icon" data-icon="fas fa-lock" title="Firewall"></i>
+                                    <span class="icon-title">Firewall</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-cloud-download-alt icon" data-icon="fas fa-cloud-download-alt" title="Cloud Storage"></i>
+                                    <span class="icon-title">Cloud Storage</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-network-wired icon" data-icon="fas fa-network-wired" title="Network"></i>
+                                    <span class="icon-title">Network</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-plug icon" data-icon="fas fa-plug" title="Power Supply"></i>
+                                    <span class="icon-title">Power Supply</span>
+                                </div>
+                                <div class="icon-node">
+                                    <i class="fas fa-cogs icon" data-icon="fas fa-cogs" title="Configuration"></i>
+                                    <span class="icon-title">Configuration</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="tab-pane" id="messages">
+                        <div id="iconList2" class="icon-container">
+                            <div class="icon-container">
+                                <!-- Phishing Attack -->
+                                <div class="icon-node">
+                                    <i class="fas fa-envelope-open-text icon" data-icon="fas fa-envelope-open-text" title="Phishing"></i>
+                                    <span class="icon-title">Phishing</span>
+                                </div>
+                                <!-- DDoS Attack -->
+                                <div class="icon-node">
+                                    <i class="fas fa-cloud-upload-alt icon" data-icon="fas fa-cloud-upload-alt" title="DDoS"></i>
+                                    <span class="icon-title">DDoS</span>
+                                </div>
+                                <!-- Malware Attack -->
+                                <div class="icon-node">
+                                    <i class="fas fa-virus icon" data-icon="fas fa-virus" title="Malware"></i>
+                                    <span class="icon-title">Malware</span>
+                                </div>
+                                <!-- SQL Injection -->
+                                <div class="icon-node">
+                                    <i class="fas fa-database icon" data-icon="fas fa-database" title="SQL Injection"></i>
+                                    <span class="icon-title">SQL Injection</span>
+                                </div>
+                                <!-- Ransomware -->
+                                <div class="icon-node">
+                                    <i class="fas fa-lock icon" data-icon="fas fa-lock" title="Ransomware"></i>
+                                    <span class="icon-title">Ransomware</span>
+                                </div>
+                                <!-- Man-in-the-middle (MITM) Attack -->
+                                <div class="icon-node">
+                                    <i class="fas fa-exchange-alt icon" data-icon="fas fa-exchange-alt" title="MITM"></i>
+                                    <span class="icon-title">MITM Attack</span>
+                                </div>
+                                <!-- Denial of Service -->
+                                <div class="icon-node">
+                                    <i class="fas fa-ban icon" data-icon="fas fa-ban" title="Denial of Service"></i>
+                                    <span class="icon-title">DoS</span>
+                                </div>
+                                <!-- Cross-Site Scripting (XSS) -->
+                                <div class="icon-node">
+                                    <i class="fas fa-code icon" data-icon="fas fa-code" title="XSS"></i>
+                                    <span class="icon-title">XSS</span>
+                                </div>
+                                <!-- Brute Force Attack -->
+                                <div class="icon-node">
+                                    <i class="fas fa-key icon" data-icon="fas fa-key" title="Brute Force"></i>
+                                    <span class="icon-title">Brute Force</span>
+                                </div>
+                                <!-- Spoofing -->
+                                <div class="icon-node">
+                                    <i class="fas fa-fingerprint icon" data-icon="fas fa-fingerprint" title="Spoofing"></i>
+                                    <span class="icon-title">Spoofing</span>
+                                </div>
+                                <!-- Eavesdropping -->
+                                <div class="icon-node">
+                                    <i class="fas fa-headphones-alt icon" data-icon="fas fa-headphones-alt" title="Eavesdropping"></i>
+                                    <span class="icon-title">Eavesdropping</span>
+                                </div>
+                                <!-- Trojan Horse -->
+                                <div class="icon-node">
+                                    <i class="fas fa-horse icon" data-icon="fas fa-horse" title="Trojan Horse"></i>
+                                    <span class="icon-title">Trojan Horse</span>
+                                </div>
+                                <!-- Insider Threat -->
+                                <div class="icon-node">
+                                    <i class="fas fa-users icon" data-icon="fas fa-users" title="Insider Threat"></i>
+                                    <span class="icon-title">Insider Threat</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                     
+                     
+                    <div class="tab-pane" id="edit">
+                        <div id="iconList3" class="icon-container">
+                            <div class="icon-container">
+                                <!-- Firewall -->
+                                <div class="icon-node">
+                                    <i class="fas fa-shield-alt icon" data-icon="fas fa-shield-alt" title="Firewall"></i>
+                                    <span class="icon-title">Firewall</span>
+                                </div>
+                                <!-- Encryption -->
+                                <div class="icon-node">
+                                    <i class="fas fa-lock icon" data-icon="fas fa-lock" title="Encryption"></i>
+                                    <span class="icon-title">Encryption</span>
+                                </div>
+                                <!-- Antivirus -->
+                                <div class="icon-node">
+                                    <i class="fas fa-bug icon" data-icon="fas fa-bug" title="Antivirus"></i>
+                                    <span class="icon-title">Antivirus</span>
+                                </div>
+                                <!-- Multi-factor Authentication -->
+                                <div class="icon-node">
+                                    <i class="fas fa-fingerprint icon" data-icon="fas fa-fingerprint" title="MFA"></i>
+                                    <span class="icon-title">MFA</span>
+                                </div>
+                                <!-- Intrusion Detection System (IDS) -->
+                                <div class="icon-node">
+                                    <i class="fas fa-bell icon" data-icon="fas fa-bell" title="IDS"></i>
+                                    <span class="icon-title">IDS</span>
+                                </div>
+                                <!-- Intrusion Prevention System (IPS) -->
+                                <div class="icon-node">
+                                    <i class="fas fa-slash icon" data-icon="fas fa-slash" title="IPS"></i>
+                                    <span class="icon-title">IPS</span>
+                                </div>
+                                <!-- Virtual Private Network (VPN) -->
+                                <div class="icon-node">
+                                    <i class="fas fa-user-shield icon" data-icon="fas fa-user-shield" title="VPN"></i>
+                                    <span class="icon-title">VPN</span>
+                                </div>
+                                <!-- Security Information and Event Management (SIEM) -->
+                                <div class="icon-node">
+                                    <i class="fas fa-chart-line icon" data-icon="fas fa-chart-line" title="SIEM"></i>
+                                    <span class="icon-title">SIEM</span>
+                                </div>
+                                <!-- Endpoint Protection -->
+                                <div class="icon-node">
+                                    <i class="fas fa-laptop icon" data-icon="fas fa-laptop" title="Endpoint Protection"></i>
+                                    <span class="icon-title">Endpoint Protection</span>
+                                </div>
+                                <!-- Patch Management -->
+                                <div class="icon-node">
+                                    <i class="fas fa-tools icon" data-icon="fas fa-tools" title="Patch Management"></i>
+                                    <span class="icon-title">Patch Management</span>
+                                </div>
+                                <!-- Security Awareness Training -->
+                                <div class="icon-node">
+                                    <i class="fas fa-graduation-cap icon" data-icon="fas fa-graduation-cap" title="Security Awareness Training"></i>
+                                    <span class="icon-title">Security Awareness</span>
+                                </div>
+                                <!-- Data Loss Prevention -->
+                                <div class="icon-node">
+                                    <i class="fas fa-database icon" data-icon="fas fa-database" title="Data Loss Prevention"></i>
+                                    <span class="icon-title">DLP</span>
+                                </div>
+                                <!-- Access Control -->
+                                <div class="icon-node">
+                                    <i class="fas fa-key icon" data-icon="fas fa-key" title="Access Control"></i>
+                                    <span class="icon-title">Access Control</span>
+                                </div>
+                                <!-- Backup Systems -->
+                                <div class="icon-node">
+                                    <i class="fas fa-hdd icon" data-icon="fas fa-hdd" title="Backup Systems"></i>
+                                    <span class="icon-title">Backup Systems</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                 </div>
+             </div>
+           </div>
+           </div>
+           <br>
+             <button id="closeModalBtn">Close</button>
         </div>
     </div>
 
@@ -519,68 +770,76 @@ label {
     </div>
 
     
-<div id="titleModal" class="modal">
-    <div class="modal-content">
-        <span class="close" id="closeTitleModalBtn" style="position:fixed;position: absolute; top: 25px; right: 25px;">&times;</span>
-        <h2> Publish Network </h2>
-        <input type="text" id="canvasTitleInput" placeholder="Enter title" required>
+    <div id="titleModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeTitleModalBtn" style="position:fixed;position: absolute; top: 25px; right: 25px;">&times;</span>
+            <h2> Publish Network </h2>
+            <input type="text" id="canvasTitleInput" placeholder="Enter title" required>
+            <label for="canvasScenario">Scenario Description:</label>
+        <textarea id="canvasScenario" placeholder="Describe the scenario..." rows="4" required></textarea>
 
-        <label for="canvasCategoryDropdown">Select Category:</label>
-        <select id="canvasCategoryDropdown">
-            <option value="Web Exploitation">Web Exploitation</option>
-            <option value="Cloud Security">Cloud Security</option>
-            <option value="Reverse Engineering">Reverse Engineering</option>
-            <option value="General Skills">General Skills</option>
-        </select>
-        
-        <!-- Dropdown for Difficulty Level -->
-        <label for="canvasDifficultyDropdown">Select Level of Difficulty:</label>
-        <select id="canvasDifficultyDropdown">
-            <option value="Easy">Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
-        </select>
-   
-        
-        <label for="canvasTime">Select Timer (Seconds):</label>
-        <select id="canvasTime">
-            <option value="30">30</option>
-            <option value="60">60</option>
-            <option value="90">90</option>
-        </select>
-      
-        <label for="canvasSection">Select sections to publish:</label>
-        <div id="canvasSection" class="section-checkbox-group">
-            <label class="checkbox-label">
-                <input type="checkbox" name="canvasSection" value="All" onclick="toggleAllSections(this)"> 
-                <span class="custom-checkbox"></span> Publish to all Sections
-            </label>
-            <label class="checkbox-label">
-                <input type="checkbox" name="canvasSection" value="IT41S1"> 
-                <span class="custom-checkbox"></span> IT41S1
-            </label>
-            <label class="checkbox-label">
-                <input type="checkbox" name="canvasSection" value="IT41S2"> 
-                <span class="custom-checkbox"></span> IT41S2
-            </label>
-            <label class="checkbox-label">
-                <input type="checkbox" name="canvasSection" value="IT41S3"> 
-                <span class="custom-checkbox"></span> IT41S3
-            </label>
-            <label class="checkbox-label">
-                <input type="checkbox" name="canvasSection" value="IT41S4"> 
-                <span class="custom-checkbox"></span> IT41S4
-            </label>
-            <label class="checkbox-label">
-                <input type="checkbox" name="canvasSection" value="IT41S5"> 
-                <span class="custom-checkbox"></span> IT41S5
-            </label>
+            <label for="canvasCategoryDropdown">Select Category:</label>
+            <select id="canvasCategoryDropdown">
+                <option value="Web Exploitation">Web Exploitation</option>
+                <option value="Cloud Security">Cloud Security</option>
+                <option value="Reverse Engineering">Reverse Engineering</option>
+                <option value="General Skills">General Skills</option>
+            </select>
+            
+            <div class="flex-row">
+                <div class="flex-item">
+                    <label for="canvasDifficultyDropdown">Select Level of Difficulty:</label>
+                    <select id="canvasDifficultyDropdown">
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                    </select>
+                </div>
+                <div class="flex-item">
+                    <label for="canvasTime">Select Timer (Seconds):</label>
+                    <select id="canvasTime">
+                        <option value="120">120</option>
+                        <option value="180">180</option>
+                        <option value="240">240</option>
+                    </select>
+                </div>
+            </div>
+            <label for="canvasDeadline">Set Deadline:</label>
+            <input type="datetime-local" id="canvasDeadline" required>
+    
+            <label for="canvasSection">Select sections to publish:</label>
+            <div id="canvasSection" class="section-checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="canvasSection" value="All" onclick="toggleAllSections(this)"> 
+                    <span class="custom-checkbox"></span> Publish to all Sections
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" name="canvasSection" value="IT41S1"> 
+                    <span class="custom-checkbox"></span> IT41S1
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" name="canvasSection" value="IT41S2"> 
+                    <span class="custom-checkbox"></span> IT41S2
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" name="canvasSection" value="IT41S3"> 
+                    <span class="custom-checkbox"></span> IT41S3
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" name="canvasSection" value="IT41S4"> 
+                    <span class="custom-checkbox"></span> IT41S4
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" name="canvasSection" value="IT41S5"> 
+                    <span class="custom-checkbox"></span> IT41S5
+                </label>
+            </div>
+            
+            <br>
+            <button id="saveTitleBtn">Publish Network</button>
         </div>
-        
-        <br>
-        <button id="saveTitleBtn">Save Title</button>
     </div>
-</div>
+    
 
 
 <div id="snackbar">Generating network...</div>
@@ -602,6 +861,7 @@ label {
             <option value="Reverse Engineering">Reverse Engineering</option>
             <option value="General Skills">General Skills</option>
         </select>
+       
         <label for="canvasDifficultyDropdown">Select Level of Difficulty:</label>
         <select id="canvasDifficultyDropdown">
             <option value="Easy">Easy</option>
@@ -612,11 +872,11 @@ label {
         
         <label for="canvasTime">Select Timer (Seconds):</label>
         <select id="canvasTime">
-            <option value="30">30</option>
-            <option value="60">60</option>
-            <option value="90">90</option>
+            <option value="120">120</option>
+            <option value="180">180</option>
+            <option value="240">240</option>
         </select>
-      
+    
         <label for="canvasSection">Select sections to publish:</label>
         <div id="canvasSection" class="section-checkbox-group">
             <label class="checkbox-label">
@@ -651,20 +911,11 @@ label {
 
     </center>
 
-  
     <div class="container-fluid">
-
-        <!-- Page Heading -->
-        
-        <!-- DataTales Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3" style="display: flex;">
-                <h6 class="m-0 font-weight-bold text-primary">ADD ATTACK! CHALLENGES</h6>
-                
+                <h6 class="m-0 font-weight-bold text-primary">ADD CYMULATION CHALLENGES</h6>   
             </div>
-
-            
-     
             <div class="card-body">
                 <div>
                     <button id="generate">Generate and Publish using AI</button>
@@ -673,20 +924,16 @@ label {
                     <button id="removeBtn">Remove Node</button>
                     <button id="clearBtn">Clear Canvas</button>
                     <button id="demoBtn">Demonstrate</button>
-                    <button id="publishBtn">Publish</button>
-                    
+                    <button id="publishBtn">Publish</button>     
                 </div>
                 <div class="canvas" id="canvas">
                     <svg id="svgCanvas" width="1600" height="750" style="position: absolute; top: 0; left: 0;"></svg>
-                </div>
-
-                
+                </div>       
                 </div>
             </div>
         </div>
 
     </div>
-    <!-- /.container-fluid -->
 
 </div>
 </body>
@@ -767,14 +1014,21 @@ canvas.addEventListener('click', (e) => {
         iconModal.style.display = 'none';
     });
 
-    // Icon selection
+    const iconLists = document.querySelectorAll('#iconList, #iconList2, #iconList3');
+    iconLists.forEach((iconList) => {
     iconList.addEventListener('click', (e) => {
+        // Check if the clicked element is an icon
         if (e.target.classList.contains('icon')) {
             selectedIconClass = e.target.getAttribute('data-icon');
-            nodeConfigModal.style.display = 'block'; // Show node configuration modal
-            iconModal.style.display = 'none'; // Close the icon selection modal
+            
+            // Show the node configuration modal
+            nodeConfigModal.style.display = 'block';
+            
+            // Close the icon selection modal
+            iconModal.style.display = 'none';
         }
     });
+});
 
     // Close node configuration modal
     document.getElementById("closeNodeConfigModalBtn").onclick = function() {
@@ -1002,10 +1256,7 @@ document.getElementById("closeTitleModalBtn").onclick = function() {
                             wires.push({
                                 start: wireStart.id,
                                 end: node.id,
-                                startX: startX,
-                                startY: startY,
-                                endX: endX,
-                                endY: endY
+                               
                             });
                             wireStart = null; // Reset wire start
                             nodes.forEach(node => {
@@ -1026,8 +1277,8 @@ document.getElementById("closeTitleModalBtn").onclick = function() {
     const category = document.getElementById('canvasCategoryDropdown').value;
     const difficulty = document.getElementById('canvasDifficultyDropdown').value;
     const canvasTime = document.getElementById('canvasTime').value;
-    
-    // Get selected sections
+    const dueDate = document.getElementById('canvasDeadline').value; // Retrieve due date
+
     const selectedSections = Array.from(
         document.querySelectorAll('#canvasSection input[type="checkbox"]:checked')
     ).map(checkbox => checkbox.value);
@@ -1054,7 +1305,7 @@ document.getElementById("closeTitleModalBtn").onclick = function() {
             ipAddress: node.querySelector('.ip-address')?.textContent || '',
             vulnerability: node.querySelector('.vulnerability')?.textContent || '',
             title: node.querySelector('.node-title')?.textContent || '',
-            tooltip: node.querySelector('.tooltip')?.value || '' // Retrieve tooltip value
+            tooltip: node.querySelector('.tooltip')?.value || ''
         };
 
         if (nodeData.id && nodeData.title) {
@@ -1070,22 +1321,20 @@ document.getElementById("closeTitleModalBtn").onclick = function() {
             wiresData.push({
                 start: wire.start,
                 end: wire.end,
-                startX: parseInt(startNode.style.left) + 25,
-                startY: parseInt(startNode.style.top) + 25,
-                endX: parseInt(endNode.style.left) + 25,
-                endY: parseInt(endNode.style.top) + 25,
             });
         }
     });
-
+    const canvasScenario = document.getElementById('canvasScenario').value.trim(); 
     const canvasState = {
         title: canvasTitle,
         category: category,
         difficulty: difficulty,
         canvas_time: canvasTime,
-        canvas_section: selectedSections, // Store multiple sections
+        due_date: dueDate, // Include due date
+        canvas_section: selectedSections,
         nodes: nodes,
-        wires: wiresData
+        wires: wiresData,
+        canvas_scenario: canvasScenario
     };
 
     fetch('/save_canvas_state/', {
@@ -1100,13 +1349,14 @@ document.getElementById("closeTitleModalBtn").onclick = function() {
             alert('Canvas state saved successfully!');
             document.getElementById('titleModal').style.display = 'none';
         } else {
-            alert('Failed to save canvas state.');
+            alert('Failed to save canvas state. Check if you filled the required fields.');
         }
     }).catch(error => {
         console.error('Error:', error);
         alert('An error occurred while saving the canvas state.');
     });
 });
+
 
 
     // Function to get the CSRF token (used by Django for security)

@@ -118,6 +118,7 @@ def submit_score(request):
         data = json.loads(request.body)
         canvas_state_id = data.get('canvas_state_id')
         user_wires = json.loads(data.get('user_wires', '[]'))
+        canvas_explanation = data.get('canvas_explanation', '')
 
         try:
             canvas_state = CanvasState.objects.get(id=canvas_state_id)
@@ -129,8 +130,14 @@ def submit_score(request):
             correct_submissions = normalized_correct_wires & normalized_user_wires
             incorrect_submissions = normalized_user_wires - normalized_correct_wires
 
+            # Calculate the score based on correct submissions
             total_score = len(correct_submissions) * 10
 
+            # Calculate the total possible correct answers and total possible score
+            total_possible_correct_answers = len(normalized_correct_wires)
+            total_possible_score = total_possible_correct_answers * 10
+
+            # Save the score and additional details
             Score.objects.create(
                 user=request.user,
                 score=total_score,
@@ -139,6 +146,9 @@ def submit_score(request):
                 incorrect_submissions=len(incorrect_submissions),
                 canvas_state_title=canvas_state.title,
                 finished=True,
+                canvas_explanation=canvas_explanation,
+                total_possible_score=total_possible_score,
+                total_possible_correct_answers=total_possible_correct_answers,
             )
 
             return JsonResponse({
@@ -146,6 +156,8 @@ def submit_score(request):
                 'score': total_score,
                 'correct_wires': ['-'.join(wire) for wire in correct_submissions],
                 'incorrect_wires': ['-'.join(wire) for wire in incorrect_submissions],
+                'total_possible_score': total_possible_score,
+                'total_possible_correct_answers': total_possible_correct_answers,
             })
 
         except CanvasState.DoesNotExist:
@@ -154,6 +166,9 @@ def submit_score(request):
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
 
+
+
+import datetime
 
 
 def generate_network(request):
@@ -165,8 +180,32 @@ def generate_network(request):
         difficulty = data.get('difficulty')
         canvas_time = data.get('canvas_time')
         canvas_sections = data.get('canvas_section')
+        canvas_scenario = data.get('canvas_scenario', '').strip()
+        canvas_deadline = data.get('canvas_deadline')  # Get the deadline from the frontend
         canvas_sections_str = ','.join(canvas_sections)
+
         try:
+            # Parse deadline into a datetime object if provided
+            due_date = None
+            if canvas_deadline:
+                due_date = datetime.datetime.fromisoformat(canvas_deadline)
+
+            # Generate scenario if canvasScenario is empty
+            if not canvas_scenario:
+                scenario_prompt = (
+                    f"Generate a realistic and detailed scenario for a network titled '{title}' in 3-4 sentences, and ender 'Create an attacking and defending network simulation using the tools provided.'"
+      
+                )
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "You are an assistant that writes realistic cybersecurity scenarios."},
+                        {"role": "user", "content": scenario_prompt}
+                    ],
+                    max_tokens=200
+                )
+                canvas_scenario = response['choices'][0]['message']['content'].strip()
+
             # Call OpenAI API to generate the network
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
@@ -206,14 +245,16 @@ def generate_network(request):
             canvas_state = CanvasState.objects.create(
                 user=request.user,
                 title=title,
-                category = category,
-                difficulty = difficulty,
-                canvas_section = canvas_sections_str,
-                canvas_time = canvas_time,
+                category=category,
+                difficulty=difficulty,
+                canvas_section=canvas_sections_str,
+                canvas_time=canvas_time,
+                canvas_scenario=canvas_scenario,
+                due_date=due_date,  # Save the deadline
                 nodes=nodes,
                 wires=wires
             )
-        
+
             return JsonResponse({'success': True})
 
         except Exception as e:
@@ -221,6 +262,7 @@ def generate_network(request):
             return JsonResponse({'success': False, 'error': str(e)})
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
 def generate_network_defend(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -791,6 +833,8 @@ def display_canvas_defend(request, canvas_id):
 def save_canvas_state(request):
     if request.method == 'POST':
         data = json.loads(request.body)
+        
+        # Retrieve data from the request
         title = data.get('title')
         category = data.get('category')
         difficulty = data.get('difficulty')
@@ -798,26 +842,47 @@ def save_canvas_state(request):
         canvas_sections = data.get('canvas_section')
         nodes = data.get('nodes')
         wires = data.get('wires')
-        due_date = data.get('due_date')  # Retrieve due date
-        canvas_scenario = data.get('canvas_scenario')  # Retrieve scenario description
+        due_date = data.get('due_date')
+        canvas_scenario = data.get('canvas_scenario', '').strip()
 
+        # If canvas_scenario is empty, generate it using GPT-3.5
+        if not canvas_scenario:
+            try:
+                openai.api_key = os.getenv('OPENAI_API_KEY')
+                prompt = f"Generate a realistic and detailed scenario for a network titled '{title}' in 3-4 sentences, and ender 'Create an attacking and defending network simulation using the tools provided.'"
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[{"role": "system", "content": "You are an assistant that writes realistic cybersecurity scenarios."},
+                              {"role": "user", "content": prompt}],
+                    max_tokens=200
+                )
+                canvas_scenario = response['choices'][0]['message']['content'].strip()
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'message': f'Error generating scenario: {str(e)}'})
+
+        # Save sections as a string
         canvas_sections_str = ','.join(canvas_sections)
 
-        canvas_state = CanvasState.objects.create(
-            user=request.user,
-            title=title,
-            category=category,
-            difficulty=difficulty,
-            canvas_time=canvas_time,
-            canvas_section=canvas_sections_str,
-            nodes=nodes,
-            wires=wires,
-            due_date=due_date,  # Save due date
-            canvas_scenario=canvas_scenario  # Save scenario description
-        )
+        # Save canvas state to the database
+        try:
+            canvas_state = CanvasState.objects.create(
+                user=request.user,
+                title=title,
+                category=category,
+                difficulty=difficulty,
+                canvas_time=canvas_time,
+                canvas_section=canvas_sections_str,
+                nodes=nodes,
+                wires=wires,
+                due_date=due_date,
+                canvas_scenario=canvas_scenario
+            )
+            return JsonResponse({'status': 'success', 'message': 'Canvas state saved successfully!'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': f'Error saving canvas state: {str(e)}'})
 
-        return JsonResponse({'status': 'success', 'message': 'Canvas state saved successfully!'})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
 
 
 def user_list(request):
@@ -1896,12 +1961,18 @@ def profile_view(request):
     .values('category')
     .annotate(count=Count('id'))  # Count the entries for each category
 )
+    recent_activities = Score.objects.filter(user=request.user).order_by('-created_at')[:5]
 
+    # Add total_possible_score and total_possible_correct_answers to each activity
+    for activity in recent_activities:
+        # Calculate the total_possible_score and total_possible_correct_answers for each activity
+        activity.total_possible_score = activity.total_possible_score  # This is directly from the model
+        activity.total_possible_correct_answers = activity.total_possible_correct_answers
 # Prepare data for the chart
     categories = [entry['category'] for entry in category_counts]  # Category names
     submission_counts = [entry['count'] for entry in category_counts]  # Counts per category
     user_role = "Student"  # Default role
-
+    
     if request.user.is_superuser:
         user_role = "Admin"
     elif request.user.email.endswith('.it@tip.edu.ph'):

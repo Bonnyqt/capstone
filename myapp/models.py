@@ -89,19 +89,24 @@ class CanvasInteraction(models.Model):
         return f"User: {self.user.username}, Clicked at: {self.clicked_at}"
 
 class Score(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Links score to a user
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     score = models.IntegerField()
-    date_submitted = models.DateField(auto_now_add=True)  # Stores the date when the score was submitted
-    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp for record creation
-    finished = models.BooleanField(default=False)  # Tracks if the user has finished the activity
-    category = models.CharField(max_length=255)  # Stores the category of the selected canvas
-    correct_submissions = models.IntegerField(default=0)  # Tracks correct submissions
-    incorrect_submissions = models.IntegerField(default=0)  # Tracks incorrect submissions
-    canvas_state_title = models.CharField(max_length=100, null=True, blank=True)  # Field for CanvasState title
-    closed_by_user = models.BooleanField(default=False)  
+    date_submitted = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    finished = models.BooleanField(default=False)
+    category = models.CharField(max_length=255)
+    correct_submissions = models.IntegerField(default=0)
+    incorrect_submissions = models.IntegerField(default=0)
+    canvas_state_title = models.CharField(max_length=100, null=True, blank=True)
+    closed_by_user = models.BooleanField(default=False)
+    canvas_explanation = models.TextField(null=True, blank=True)
     
+    # New fields for total score and total correct answers possible
+    total_possible_score = models.IntegerField(default=0)  # Total score possible for the challenge
+    total_possible_correct_answers = models.IntegerField(default=0)  # Total correct answers possible for the challenge
+
     def __str__(self):
-        return f"User: {self.user.username}, Score: {self.score}, Finished: {self.finished}, Category: {self.category}, Correct: {self.correct_submissions}, Incorrect: {self.incorrect_submissions}, Date: {self.date_submitted}, Canvas Title: {self.canvas_state_title}"
+        return f"User: {self.user.username}, Score: {self.score}, Finished: {self.finished}, Category: {self.category}, Correct: {self.correct_submissions}, Incorrect: {self.incorrect_submissions}, Date: {self.date_submitted}, Canvas Title: {self.canvas_state_title}, Total Score Possible: {self.total_possible_score}, Total Correct Answers Possible: {self.total_possible_correct_answers}"
 
 class UserSession(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

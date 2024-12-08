@@ -1,0 +1,244 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERCLASH | Student Assessment</title>
+    <link href="{% static 'img/logo.png' %}" rel="icon">
+    <!-- Custom fonts for this template-->
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+    {% include "myapp/professor/professor_sidebar.html" %}
+
+    
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">STUDENT ASSESSMENT | <span id="currentDate" class="text-gray-600 small"></span></h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                   <!-- Include jQuery and DataTables CSS and JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 10px; background-color: #f9f9f9; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); margin-bottom: 15px; gap: 20px; font-family: Arial, sans-serif;">
+
+    <!-- Filter Sections -->
+    <div>
+        <label for="sectionFilter" style="font-weight: bold; color: #555;">Section</label>
+<select id="sectionFilter" onchange="filterData()" 
+        style="padding: 8px; margin-left: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 5px;">
+    <option value="">All Sections</option>
+    <option value="IT41S1">IT41S1</option>
+    <option value="IT41S2">IT41S2</option>
+    <option value="IT41S3">IT41S3</option>
+    <option value="IT41S4">IT41S4</option>
+    <option value="IT41S5">IT41S5</option>
+</select>
+
+    </div>
+
+    <!-- Filter Challenges -->
+    <div>
+        <label for="challengeFilter" style="font-weight: bold; color: #555;">Challenge</label>
+        <select id="challengeFilter" onchange="filterData()" style="padding: 8px; margin-left: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 5px;">
+            <option value="">All Challenges</option>
+            {% for challenge in challenges %}
+                <option value="{{ challenge.title }}">{{ challenge.title }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Search Bar -->
+    <input type="text" id="searchBar" placeholder="Search User/Challenge..." 
+           onkeyup="searchTable()" 
+           style="padding: 10px; font-size: 14px; width: 300px; border: 1px solid #ccc; border-radius: 5px; outline: none; box-sizing: border-box;"/>
+
+    <!-- Sort by Score Dropdown -->
+<div>
+    <label for="sortScoreOrder" style="font-weight: bold; color: #555;">Sort by Score</label>
+    <select id="sortScoreOrder" onchange="sortTableByScore()" 
+            style="padding: 8px; font-size: 14px; margin-left: 10px; border: 1px solid #ccc; border-radius: 5px;">
+        <option value="desc">Highest</option>
+        <option value="asc">Lowest</option>
+    </select>
+</div>
+
+    <div>
+        <label for="entriesSelect" style="font-weight: bold; color: #555;">Show</label>
+        <select id="entriesSelect" onchange="updateEntries()" 
+                style="padding: 10px; font-size: 14px; margin-left: 5px; border: 1px solid #ccc; border-radius: 5px;">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+        </select>
+    </div>
+    
+</div>
+
+<!-- Data Table -->
+<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif; text-align: center;">
+    <thead class="table-grey" style="background-color: #e9ecef; font-weight: bold;">
+        <tr>
+            <th style="padding: 10px; border: 1px solid #ccc;">User</th>
+            <th style="padding: 10px; border: 1px solid #ccc;">Challenge</th>
+            <th style="padding: 10px; border: 1px solid #ccc;">Correct</th>
+            <th style="padding: 10px; border: 1px solid #ccc;">Score</th>
+            <th style="padding: 10px; border: 1px solid #ccc;">Section</th>
+            <th style="padding: 10px; border: 1px solid #ccc;">Student Takeaways</th>
+        </tr>
+    </thead>
+    <tbody id="dataRows">
+        {% for item in data %}
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ccc;">{{ item.user }}</td>
+            <td style="padding: 10px; border: 1px solid #ccc;">{{ item.canvas_state_title }}</td>
+            <td style="padding: 10px; border: 1px solid #ccc;">{{ item.ratio }}</td>
+            <td style="padding: 10px; border: 1px solid #ccc;">{{ item.score_ratio }}</td>
+            <td style="padding: 10px; border: 1px solid #ccc;">{{ item.section }}</td>
+            <td style="padding: 10px; border: 1px solid #ccc;">{{ item.canvas_explanation }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    function sortTableByScore() {
+    var order = $('#sortScoreOrder').val();  // Get sorting order (asc or desc)
+    var rows = $('#dataTable tbody tr').get();
+
+    rows.sort(function(rowA, rowB) {
+        var scoreA = parseFloat($(rowA).find('td:eq(3)').text().trim()) || 0;  // Score column
+        var scoreB = parseFloat($(rowB).find('td:eq(3)').text().trim()) || 0;
+
+        if (order === 'asc') {
+            return scoreA - scoreB;
+        } else {
+            return scoreB - scoreA;
+        }
+    });
+
+    $.each(rows, function(index, row) {
+        $('#dataTable tbody').append(row);
+    });
+}
+
+    function searchTable() {
+        const input = document.getElementById('searchBar').value.toLowerCase();
+        const rows = document.querySelectorAll("#dataRows tr");
+
+        rows.forEach(row => {
+            const cells = row.getElementsByTagName('td');
+            let rowText = '';
+            
+            for (let cell of cells) {
+                rowText += cell.textContent.toLowerCase() + ' ';
+            }
+
+            if (rowText.includes(input)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    // Show Entries Dropdown Functionality
+    function updateEntries() {
+        const entries = parseInt(document.getElementById('entriesSelect').value);
+        const rows = document.querySelectorAll("#dataRows tr");
+
+        rows.forEach((row, index) => {
+            if (index < entries) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+
+
+<!-- Initialize DataTables -->
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            "order": [[1, "asc"]],  // Default sorting by Challenge column
+        });
+    });
+
+    // Filtering logic for section and challenge dropdowns
+    function filterData() {
+    var section = $('#sectionFilter').val();
+    var challenge = $('#challengeFilter').val();
+
+    var rows = $('#dataTable tbody tr');
+
+    rows.each(function() {
+        var sectionData = $(this).find('td:eq(4)').text().trim();  // Section column
+        var challengeData = $(this).find('td:eq(1)').text().trim();
+
+        var sectionMatch = section ? sectionData === section : true;
+        var challengeMatch = challenge ? challengeData === challenge : true;
+
+        if (sectionMatch && challengeMatch) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    });
+}
+
+</script>
+
+                    
+                         
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- /.container-fluid -->
+
+
+<!-- End of Main Content -->
+</body>
+
+
+    <!-- Page level plugins -->
+    <script src="{% static 'vendor/chart.js/Chart.min.js' %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{% static 'js/demo/chart-area-demo.js' %}"></script>
+    <script src="{% static 'js/demo/chart-pie-demo.js' %}"></script>
+    <script>
+        // Display today's date in a readable format
+        const currentDateElement = document.getElementById('currentDate');
+        const today = new Date();
+        const formattedDate = today.toLocaleDateString('en-US', {
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric'
+        });
+    
+        currentDateElement.textContent = formattedDate;
+    </script>
+</html>

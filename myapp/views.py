@@ -2164,6 +2164,56 @@ def delete_course(request, course_id):
 
 
 
+from django.shortcuts import render
+from .models import Score, UserProfile
+
+def student_assessment(request):
+    # Fetch all scores and related user profiles
+    scores = Score.objects.select_related('user').all()
+    user_profiles = UserProfile.objects.all()  # Get all user profiles
+    challenges = CanvasState.objects.all()
+
+    data = []
+    for challenge in challenges:
+        # Filter students who answered this challenge
+        answered_students = [
+            score for score in scores if score.canvas_state_title == challenge.title
+        ]
+
+        for score in answered_students:
+            user_profile = user_profiles.filter(user_id=score.user_id).first()
+            section = user_profile.section if user_profile else "N/A"
+
+            canvas_state_title = score.canvas_state_title or "No Title"
+            ratio = (
+                f"{score.correct_submissions}/{score.total_possible_correct_answers}"
+                if score.total_possible_correct_answers > 0
+                else "N/A"
+            )
+            score_ratio = (
+                f"{score.score}/{score.total_possible_score}"
+                if score.total_possible_score > 0
+                else "N/A"
+            )
+            canvas_explanation = score.canvas_explanation or "No explanation provided"
+
+            data.append({
+                "user": score.user.username,
+                "canvas_state_title": canvas_state_title,
+                "ratio": ratio,
+                "score_ratio": score_ratio,
+                "section": section,
+                "canvas_explanation": canvas_explanation,
+                "challenge_title": challenge.title
+            })
+
+    return render(request, 'myapp/professor/professor_answered.html', {
+        "data": data,
+        "challenges": challenges,
+        "user_profiles": user_profiles
+    })
+
+
 
 
 

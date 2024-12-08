@@ -564,17 +564,23 @@
             
                 <textarea name="text" id="canvasExp" placeholder="Explain your network simulation..." style="color:white; background: linear-gradient(135deg, #042350cb, #3b73db); padding: 10px; border-radius: 5px; width:1500px; ::placeholder { color: white; opacity: 1; }"></textarea>
             
-                <div class="controls mt-3 text-center hidden-controls" style="background: linear-gradient(135deg, #042350cb, #3b73db); padding: 10px; border-radius: 5px;">
-                    <button id="playPauseBtn" class="btn btn-primary">
+                <div class="controls mt-3 text-center" style="background: linear-gradient(135deg, #042350cb, #3b73db); padding: 10px; border-radius: 5px;">
+                    <button id="slowMoBtn" class="btn btn-secondary" style="font-size: 30px; color: white;" title="Slow Motion">
+                        <i class="fas fa-tachometer-alt"></i> <!-- Slow-mo Button -->
+                    </button>
+                    <button id="playPauseBtn" class="btn btn-primary" title="Play">
                         <i class="bi bi-play-fill" style="font-size: 30px;"></i> <!-- Play icon -->
                     </button>
-                    <button id="pauseBtn" class="btn btn-danger" style="display: none; font-size: 30px;">
+                    <button id="pauseBtn" class="btn btn-danger" style="display: none; font-size: 30px;" title="Pause">
                         <i class="bi bi-pause-fill"></i> <!-- Pause icon -->
                     </button>
-                    <button id="fastForwardBtn" class="btn btn-secondary" style="font-size: 30px;">
+                    <button id="fastForwardBtn" class="btn btn-secondary" style="font-size: 30px;" title="Fast Forward">
                         <i class="bi bi-fast-forward-fill"></i> <!-- Fast-forward icon -->
                     </button>
+                    
                 </div>
+                
+                
                 
                 
             </div>
@@ -968,12 +974,13 @@ document.getElementById('submitBtn').addEventListener('click', function () {
 let animationInProgress = false; // Track if animation is in progress
 let currentWireIndex = 0; // Track current wire for simulation state
 let fastForward = false; // Flag to track fast-forward mode
+let slowMotion = false; // Flag to track slow-motion mode
 
 // Function to animate the packet
 function animatePacket() {
     if (!Array.isArray(wires) || wires.length === 0) {
         alert('No wires connected. Please create connections first.');
-        return;  // Exit early if no wires are defined
+        return; // Exit early if no wires are defined
     }
 
     const packetElement = document.getElementById('packet');
@@ -1018,7 +1025,7 @@ function animatePacket() {
 
         // Wait for 1 second at the start node before starting the animation
         setTimeout(() => {
-            const duration = fastForward ? 500 : 2000; // If fast-forward is true, animate faster
+            const duration = getDuration(); // Adjust duration based on mode
             const startTime = performance.now();
 
             function animate(timestamp) {
@@ -1043,7 +1050,7 @@ function animatePacket() {
                     // Move to the next wire
                     wireIndex++;
                     if (wireIndex < wires.length) {
-                        setTimeout(() => movePacket(wires[wireIndex]), fastForward ? 1000 : 2000); 
+                        setTimeout(() => movePacket(wires[wireIndex]), getDuration());
                     } else {
                         // End animation
                         packetElement.style.display = 'none';
@@ -1072,13 +1079,6 @@ function stopAnimation() {
     const packetElement = document.getElementById('packet');
     packetElement.style.display = 'none';
 
-    // Fix the tooltip in a visible state
-    const allTooltips = document.querySelectorAll('.tooltip');
-    allTooltips.forEach(tooltip => {
-        tooltip.style.visibility = 'visible'; // Keep it visible
-        tooltip.style.opacity = '1'; // Full opacity
-    });
-
     animationInProgress = false; // Mark animation as stopped
 }
 
@@ -1102,8 +1102,30 @@ function toggleFastForward() {
     }
 }
 
-// Attach event listener to Demonstrate button (play/pause functionality)
-playPauseBtn.addEventListener('click', function() {
+// Function to toggle the slow-motion mode
+function toggleSlowMotion() {
+    slowMotion = !slowMotion; // Toggle slow-motion mode
+
+    // Change the button color to indicate slow-motion mode is on
+    if (slowMotion) {
+        slowMoBtn.style.backgroundColor = '#ffc107'; // Change to active color (yellow)
+        slowMoBtn.style.color = 'black'; // Change text color for visibility
+    } else {
+        slowMoBtn.style.backgroundColor = '#6c757d'; // Change back to default color (grey)
+        slowMoBtn.style.color = 'white'; // Reset text color
+    }
+}
+
+// Function to get the current animation duration based on the active mode
+function getDuration() {
+    if (slowMotion) {
+        return 3000; // Slow motion: 3 seconds
+    }
+    return fastForward ? 500 : 2000; // Fast-forward: 0.5 seconds, Normal: 2 seconds
+}
+
+// Attach event listener to Play/Pause button
+playPauseBtn.addEventListener('click', function () {
     if (animationInProgress) {
         stopAnimation(); // Stop if playing
     } else {
@@ -1111,13 +1133,16 @@ playPauseBtn.addEventListener('click', function() {
     }
 });
 
-// Attach event listener to Stop button
-const stopBtn = document.getElementById('stopBtn');
+// Attach event listener to Pause button
 pauseBtn.addEventListener('click', stopAnimation);
 
 // Attach event listener to Fast Forward button
 const fastForwardBtn = document.getElementById('fastForwardBtn');
 fastForwardBtn.addEventListener('click', toggleFastForward);
+
+// Attach event listener to Slow Motion button
+const slowMoBtn = document.getElementById('slowMoBtn');
+slowMoBtn.addEventListener('click', toggleSlowMotion);
 
 
 

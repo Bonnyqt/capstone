@@ -71,6 +71,7 @@ path('generate_network_defend/', views.generate_network_defend, name='generate_n
 path('mark_challenge_closed/<int:canvas_id>/', views.mark_challenge_closed, name='mark_challenge_closed'),
 path('logs/', views.logs, name='logs'),
 path('submit_score/', views.submit_score, name='submit_score'),
+path('student-assessment/', views.student_assessment, name='student_assessment'),
 ] 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

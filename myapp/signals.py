@@ -6,7 +6,6 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 import json
 from datetime import date
 import logging
-from tkinter import Canvas
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User as DjangoUser

@@ -98,7 +98,7 @@ DATABASES = {
 }
 
 
-DATABASES["default"] = dj_database_url.parse('postgresql://cyberclash_user:YqnNUvvvxRBQs6suu136F992dM6QnpIY@dpg-ct0otibtq21c73eh6b60-a.oregon-postgres.render.com/cyberclash')
+DATABASES["default"] = dj_database_url.parse('postgresql://cyberclash_r0cp_user:2pxHqk6Y0TxYZyD3vdzYp5XSQwYKvV2V@dpg-cuobqadds78s738ifbhg-a.oregon-postgres.render.com/cyberclash_r0cp')
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

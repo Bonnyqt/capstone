@@ -287,8 +287,7 @@ h1 {
                 {{ challenge.id }},
                 '{{ challenge.finished }}',
                 '{{ challenge.locked }}',
-                '{{ challenge.due_date|date:"Y-m-d H:i:s" }}'  
-            )" class="card" style="--surface-color: 
+                '{{ challenge.due_date|date:"Y-m-d H:i:s" }}')" class="card" style="--surface-color: 
                 {% if challenge.locked %} #ffcccc 
                 {% elif challenge.finished %} #8ceda9 
                 {% elif challenge.is_overdue %} #ffb74c

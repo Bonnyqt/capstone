@@ -1602,7 +1602,7 @@ def login(request):
             # Generate activation link
             token = account_activation_token.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            domain ='127.0.0.1:8000'
+            domain ='cyberclash.onrender.com'
             protocol = 'https' if request.is_secure() else 'http'
             link = f'{protocol}://{domain}/activate/{uid}/{token}/'
 
